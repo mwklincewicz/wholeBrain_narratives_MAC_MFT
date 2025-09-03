@@ -28,7 +28,7 @@ onsets = [44.7,62.6,76.4,110,145.4,154.6,182.7,199,213.8,232,243,263,281.2,302.5
 durations = [17.9,13.8,33.6,35.4,9.2,28.1,16.3,14.8,18.2,11,20,18.2,21.3,9.5,19.7,32,12.9,13.4,16,15,17.5,14.5]
 eventNames = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22"]
 
-segmentFileDF = pd.read_excel("testData/foundationScores/shapesphysical_transcript_segment_MFT_MAC.xlsx")
+segmentFileDF = pd.read_excel("testData/foundationScores/shapessocial_transcript_segment_MFT_MAC.xlsx")
 segmentValues = segmentFileDF[['segment',
                                'seg_MFT_a_care_virtue',
                                'seg_MFT_a_fairness_virtue',
@@ -55,7 +55,8 @@ segmentValues = segmentFileDF[['segment',
                                'seg_MAC_a_family_vice',
                                'seg_MAC_a_property_vice']]
 
-eventFoundations = segmentValues.drop_duplicates(subset=['segment'])
+eventFoundations = segmentValues.drop_duplicates(subset=['segment'], keep='first', ignore_index=True)
+eventFoundations = eventFoundations.iloc[:,1:]
 
 #
 #   Helper functions
@@ -101,7 +102,7 @@ X_base = make_first_level_design_matrix(
     frame_times,
     events,
     add_regs=confound_file1,
-    add_reg_names=['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z'], #select confound regressors
+    add_reg_names=['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z'],
     hrf_model='glover',
 )
 
@@ -110,22 +111,23 @@ FM1 = FM1.fit(nifti_image_for_model, design_matrices=X_base)
 
 #contrast first level model
 
-modulationFoundations = []
-modulated_events = pd.DataFrame(
-    {
-        "trial_type": eventNames,
-        "onset": onsets,
-        "duration": durations,
-        "modulation": modulationFoundations,
-    }
-)
+for modulationFoundations, modulationValues in eventFoundations.items():
+    #print(modulationFoundations)
+    #print(modulationValues.shape)
+    modulated_events = pd.DataFrame(
+        {
+            "trial_type": sorted([int(x) for x in eventNames]),
+            "onset": onsets,
+            "duration": durations,
+            "modulation": modulationValues,
+        }
+    )
 
 X_modulated = make_first_level_design_matrix(
     frame_times,
     modulated_events,
     add_regs=confound_file1,
     add_reg_names=['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z'],
-    # select confound regressors
     hrf_model='glover',
 )
 
