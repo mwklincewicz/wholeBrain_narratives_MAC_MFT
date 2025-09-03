@@ -134,11 +134,8 @@ fig, (ax1, ax2) = plt.subplots(
     figsize=(10, 6), nrows=1, ncols=2, constrained_layout=True
 )
 
-plot_design_matrix(X2, axes=ax1)
+plot_design_matrix(X_base, axes=ax1)
 ax1.set_title("Block design matrix", fontsize=12)
-plot_design_matrix(X4, axes=ax2)
+plot_design_matrix(X_modulated, axes=ax2)
 ax2.set_title("Modulated block design matrix", fontsize=12)
-plt.show()
-
-plot_design_matrix(X1)
 plt.show()
