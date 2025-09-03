@@ -95,17 +95,20 @@ confoundsAll = confounds_dir + fname1
 df = pd.read_csv(confoundsAll, sep='\t')
 confound_file1 = df[['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
 
-hrf_model = "glover"
-X1 = make_first_level_design_matrix(
+#baseline first level model
+
+X_base = make_first_level_design_matrix(
     frame_times,
     events,
     add_regs=confound_file1,
-    add_reg_names=['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z'],
-    hrf_model=hrf_model,
+    add_reg_names=['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z'], #select confound regressors
+    hrf_model='glover',
 )
 
 FM1 = FirstLevelModel()
-FM1 = FM1.fit(nifti_image_for_model, design_matrices=X1)
+FM1 = FM1.fit(nifti_image_for_model, design_matrices=X_base)
+
+#contrast first level model
 
 modulationFoundations = []
 modulated_events = pd.DataFrame(
@@ -117,13 +120,13 @@ modulated_events = pd.DataFrame(
     }
 )
 
-hrf_model = "glover"
-X4 = make_first_level_design_matrix(
+X_modulated = make_first_level_design_matrix(
     frame_times,
     modulated_events,
-    drift_model="polynomial",
-    drift_order=3,
-    hrf_model=hrf_model,
+    add_regs=confound_file1,
+    add_reg_names=['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z'],
+    # select confound regressors
+    hrf_model='glover',
 )
 
 # Let's compare it to the unmodulated block design
