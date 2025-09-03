@@ -107,7 +107,7 @@ X1 = make_first_level_design_matrix(
 FM1 = FirstLevelModel()
 FM1 = FM1.fit(nifti_image_for_model, design_matrices=X1)
 
-modulationFoundations = [1.0, 0.5, 0.25, 1.0, 0.5, 0.25, 1.0, 0.5, 0.25]
+modulationFoundations = []
 modulated_events = pd.DataFrame(
     {
         "trial_type": eventNames,
