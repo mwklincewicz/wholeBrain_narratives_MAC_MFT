@@ -29,6 +29,9 @@ durations = [17.9,13.8,33.6,35.4,9.2,28.1,16.3,14.8,18.2,11,20,18.2,21.3,9.5,19.
 eventNames = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22"]
 
 segmentFileDF = pd.read_excel("testData/foundationScores/shapessocial_transcript_segment_MFT_MAC.xlsx")
+
+segmentFileDF['familyMAC_filterAbovePointTwo']  = segmentFileDF['seg_MAC_a_family_virtue'].apply(lambda x: x if x >= .2 else 0.00001)
+
 segmentValues = segmentFileDF[['segment',
                                'seg_MFT_a_care_virtue',
                                'seg_MFT_a_fairness_virtue',
@@ -53,7 +56,10 @@ segmentValues = segmentFileDF[['segment',
                                'seg_MAC_a_heroism_vice',
                                'seg_MAC_a_reciprocity_vice',
                                'seg_MAC_a_family_vice',
-                               'seg_MAC_a_property_vice']]
+                               'seg_MAC_a_property_vice',
+                               'familyMAC_filterAbovePointTwo']]
+
+
 
 eventFoundations = segmentValues.drop_duplicates(subset=['segment'], keep='first', ignore_index=True)
 eventFoundations = eventFoundations.iloc[:,1:]
@@ -110,18 +116,18 @@ FM1 = FirstLevelModel()
 FM1 = FM1.fit(nifti_image_for_model, design_matrices=X_base)
 
 #contrast first level model
-
-for modulationFoundations, modulationValues in eventFoundations.items():
-    #print(modulationFoundations)
-    #print(modulationValues.shape)
-    modulated_events = pd.DataFrame(
-        {
-            "trial_type": sorted([int(x) for x in eventNames]),
-            "onset": onsets,
-            "duration": durations,
-            "modulation": modulationValues,
-        }
-    )
+#print(eventFoundations.shape)
+#print(eventFoundations.items())
+modulationValues = eventFoundations[ 'familyMAC_filterAbovePointTwo']
+print(modulationValues)
+modulated_events = pd.DataFrame(
+    {
+        "trial_type": sorted([int(x) for x in eventNames]),
+        "onset": onsets,
+        "duration": durations,
+        "modulation": modulationValues,
+    }
+)
 
 X_modulated = make_first_level_design_matrix(
     frame_times,
