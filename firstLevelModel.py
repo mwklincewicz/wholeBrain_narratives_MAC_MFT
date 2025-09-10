@@ -25,12 +25,12 @@ from nilearn import plotting
 epidataTest_dir = "./testData/fmri"
 confoundsTest_dir = "./testData/confounds/"
 
-epidata_dir = "./testData/fmri"
-confounds_dir = "./testData/confounds/"
+epidata_dir = "C:/fmriData/"
+confounds_dir = "C:/fmriData/confounds/confounds/"
 
 testSubject = 221
 # Define subjects
-participants = [49]#, 58, 95, 115, 127, 181, 186, 190, 191, 200, 201] + list(range(206, 238)) + list(range(239, 254))
+participants = [49, 58, 95, 115, 127, 181, 186, 190, 191, 200, 201] + list(range(206, 238)) + list(range(239, 254))
 #exclude subj 238, see paper
 
 onsets = [44.7,62.6,76.4,110,145.4,154.6,182.7,199,213.8,232,243,263,281.2,302.5,312,331.7,363.7,376.6,390,406,421,438.5]
@@ -97,80 +97,82 @@ def load_epi_data_physical(sub):
 #   Data transform
 #
 
-epi_data_socialNIFTI = load_epi_data_social(testSubject)
+for participant in participants:
+    print ("Building first-level model for participant %s" % (participant))
+    epi_data_socialNIFTI = load_epi_data_social(participant)
 
-events = pd.DataFrame({"trial_type": sorted([int(x) for x in eventNames]), "onset": onsets, "duration": durations})
-fname1 = "sub-%03d_task-shapessocial_desc-confounds_regressors.tsv" % testSubject
-confoundsAll = confounds_dir + fname1
+    events = pd.DataFrame({"trial_type": sorted([int(x) for x in eventNames]), "onset": onsets, "duration": durations})
+    fname1 = "sub-%03d_task-shapessocial_desc-confounds_regressors.tsv" % participant
+    confoundsAll = confounds_dir + fname1
 
-df = pd.read_csv(confoundsAll, sep='\t')
-confound_file1 = df[['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
+    df = pd.read_csv(confoundsAll, sep='\t')
+    confound_file1 = df[['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
 
-# use only events from above .2 MAC family values
-modulationValues = eventFoundations['familyMAC_filterAbovePointTwo']
+    # use only events from above .2 MAC family values
+    modulationValues = eventFoundations['familyMAC_filterAbovePointTwo']
 
-## only keep the rows with modulationValues above .2
-for Trial in range(len(modulationValues)):
+    ## only keep the rows with modulationValues above .2
+    for Trial in range(len(modulationValues)):
 
-    print('trial:', Trial)
+        #print('trial:', Trial)
 
-    if modulationValues[Trial] < .2:
-        events = events.drop(Trial)
+        if modulationValues[Trial] < .2:
+            events = events.drop(Trial)
 
-events['trial_type'] = 'macFamily'
+    events['trial_type'] = 'macFamily'
 
-# Make an average
-mean_img = image.mean_img(epi_data_socialNIFTI, copy_header=True)
-mask = masking.compute_epi_mask(mean_img, lower_cutoff=0.2, upper_cutoff=0.85, opening=3, connected=True)
+    # Make an average
+    mean_img = image.mean_img(epi_data_socialNIFTI, copy_header=True)
+    mask = masking.compute_epi_mask(mean_img, lower_cutoff=0.2, upper_cutoff=0.85, opening=3, connected=True)
 
-# Clean and smooth data
-epi_data_socialNIFTI = image.clean_img(epi_data_socialNIFTI, standardize=False)
-epi_data_socialNIFTI = image.smooth_img(epi_data_socialNIFTI, 6.0)
+    # Clean and smooth data
+    epi_data_socialNIFTI = image.clean_img(epi_data_socialNIFTI, standardize=False)
+    epi_data_socialNIFTI = image.smooth_img(epi_data_socialNIFTI, 6.0)
 
-# get fdata
-epi_data_social = epi_data_socialNIFTI.get_fdata()
+    # get fdata
+    epi_data_social = epi_data_socialNIFTI.get_fdata()
 
-frame_times = (
-        np.arange(epi_data_social.shape[3]) * 1.5
-)
+    frame_times = (
+            np.arange(epi_data_social.shape[3]) * 1.5
+    )
 
-# baseline first level model
+    # baseline first level model
 
-X_base = make_first_level_design_matrix(
-    frame_times,
-    events,
-    add_regs=confound_file1,
-    add_reg_names=['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z'],
-    hrf_model='glover',
-)
+    X_base = make_first_level_design_matrix(
+        frame_times,
+        events,
+        add_regs=confound_file1,
+        add_reg_names=['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z'],
+        hrf_model='glover',
+    )
 
-FM1 = FirstLevelModel(mask_img=mask)
-FM1 = FM1.fit(epi_data_socialNIFTI, design_matrices=X_base)
+    FM1 = FirstLevelModel(mask_img=mask)
+    FM1 = FM1.fit(epi_data_socialNIFTI, design_matrices=X_base)
 
-# contrast first level model
+    # contrast first level model
 
-# Let's compare it to the unmodulated block design
-fig, (ax1) = plt.subplots(
-    figsize=(10, 6), nrows=1, ncols=1, constrained_layout=True
-)
+    # Let's compare it to the unmodulated block design
+    fig, (ax1) = plt.subplots(
+        figsize=(10, 6), nrows=1, ncols=1, constrained_layout=True
+    )
 
-plot_design_matrix(X_base, axes=ax1)
-ax1.set_title("Block design matrix", fontsize=12)
-plt.show()
+    plot_design_matrix(X_base, axes=ax1)
+    ax1.set_title("Block design matrix", fontsize=12)
+    #plt.show()
 
-## create contrast image
-contrast_name = "macFamily"
+    ## create contrast image
+    contrast_name = "macFamily"
 
-z_map = FM1.compute_contrast(
-    contrast_name,
-    output_type="z_score"  # Can be ‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’ or ‘all’
-)
+    z_map = FM1.compute_contrast(
+        contrast_name,
+        output_type="z_score"  # Can be ‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’ or ‘all’
+    )
 
-# Apply mask to z_map
-masked_data = apply_mask(z_map, mask)
-z_map_masked = unmask(masked_data, mask)
+    # Apply mask to z_map
+    masked_data = apply_mask(z_map, mask)
+    z_map_masked = unmask(masked_data, mask)
 
-# save contrast image for the testsubject (to be used at second level)
-z_map_masked.to_filename(("./processedFirstLevel/%03d_contrast_macFamily.nii.gz") %(testSubject) )
+    # save contrast image for the testsubject (to be used at second level)
+    z_map_masked.to_filename(("./processedFirstLevel/%03d_contrast_macFamily.nii.gz") %(participant) )
 
-plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
+    plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
