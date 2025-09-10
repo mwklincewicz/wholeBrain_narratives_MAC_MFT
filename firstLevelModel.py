@@ -7,14 +7,23 @@ import nibabel as nib
 import matplotlib.pyplot as plt
 import openpyxl as xl
 
+from nilearn import image, masking
+from nilearn._utils import plotting
+from pandas import read_excel
 from nilearn.glm.first_level import make_first_level_design_matrix
 from nilearn.plotting import plot_design_matrix
 from nilearn.glm.first_level import FirstLevelModel
-from pandas import read_excel
+from nilearn.masking import compute_epi_mask, apply_mask, unmask
+from nilearn.image import index_img, resample_to_img, math_img, mean_img
+from nilearn.plotting import plot_stat_map, show
+from nilearn import plotting
 
 #
 #   Constants
 #
+
+epidataTest_dir = "./testData/fmri"
+confoundsTest_dir = "./testData/confounds/"
 
 epidata_dir = "./testData/fmri"
 confounds_dir = "./testData/confounds/"
@@ -30,7 +39,8 @@ eventNames = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15",
 
 segmentFileDF = pd.read_excel("testData/foundationScores/shapessocial_transcript_segment_MFT_MAC.xlsx")
 
-segmentFileDF['familyMAC_filterAbovePointTwo']  = segmentFileDF['seg_MAC_a_family_virtue'].apply(lambda x: x if x >= .2 else 0.00001)
+#filter to keep all values above .2 in the MAC Family Virtue column and change the rest to .000001
+segmentFileDF['familyMAC_filterAbovePointTwo']  = segmentFileDF['seg_MAC_a_family_virtue'].apply(lambda x: x if x >= .2 else 0.000001)
 
 segmentValues = segmentFileDF[['segment',
                                'seg_MFT_a_care_virtue',
@@ -82,27 +92,49 @@ def load_epi_data_physical(sub):
     print("Loading data from %s" % (epi_in))
     return epi_data_physical
 
+
 #
 #   Data transform
 #
 
 epi_data_socialNIFTI = load_epi_data_social(testSubject)
-epi_data_social = epi_data_socialNIFTI.get_fdata()
 
-nifti_image_for_model = nib.Nifti1Image(epi_data_social,affine=epi_data_socialNIFTI.affine)
-
-frame_times = (
-    np.arange(epi_data_social.shape[3] ) * 1.5
-)
-
-events = pd.DataFrame( {"trial_type":sorted([int(x) for x in eventNames]),"onset":onsets,"duration":durations})
+events = pd.DataFrame({"trial_type": sorted([int(x) for x in eventNames]), "onset": onsets, "duration": durations})
 fname1 = "sub-%03d_task-shapessocial_desc-confounds_regressors.tsv" % testSubject
 confoundsAll = confounds_dir + fname1
 
 df = pd.read_csv(confoundsAll, sep='\t')
 confound_file1 = df[['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
 
-#baseline first level model
+# use only events from above .2 MAC family values
+modulationValues = eventFoundations['familyMAC_filterAbovePointTwo']
+
+## only keep the rows with modulationValues above .2
+for Trial in range(len(modulationValues)):
+
+    print('trial:', Trial)
+
+    if modulationValues[Trial] < .2:
+        events = events.drop(Trial)
+
+events['trial_type'] = 'macFamily'
+
+# Make an average
+mean_img = image.mean_img(epi_data_socialNIFTI, copy_header=True)
+mask = masking.compute_epi_mask(mean_img, lower_cutoff=0.2, upper_cutoff=0.85, opening=3, connected=True)
+
+# Clean and smooth data
+epi_data_socialNIFTI = image.clean_img(epi_data_socialNIFTI, standardize=False)
+epi_data_socialNIFTI = image.smooth_img(epi_data_socialNIFTI, 6.0)
+
+# get fdata
+epi_data_social = epi_data_socialNIFTI.get_fdata()
+
+frame_times = (
+        np.arange(epi_data_social.shape[3]) * 1.5
+)
+
+# baseline first level model
 
 X_base = make_first_level_design_matrix(
     frame_times,
@@ -112,38 +144,33 @@ X_base = make_first_level_design_matrix(
     hrf_model='glover',
 )
 
-FM1 = FirstLevelModel()
-FM1 = FM1.fit(nifti_image_for_model, design_matrices=X_base)
+FM1 = FirstLevelModel(mask_img=mask)
+FM1 = FM1.fit(epi_data_socialNIFTI, design_matrices=X_base)
 
-#contrast first level model
-#print(eventFoundations.shape)
-#print(eventFoundations.items())
-modulationValues = eventFoundations[ 'familyMAC_filterAbovePointTwo']
-print(modulationValues)
-modulated_events = pd.DataFrame(
-    {
-        "trial_type": sorted([int(x) for x in eventNames]),
-        "onset": onsets,
-        "duration": durations,
-        "modulation": modulationValues,
-    }
-)
-
-X_modulated = make_first_level_design_matrix(
-    frame_times,
-    modulated_events,
-    add_regs=confound_file1,
-    add_reg_names=['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z'],
-    hrf_model='glover',
-)
+# contrast first level model
 
 # Let's compare it to the unmodulated block design
-fig, (ax1, ax2) = plt.subplots(
-    figsize=(10, 6), nrows=1, ncols=2, constrained_layout=True
+fig, (ax1) = plt.subplots(
+    figsize=(10, 6), nrows=1, ncols=1, constrained_layout=True
 )
 
 plot_design_matrix(X_base, axes=ax1)
 ax1.set_title("Block design matrix", fontsize=12)
-plot_design_matrix(X_modulated, axes=ax2)
-ax2.set_title("Modulated block design matrix", fontsize=12)
 plt.show()
+
+## create contrast image
+contrast_name = "macFamily"
+
+z_map = FM1.compute_contrast(
+    contrast_name,
+    output_type="z_score"  # Can be ‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’ or ‘all’
+)
+
+# Apply mask to z_map
+masked_data = apply_mask(z_map, mask)
+z_map_masked = unmask(masked_data, mask)
+
+# save contrast image for the testsubject (to be used at second level)
+z_map_masked.to_filename(("./processedFirstLevel/%03d_contrast_macFamily.nii.gz") %(testSubject) )
+
+plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
