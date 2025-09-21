@@ -1,21 +1,14 @@
-import nilearn as nl
 import numpy as np
-import matplotlib
 import pandas as pd
 import os
 import nibabel as nib
 import matplotlib.pyplot as plt
-import openpyxl as xl
 
 from nilearn import image, masking
-from nilearn._utils import plotting
-from pandas import read_excel
 from nilearn.glm.first_level import make_first_level_design_matrix
 from nilearn.plotting import plot_design_matrix
 from nilearn.glm.first_level import FirstLevelModel
 from nilearn.masking import compute_epi_mask, apply_mask, unmask
-from nilearn.image import index_img, resample_to_img, math_img, mean_img
-from nilearn.plotting import plot_stat_map, show
 from nilearn import plotting
 
 #
@@ -38,14 +31,13 @@ wordPeaks = ["3","4","13","22"]
 
 epidataTest_dir = "./testData/fmri"
 confoundsTest_dir = "./testData/confounds/"
+processed_Testdir = "./testData/processed_first_level_MAC_family/"
 
 epidata_dir = "G:/fMRI_project/narrative_mri/data/"
 confounds_dir = "G:/fMRI_project/narrative_mri/confounds/"
-
 processed_dir = "G:/fMRI_project/processed_first_level_MAC_family/"
-processed_Testdir = "./testData/processed_first_level_MAC_family/"
 
-segmentFileDF_social = pd.read_excel("testData/foundationScores/shapessocial_transcript_segment_MFT_MAC.xlsx")
+segmentFileDF_social = pd.read_excel("./foundationScores/shapessocial_transcript_segment_MFT_MAC.xlsx")
 
 #filter to keep all values above .2 in the MAC Family Virtue column and change the rest to .000001
 segmentFileDF_social['familyMAC_filterAbovePointTwo']  = segmentFileDF_social['seg_MAC_a_family_virtue'].apply(lambda x: x if x >= .2 else 0.000001)
