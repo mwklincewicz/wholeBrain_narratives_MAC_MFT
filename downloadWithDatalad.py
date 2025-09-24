@@ -10,3 +10,7 @@ for root, dirs, files in os.walk(alias_dir):
             epi = os.path.join(root,file)
             print("Downloading data for %s" % (epi))
             call(["datalad", "get", epi])
+        if "bronx" in file and file.endswith("desc-confounds_regressors.tsv"):
+            epi = os.path.join(root, file)
+            print("Downloading data for %s" % (epi))
+            call(["datalad", "get", epi])
