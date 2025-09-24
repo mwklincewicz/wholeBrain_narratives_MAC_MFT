@@ -9,6 +9,9 @@ from nilearn.plotting import plot_design_matrix
 from nilearn.glm.first_level import FirstLevelModel
 from nilearn.masking import compute_epi_mask, apply_mask, unmask
 from nilearn import plotting
+import datalad
+from subprocess import call
+
 
 #
 # USE MAC FOUNDATION FAMILY IMAGERY WORD PEAKS AS TRIALS IN PHYSICAL VERSION OF THE NARRATIVE
@@ -35,6 +38,8 @@ processed_Testdir = "./testData/processed_first_level_MAC_family/"
 epidata_dir = "G:/fMRI_project/narrative_mri/data/"
 confounds_dir = "G:/fMRI_project/narrative_mri/confounds/"
 processed_dir = "G:/fMRI_project/processed_first_level_MAC_family/"
+
+alias_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\allDataAliases\\fmriprep"
 
 segmentFileDF_social = pd.read_excel("./foundationScores/shapessocial_transcript_segment_MFT_MAC.xlsx")
 
@@ -80,6 +85,12 @@ def load_epi_data_physical(sub):
     print("Loading data from %s" % (epi_in))
     return epi_data_physical
 
+def load_epi_data_physical_alias(sub):
+    # Load MRI file (in Nifti format)
+    epi_in = os.path.join(alias_dir+"/sub-%03d/func/" %(sub),"sub-%03d_task-shapesphysical_space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz" % (sub))
+    epi_data_physical = nib.load(epi_in)
+    print("Loading data from %s" % (epi_in))
+    return epi_data_physical
 
 #
 #   Data transform
@@ -87,7 +98,7 @@ def load_epi_data_physical(sub):
 
 for participant in testSubject:
     print ("Building first-level model for participant %s" % (participant))
-    epi_data_physicalNIFTI = load_epi_data_physical(participant)
+    epi_data_physicalNIFTI = load_epi_data_physical_alias(participant)
 
     events = pd.DataFrame({"trial_type": sorted([int(x) for x in eventNames]), "onset": onsets, "duration": durations})
 
