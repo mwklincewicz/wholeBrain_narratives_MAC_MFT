@@ -231,9 +231,12 @@ for filename in os.listdir("./"+directory_text):
     fragmentFiles.sort(key=len)
     print("Reading fragment files: " + str(fragmentFiles))
 
+    segmentIndex = 0
+
     for segments in fragmentFiles:
         if segments.endswith('.txt'):
-            print( "Reading text from segment file: " + segments + " which is " + str(len(fragmentFiles) - len(fragmentFiles) + 1) + " of " + str(len(fragmentFiles)))
+            segmentIndex = segmentIndex+1
+            print( "Reading text from segment file: " + segments + " which is " + segmentIndex + " of " + str(len(fragmentFiles)))
             with open("./" + directory + "/" + segments, encoding='utf-8') as f1:
                 segment = f1.read()
                 f2 = open(os.path.join('my_temp_file'), 'w', encoding='utf-8')
@@ -359,4 +362,4 @@ for filename in os.listdir("./"+directory_text):
 
     # Save dataframe with both sentence and segment scores to xlsx
     #dataFrameForSaving.to_excel('sentence_segment_MFT_MAC.xlsx')
-    dataFrameForSaving.to_excel(filename.split('.')[0] + '_segment_MFT_MAC.xlsx')
+    dataFrameForSaving.to_excel(directory.split('.')[0] + '_segment_MFT_MAC.xlsx')
