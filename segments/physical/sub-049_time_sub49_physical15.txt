@@ -1,0 +1,1 @@
+The square and triangle move up and down. The square leaves and re-enters with a small circle. The circle is between the triangle and square. The circle moves quickly towards the lines. When the circle touches the lines, they collapse into pieces. The triangle moves above the pieces, making a small loop,

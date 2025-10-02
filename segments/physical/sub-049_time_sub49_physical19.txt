@@ -1,0 +1,1 @@
+It slides out of the structure. The structure reconfigures into a rectangle with a gap in the upper left side and a circle in the bottom left. The small triangle slides through the gap. It touches the angled bar, which rotates to close the gap. 

@@ -1,0 +1,1 @@
+The triangle moves in a ring around the circle, rotating. A large triangle slides towards the rectangle. The small triangle slides outside the rectangle until it is adjacent to the large triangle. After bouncing, both triangles slide out of the scene. 

@@ -1,0 +1,1 @@
+The big triangle moves diagonally up to the middle line. Adjacent to the little triangle, it moves up and down once. The large triangle moves diagonally down. The small triangle does the same. The small triangle slides down out of the structure. The large triangle disappears, and the entire structure rotates three-hundred-sixty degrees. 

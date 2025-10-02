@@ -1,0 +1,1 @@
+The triangle moves to the circle and the circle moves away. A square appears on the left and moves towards the rectangle. The squared stops. It touches the bar, which rotates to make a gap. It moves to the triangle's position. The shapes touch and then bounce adjacent to each other. 

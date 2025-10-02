@@ -1,0 +1,1 @@
+The triangle moves to the circle and the circle moves to the square. The circle moves repeatedly between the square and the triangle.

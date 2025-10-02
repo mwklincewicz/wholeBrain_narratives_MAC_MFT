@@ -1,0 +1,1 @@
+The large triangle appears in the bottom, moves left, and bounces once. The small triangle rotates ninety degrees, glides diagonally down, and bounces next to the large triangle. 

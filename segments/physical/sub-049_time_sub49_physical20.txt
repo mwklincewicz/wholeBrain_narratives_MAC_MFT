@@ -1,0 +1,1 @@
+The triangle slides towards the circle until they are touching. The circle moves upward and stops. 

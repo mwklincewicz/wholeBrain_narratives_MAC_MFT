@@ -1,0 +1,1 @@
+The large triangle appears, moves left, and then rotates to point diagonally up. It bounces. The little triangle rotates ninety degrees and slides diagonally down. Both bounce, and the little triangle exits the structure. The large triangle disappears and the structure rotates three-hundred-sixty degrees. 

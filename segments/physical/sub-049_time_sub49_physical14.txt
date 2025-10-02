@@ -1,0 +1,1 @@
+The small square appears from the left. Two of the lines rotate to point at them. The square and the triangle move counter-clockwise around the screen. 

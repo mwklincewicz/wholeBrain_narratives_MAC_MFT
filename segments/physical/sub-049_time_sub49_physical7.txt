@@ -1,0 +1,1 @@
+The large triangle appears at the bottom. The small triangle moves into the structure, moves up and down next to the large triangle once, and then slides diagonally up to the middle of the structure. Both triangles rotate ninety degrees and then bounce slowly in place. 
