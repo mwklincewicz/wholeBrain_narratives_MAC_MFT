@@ -173,36 +173,38 @@ def load_regressor(sub,story):
 
 for participant in load_participants("tunnel"):
     print ("Building first-level models for participant %s" % (participant))
-    epi_data_socialNIFTI = load_epi_data(participant, story)
-    events = pd.DataFrame({"trial_type": sorted([int(x) for x in eventNames]), "onset": onsets, "duration": durations})
+    epi_data_NIFTI = load_epi_data(participant, story)
+
     df = load_regressor(participant, story)
     confound_file1 = df[['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
     #print( listOfFoundationsWithValuesAndSegments )
     for foundationUsedForModel, topSegmentsForFoundation in listOfFoundationsWithValuesAndSegments:
-
+        events = pd.DataFrame(
+            {"trial_type": sorted([int(x) for x in eventNames]), "onset": onsets, "duration": durations})
         # now use events from the list of top segments per foundation
         modulationValues = eventFoundations[ "seg_" + foundationUsedForModel ]
         for Trial in range(len(modulationValues)):
             if str( Trial + 1 ) not in topSegments[foundationUsedForModel]:
+                #print( "dropping segment %s" % ( str( Trial + 1 ) ) )
                 events = events.drop(Trial)
 
         events['trial_type'] = str(foundationUsedForModel)
         print( events )
 
         # Make an average
-        mean_img = image.mean_img(epi_data_socialNIFTI)
+        mean_img = image.mean_img(epi_data_NIFTI)
 
         mask = masking.compute_epi_mask(mean_img, lower_cutoff=0.2, upper_cutoff=0.85, opening=3, connected=True)
 
         # Clean and smooth data
-        epi_data_socialNIFTI = image.clean_img(epi_data_socialNIFTI, standardize=False)
-        epi_data_socialNIFTI = image.smooth_img(epi_data_socialNIFTI, 6.0)
+        epi_data_NIFTI = image.clean_img(epi_data_NIFTI, standardize=False)
+        epi_data_NIFTI = image.smooth_img(epi_data_NIFTI, 6.0)
 
         # get fdata
-        epi_data_social = epi_data_socialNIFTI.get_fdata()
+        epi_data = epi_data_NIFTI.get_fdata()
 
         frame_times = (
-                np.arange(epi_data_social.shape[3]) * 1.5
+                np.arange(epi_data.shape[3]) * 1.5
         )
 
         # baseline first level model
@@ -216,7 +218,7 @@ for participant in load_participants("tunnel"):
         )
 
         FM1 = FirstLevelModel(mask_img=mask)
-        FM1 = FM1.fit(epi_data_socialNIFTI, design_matrices=X_base)
+        FM1 = FM1.fit(epi_data_NIFTI, design_matrices=X_base)
 
         # contrast first level model
 
@@ -225,7 +227,7 @@ for participant in load_participants("tunnel"):
             figsize=(10, 6), nrows=1, ncols=1, constrained_layout=True
         )
 
-        plot_design_matrix(X_base, axes=ax1)
+        plot_design_matrix(X_base)
         ax1.set_title("Block design matrix", fontsize=12)
         #plt.show()
 
