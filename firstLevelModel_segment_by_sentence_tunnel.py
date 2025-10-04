@@ -92,17 +92,40 @@ segmentValues = segmentFileDF[['segment',
 eventFoundations = segmentValues.drop_duplicates(subset=['segment'], keep='first', ignore_index=True)
 #sentenceFoundations = sentenceValues.drop_duplicates(subset=['segment'], keep='first', ignore_index=True)
 valueWithSegment = []
+tempValueWithSegment = []
 listOfFoundationsWithValuesAndSegments = []
-numberOfTopValues = 4
 
-for column in sentenceValues.columns[1:]:
+# listOfTuples = [('a',['1','2','3','4','5','6','7','8','9','10']),('b',['11','12','13','14'])]
+#
+# for tuple in listOfTuples:
+#     print( tuple[1][2] )
+
+
+numberOfTopSegments = 4
+
+for column in sentenceValues.columns[1:2]:
     #print(column)
     for cell in sentenceValues.iterrows():
         tuple = cell[0], cell[1]['segment'], cell[1][column]
-        #print(tuple)
-        valueWithSegment.append(tuple)
+        #print( tuple )
+        #print(cell[1]['segment'])
+        tempValueWithSegment.append(tuple)
+        #print(valueWithSegment)
+        temp = [tup for tup in tempValueWithSegment if tup[1] == cell[1]['segment']]
+        tempSortedByValues = sorted(temp, key=lambda x: x[2], reverse=True)
+        #print( tempSortedByValues )
+        #print( tempSortedByValues[0][2] )
+        #print( cell[1][column] )
+        if tempSortedByValues[0][2] == cell[1][column]:
+            #print( "###################" + str( tempSortedByValues[0][2] ) )
+            if len(valueWithSegment) > 0:
+                valueWithSegment = valueWithSegment[0:-1]
+            valueWithSegment.append( tempSortedByValues[0][2] )
+
     sortedByValues = sorted(valueWithSegment, key=lambda x: x[2], reverse=True)
-    listOfFoundationsWithValuesAndSegments.append((column, sortedByValues[:numberOfTopValues]))
+
+    print(sortedByValues)
+    listOfFoundationsWithValuesAndSegments.append((column, sortedByValues[:numberOfTopSegments]))
     print(listOfFoundationsWithValuesAndSegments)
 
     valueWithSegment = []
@@ -114,7 +137,7 @@ for foundation, list in listOfFoundationsWithValuesAndSegments:
         segmentNumbers.append(tuple[1].split('_')[2].split('.')[0])
     topSegmentsPerFoundation = foundation, segmentNumbers
     topSegments.append(topSegmentsPerFoundation)
-print(topSegments)
+#print(topSegments)
 
 cutOff = 0
 
