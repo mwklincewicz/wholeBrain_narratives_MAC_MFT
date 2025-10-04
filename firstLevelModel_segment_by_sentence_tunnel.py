@@ -172,78 +172,82 @@ for participant in load_participants("tunnel"):
     df = load_regressor(participant, story)
     confound_file1 = df[['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
 
-    # use only events from above .19 MAC family values
-    #modulationValues = eventFoundations['familyMAC_filterAbovePointOneNine']
-    #print(modulationValues.shape())
+    for foundationUsedForModel, valueOfSegmentForFoundation, segnmentFile in listOfFoundationsWithValuesAndSegments:
 
-    # now use events from the list of top segments per foundation
+        # use only events from above .19 MAC family values
+        #modulationValues = eventFoundations['familyMAC_filterAbovePointOneNine']
+        #print(modulationValues.shape())
 
-    #TODO: THIS FUNCTION does not work
-    ## only keep the rows with modulationValues above .2
-    for Trial in range(len(segmentValues)):
-        print( len(modulationValues) )
-        #print('trial:', Trial)
+        # now use events from the list of top segments per foundation
+        modulationValues = eventFoundations[ foundationUsedForModel ]
 
-        if modulationValues[Trial] < .19:
-           events = events.drop(Trial)
+        exit()
+        #TODO: THIS FUNCTION does not work and create a loop over foundations (all of them)
+        ## only keep the rows with modulationValues above .2
+        for Trial in range(len(segmentValues)):
+            print( len(modulationValues) )
+            #print('trial:', Trial)
+
+            if modulationValues[Trial] < .19:
+               events = events.drop(Trial)
 
 
-    #events['trial_type'] = 'macFamily'
-    # now take this value from the list of top segments per foundation
+        #events['trial_type'] = 'macFamily'
+        # now take this value from the list of top segments per foundation
 
-    # Make an average
-    mean_img = image.mean_img(epi_data_socialNIFTI, copy_header=True)
+        # Make an average
+        mean_img = image.mean_img(epi_data_socialNIFTI, copy_header=True)
 
-    mask = masking.compute_epi_mask(mean_img, lower_cutoff=0.2, upper_cutoff=0.85, opening=3, connected=True)
+        mask = masking.compute_epi_mask(mean_img, lower_cutoff=0.2, upper_cutoff=0.85, opening=3, connected=True)
 
-    # Clean and smooth data
-    epi_data_socialNIFTI = image.clean_img(epi_data_socialNIFTI, standardize=False)
-    epi_data_socialNIFTI = image.smooth_img(epi_data_socialNIFTI, 6.0)
+        # Clean and smooth data
+        epi_data_socialNIFTI = image.clean_img(epi_data_socialNIFTI, standardize=False)
+        epi_data_socialNIFTI = image.smooth_img(epi_data_socialNIFTI, 6.0)
 
-    # get fdata
-    epi_data_social = epi_data_socialNIFTI.get_fdata()
+        # get fdata
+        epi_data_social = epi_data_socialNIFTI.get_fdata()
 
-    frame_times = (
-            np.arange(epi_data_social.shape[3]) * 1.5
-    )
+        frame_times = (
+                np.arange(epi_data_social.shape[3]) * 1.5
+        )
 
-    # baseline first level model
+        # baseline first level model
 
-    X_base = make_first_level_design_matrix(
-        frame_times,
-        events,
-        add_regs=confound_file1,
-        add_reg_names=['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z'],
-        hrf_model='glover',
-    )
+        X_base = make_first_level_design_matrix(
+            frame_times,
+            events,
+            add_regs=confound_file1,
+            add_reg_names=['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z'],
+            hrf_model='glover',
+        )
 
-    FM1 = FirstLevelModel(mask_img=mask)
-    FM1 = FM1.fit(epi_data_socialNIFTI, design_matrices=X_base)
+        FM1 = FirstLevelModel(mask_img=mask)
+        FM1 = FM1.fit(epi_data_socialNIFTI, design_matrices=X_base)
 
-    # contrast first level model
+        # contrast first level model
 
-    # Let's compare it to the unmodulated block design
-    fig, (ax1) = plt.subplots(
-        figsize=(10, 6), nrows=1, ncols=1, constrained_layout=True
-    )
+        # Let's compare it to the unmodulated block design
+        fig, (ax1) = plt.subplots(
+            figsize=(10, 6), nrows=1, ncols=1, constrained_layout=True
+        )
 
-    plot_design_matrix(X_base, axes=ax1)
-    ax1.set_title("Block design matrix", fontsize=12)
-    #plt.show()
+        plot_design_matrix(X_base, axes=ax1)
+        ax1.set_title("Block design matrix", fontsize=12)
+        #plt.show()
 
-    ## create contrast image
-    contrast_name = "macFamily"
+        ## create contrast image
+        contrast_name = "macFamily"
 
-    z_map = FM1.compute_contrast(
-        contrast_name,
-        output_type="z_score"  # Can be ‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’ or ‘all’
-    )
+        z_map = FM1.compute_contrast(
+            contrast_name,
+            output_type="z_score"  # Can be ‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’ or ‘all’
+        )
 
-    # Apply mask to z_map
-    masked_data = apply_mask(z_map, mask)
-    z_map_masked = unmask(masked_data, mask)
+        # Apply mask to z_map
+        masked_data = apply_mask(z_map, mask)
+        z_map_masked = unmask(masked_data, mask)
 
-    # save contrast image for the testsubject (to be used at second level)
-    z_map_masked.to_filename((processed_dir + "%03s_"+story+"_macFamily.nii.gz") % (participant))
+        # save contrast image for the testsubject (to be used at second level)
+        z_map_masked.to_filename((processed_dir + "%03s_"+story+"_macFamily.nii.gz") % (participant))
 
-    plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
+        plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
