@@ -25,7 +25,6 @@ story = "tunnel"
 
 testSubject = [1]
 # Define subjects
-#exclude subj 238, see paper
 
 onsets = [15,37,49,71,91,103,117,145,180,199,226,261,275,297,318,333,356,388,416,430,475,517]
 durations = [22,12,22,20,12,14,28,35,19,27,35,14,22,21,15,23,32,28,14,45,42,35]
@@ -34,6 +33,7 @@ eventNames = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15",
 alias_data_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\allDataAliases\\fmriprep"
 alias_confounds_dir = ""
 segmentFileDF = pd.read_excel("./foundationScores/tunnel_transcript_segment_MFT_MAC.xlsx")
+processed_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\processedFirstLevel_per_sentence\\tunnel"
 
 #filter to keep all values above .2 in the MAC Family Virtue column and change the rest to .000001
 #segmentFileDF_social['familyMAC_filterAbovePointOneNine']  = segmentFileDF_social['seg_MAC_a_family_virtue'].apply(lambda x: x if x >= .19 else 0.000001)
@@ -165,27 +165,31 @@ def load_regressor(sub,story):
 #   Data transform
 #
 
-for participant in load_participants("bronx"):
-    print ("Building first-level model for participant %s" % (participant))
+for participant in load_participants("tunnel"):
+    print ("Building first-level models for participant %s" % (participant))
     epi_data_socialNIFTI = load_epi_data(participant, story)
     events = pd.DataFrame({"trial_type": sorted([int(x) for x in eventNames]), "onset": onsets, "duration": durations})
     df = load_regressor(participant, story)
     confound_file1 = df[['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
 
     # use only events from above .19 MAC family values
-    modulationValues = eventFoundations['familyMAC_filterAbovePointOneNine']
+    #modulationValues = eventFoundations['familyMAC_filterAbovePointOneNine']
+    #print(modulationValues.shape())
 
-    print( modulationValues.shape() )
+    # now use events from the list of top segments per foundation
 
+    #TODO: THIS FUNCTION does not work
     ## only keep the rows with modulationValues above .2
-    for Trial in range(len(modulationValues)):
+    for Trial in range(len(segmentValues)):
         print( len(modulationValues) )
         #print('trial:', Trial)
 
         if modulationValues[Trial] < .19:
            events = events.drop(Trial)
 
-    events['trial_type'] = 'macFamily'
+
+    #events['trial_type'] = 'macFamily'
+    # now take this value from the list of top segments per foundation
 
     # Make an average
     mean_img = image.mean_img(epi_data_socialNIFTI, copy_header=True)

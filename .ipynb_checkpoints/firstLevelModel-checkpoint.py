@@ -173,6 +173,6 @@ for participant in participants:
     z_map_masked = unmask(masked_data, mask)
 
     # save contrast image for the testsubject (to be used at second level)
-    z_map_masked.to_filename(("./processedFirstLevel/%03d_contrast_macFamily.nii.gz") %(participant) )
+    z_map_masked.to_filename(("./processedFirstLevel_per_sentence/%03d_contrast_macFamily.nii.gz") %(participant) )
 
     plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
