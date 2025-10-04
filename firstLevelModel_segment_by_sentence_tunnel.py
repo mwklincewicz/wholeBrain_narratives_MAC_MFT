@@ -4,6 +4,7 @@ import os
 import nibabel as nib
 import matplotlib.pyplot as plt
 from click import pause
+import itertools
 
 from nilearn import image, masking
 from nilearn.glm.first_level import make_first_level_design_matrix
@@ -95,41 +96,26 @@ valueWithSegment = []
 tempValueWithSegment = []
 listOfFoundationsWithValuesAndSegments = []
 
-# listOfTuples = [('a',['1','2','3','4','5','6','7','8','9','10']),('b',['11','12','13','14'])]
-#
-# for tuple in listOfTuples:
-#     print( tuple[1][2] )
-
-
+# this is the number of segments that will be selected for trials (this should be changed at some point)
 numberOfTopSegments = 4
 
-for column in sentenceValues.columns[1:2]:
+# selects and orders values of foundations, removing sentences from the same segment that are not with the highest score
+for column in sentenceValues.columns[1:]:
     #print(column)
     for cell in sentenceValues.iterrows():
         tuple = cell[0], cell[1]['segment'], cell[1][column]
-        #print( tuple )
-        #print(cell[1]['segment'])
-        tempValueWithSegment.append(tuple)
-        #print(valueWithSegment)
-        temp = [tup for tup in tempValueWithSegment if tup[1] == cell[1]['segment']]
-        tempSortedByValues = sorted(temp, key=lambda x: x[2], reverse=True)
-        #print( tempSortedByValues )
-        #print( tempSortedByValues[0][2] )
-        #print( cell[1][column] )
-        if tempSortedByValues[0][2] == cell[1][column]:
-            #print( "###################" + str( tempSortedByValues[0][2] ) )
-            if len(valueWithSegment) > 0:
-                valueWithSegment = valueWithSegment[0:-1]
-            valueWithSegment.append( tempSortedByValues[0][2] )
+        valueWithSegment.append(tuple)
 
     sortedByValues = sorted(valueWithSegment, key=lambda x: x[2], reverse=True)
-
-    print(sortedByValues)
+    sortedByValues = ([next(b) for a, b in itertools.groupby(sortedByValues, lambda y: y[1])])
+    #print(sortedByValues)
     listOfFoundationsWithValuesAndSegments.append((column, sortedByValues[:numberOfTopSegments]))
-    print(listOfFoundationsWithValuesAndSegments)
 
     valueWithSegment = []
 
+#print(*listOfFoundationsWithValuesAndSegments,sep='\n' )
+
+# this creates a helper list with tuples of 'foundation name' and a list of top N segments for it
 topSegments = []
 for foundation, list in listOfFoundationsWithValuesAndSegments:
     segmentNumbers = []
@@ -137,13 +123,8 @@ for foundation, list in listOfFoundationsWithValuesAndSegments:
         segmentNumbers.append(tuple[1].split('_')[2].split('.')[0])
     topSegmentsPerFoundation = foundation, segmentNumbers
     topSegments.append(topSegmentsPerFoundation)
-#print(topSegments)
+#print(*topSegments,sep='\n')
 
-cutOff = 0
-
-
-
-exit()
 
 #
 #   Helper functions
