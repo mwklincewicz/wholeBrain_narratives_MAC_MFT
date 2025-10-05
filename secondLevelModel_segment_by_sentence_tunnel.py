@@ -8,14 +8,15 @@ from nilearn.glm import threshold_stats_img
 task="tunnel"
 contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
 contrastImg_Testdir = "./testData/processed_first_level_MAC_family/social/"
-processed_dir = "./processed_second_level_per_sentence_tunnel/"
+processed_dir = "./processed_second_level_per_sentence/"
 
 #main loop over foundations
-for subdir in next(os.walk(contrastImg_dir))[1]:
+for subdir in next(os.walk(contrastImg_dir+task))[1]:
+    print(subdir)
 
     all_imgs = [
-        os.path.join(contrastImg_dir+subdir, name)
-        for name in os.listdir(contrastImg_dir)
+        os.path.join(contrastImg_dir+task+"/"+subdir, name)
+        for name in os.listdir(contrastImg_dir+task+"/"+subdir)
             if name.endswith(".nii.gz")
     ]
 
@@ -40,8 +41,9 @@ for subdir in next(os.walk(contrastImg_dir))[1]:
         second_level_contrast="intercept",
         output_type="z_score",
     )
-
-    z_map.to_filename(processed_dir + "SecondLevel_"+task+"_zscore.nii.gz")
+    os.makedirs(processed_dir + "/"+task+"/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
+    (z_map.to_filename
+     (processed_dir + "/"+task+"/" + "SecondLevel_"+task+"_"+subdir+"_zscore.nii.gz"))
 
     #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
     # #### fdr correction
@@ -56,8 +58,8 @@ for subdir in next(os.walk(contrastImg_dir))[1]:
     print(f"The p<.05 FDR-corrected threshold is z score of {threshold:.3g}")
 
     # save as brain image
-    thresholded_map.to_filename(processed_dir + "threshold_"+f"{threshold:.3g}"+"_"+
-                                "SecondLevel_"+task+"_fdrcorrect.nii.gz")
+    thresholded_map.to_filename(processed_dir + "/"+task+"/threshold_"+f"{threshold:.3g}"+"_"+
+                                "SecondLevel_"+task+"_"+subdir+"_fdrcorrect_per_sentence_for_segment.nii.gz")
     # quick visualization
     plotting.plot_stat_map(
         thresholded_map,
@@ -86,8 +88,8 @@ for subdir in next(os.walk(contrastImg_dir))[1]:
     print(f"The p<.05 Bonferroni-corrected threshold is z score of {threshold2:.3g}")
 
     # save as brain image
-    thresholded_map2.to_filename(processed_dir + "threshold_"+f"{threshold2:.3g}"+"_"+
-                                 "SecondLevel_"+task+"_bonfcorrect.nii.gz")
+    thresholded_map2.to_filename(processed_dir + "/"+ task+"/threshold_"+f"{threshold2:.3g}"+"_"+
+                                 "SecondLevel_"+task+"_"+subdir+"_bonfcorrect.nii.gz")
 
     # quick visualization
     plotting.plot_stat_map(
