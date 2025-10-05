@@ -11,12 +11,10 @@ contrastImg_Testdir = "./testData/processed_first_level_MAC_family/social/"
 processed_dir = "./processed_second_level_per_sentence_tunnel/"
 
 #main loop over foundations
-for subdir in os.listdir(contrastImg_dir):
-    print( subdir)
-exit()
-    contrastImg = contrastImg_dir+subdir
+for subdir in next(os.walk(contrastImg_dir))[1]:
+
     all_imgs = [
-        os.path.join(contrastImg_dir, name)
+        os.path.join(contrastImg_dir+subdir, name)
         for name in os.listdir(contrastImg_dir)
             if name.endswith(".nii.gz")
     ]
@@ -29,13 +27,14 @@ exit()
         [1] * len(second_level_input),
         columns=["intercept"],
     )
-    design_matrix
+
     # set up group analysis for one sample t test on the contrast images
     second_level_model = SecondLevelModel()
     second_level_model = second_level_model.fit(
         second_level_input,
         design_matrix=design_matrix,
     )
+
     # run one sample t test
     z_map = second_level_model.compute_contrast(
         second_level_contrast="intercept",
@@ -46,7 +45,6 @@ exit()
 
     #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
     # #### fdr correction
-
 
     thresholded_map, threshold = threshold_stats_img(
         stat_img=z_map,  # or p_map
