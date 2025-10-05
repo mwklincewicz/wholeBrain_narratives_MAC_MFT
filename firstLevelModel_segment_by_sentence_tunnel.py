@@ -36,7 +36,7 @@ def load_epi_data(sub,story):
             if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz") and "sub-"+str(sub) in file:
                 epi_in = os.path.join(alias_data_dir,"sub-%03s/func/sub-%03s_task-%s_space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz" % (sub, sub, story))
                 epi_data = nib.load(epi_in)
-                print("Loading data from %s" % (epi_in))
+                #print("Loading data from %s" % (epi_in))
     return epi_data
 
 def load_regressor(sub,story):
@@ -45,7 +45,7 @@ def load_regressor(sub,story):
         for file in files:
             if story in file and file.endswith("desc-confounds_regressors.tsv") and "sub-"+sub in file:
                 regressor_location = os.path.join(alias_data_dir,"sub-%03s/func/sub-%03s_task-%04s_desc-confounds_regressors.tsv" % (sub, sub, story))
-                print("Loading regressors from %s" % (regressor_location))
+                #print("Loading regressors from %s" % (regressor_location))
                 regressor = pd.read_csv(regressor_location, sep='\t')
     return regressor
 
@@ -180,10 +180,10 @@ for participant in load_participants(story):
             if str( Trial + 1 ) not in topSegments[foundationUsedForModel]:
                 events = events.drop(Trial)
         events['trial_type'] = str(foundationUsedForModel)
-        print( events.to_string(index=False) )
+        #print( events.to_string(index=False) )
 
         # Make an average
-        mean_img = image.mean_img(epi_data_NIFTI_original, copy_header=True, verbose=11)
+        mean_img = image.mean_img(epi_data_NIFTI_original, copy_header=True)
         mask = masking.compute_epi_mask(mean_img, lower_cutoff=0.2, upper_cutoff=0.85, opening=3, connected=True)
 
         # Clean and smooth data
