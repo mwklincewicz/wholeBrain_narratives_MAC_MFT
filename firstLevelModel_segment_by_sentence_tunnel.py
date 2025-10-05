@@ -173,6 +173,7 @@ for participant in load_participants(story):
     df = load_regressor(participant, story)
     confound_file1 = df[['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
     for foundationUsedForModel, topSegmentsForFoundation in listOfFoundationsWithValuesAndSegments:
+        print ("The contrast trials are for %s" % (foundationUsedForModel))
         events = pd.DataFrame({"trial_type": sorted([int(x) for x in eventNames]), "onset": onsets, "duration": durations})
         # now use events from the list of top segments per foundation
         modulationValues = eventFoundations[ "seg_" + foundationUsedForModel ]
