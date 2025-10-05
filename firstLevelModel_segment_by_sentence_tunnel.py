@@ -15,7 +15,7 @@ from nilearn import plotting
 from subprocess import call
 
 #
-# USE MAC FOUNDATION FAMILY VIRTUE PEAKS AS TRIALS IN SOCIAL VERSION OF THE NARRATIVE
+# USE FOUNDATION PER SENTENCE PEAKS AS KEYS FOR SEGMENTS TO BE USED AS TRIALS IN THE CONTRAST IMAGE
 #
 
 #
@@ -28,7 +28,7 @@ testSubject = [1]
 alias_data_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\allDataAliases\\fmriprep"
 alias_confounds_dir = ""
 segmentFileDF = pd.read_excel("./foundationScores/tunnel_transcript_segment_MFT_MAC.xlsx")
-processed_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\processedFirstLevel_per_sentence\\tunnel\\"
+processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
 
 #filter to keep all values above .2 in the MAC Family Virtue column and change the rest to .000001
 #segmentFileDF_social['familyMAC_filterAbovePointOneNine']  = segmentFileDF_social['seg_MAC_a_family_virtue'].apply(lambda x: x if x >= .19 else 0.000001)
@@ -95,19 +95,22 @@ listOfFoundationsWithValuesAndSegments = []
 numberOfTopSegments = 4
 
 # selects and orders values of foundations, removing sentences from the same segment that are not with the highest score
+# FOR SOME REASON THIS SOMETIMES RESULTS IN ONLY 3 SEGMENTS FOR A FOUNDATION (RARE); FIND OUT WHY
 for column in sentenceValues.columns[1:]:
     #print(column)
     for cell in sentenceValues.iterrows():
-        tuple = cell[0], cell[1]['segment'], cell[1][column]
+        tuple = cell[1]['segment'], cell[1][column]
         valueWithSegment.append(tuple)
 
-    sortedByValues = sorted(valueWithSegment, key=lambda x: x[2], reverse=True)
-    sortedByValues = ([next(b) for a, b in itertools.groupby(sortedByValues, lambda y: y[1])])
-    #print(sortedByValues)
+    sortedByValues = sorted(valueWithSegment, key=lambda x: x[1], reverse=True)
+    mydict = {}
+    for key, val in sortedByValues:
+        mydict.setdefault(key, val)
+    sortedByValues = sorted(mydict.items(), key=lambda x: x[1], reverse=True)
+
     listOfFoundationsWithValuesAndSegments.append((column, sortedByValues[:numberOfTopSegments]))
 
     valueWithSegment = []
-
 #print(*listOfFoundationsWithValuesAndSegments,sep='\n' )
 
 # this creates a helper list with tuples of 'foundation name' and a list of top N segments for it
@@ -115,30 +118,21 @@ topSegments = {}
 for foundation, list in listOfFoundationsWithValuesAndSegments:
     segmentNumbers = []
     for tuple in list[:]:
-        segmentNumbers.append(tuple[1].split('_')[2].split('.')[0])
+        segmentNumbers.append(tuple[0].split('_')[2].split('.')[0])
     topSegments[foundation] = segmentNumbers
 #print(topSegments,sep='\n')
 
-#These create the events and durations FOR DESIGN MATRIX
-
+#This creates the events and durations FOR DESIGN MATRIX
 eventNames = []
-onsets = []
-durations = []
-
-#onsets = [15,37,49,71,91,103,117,145,180,199,226,261,275,297,318,333,356,388,416,430,475,517]
-#durations = [22,12,22,20,12,14,28,35,19,27,35,14,22,21,15,23,32,28,14,45,42,35]
-
-#this is just a dummy loop before we get work done on events/durations
+onsets = [0,14,39,63,79,95,125,136,164,187,203,219,227,250,258,294,306,323,328,359,367,397,438,460,487,505,527, 543, 568,633,654,688,733,756,769,790,814,824,859,875,901,920,943,963,982,992,1022,1046,1071,1107,1133,1150,1170,1183,1203,1234,1241,1272,1294,1307,1335,1368,1392,1440,1473,1510]
+durations = [6,24,23,3,15,23,10,21,22,15,15,6,15,7,25,21,9,4,32,7,28,30,15,26,15,35,15,24,39,20,18,44,14,12,20,22,9,24,15,25,18,22,19,12,9,26,23,24,35,25,16,19,12,15,30,6,30,21,12,27,32,11,47,32,23,8]
 
 for event in range(len(eventFoundations)):
     eventNames.append(str(event+1))
-    onsets.append(str(event+1))
-    durations.append(str(event+1))
 #print( eventNames, onsets, durations, sep='\n' )
 
 #   Helper functions
 #
-
 def load_participants(story):
     #return a list of all participant numbers for a story
     participants = []
@@ -246,7 +240,7 @@ for participant in load_participants("tunnel"):
         z_map_masked = unmask(masked_data, mask)
 
         # save contrast image for the testsubject (to be used at second level)
-        os.makedirs(processed_dir+foundationUsedForModel, mode=0o777, exist_ok=False)
-        z_map_masked.to_filename((processed_dir + "%03s_"+story+"_"+str(foundationUsedForModel)+"_perSentence.nii.gz") % (participant))
+        os.makedirs(processed_dir+story+"\\"+foundationUsedForModel, mode=0o777, exist_ok=True)
+        z_map_masked.to_filename((processed_dir+story+"\\"+foundationUsedForModel + "\\"+ "%03s_"+story+"_"+str(foundationUsedForModel)+"_perSentence.nii.gz") % (participant))
 
         plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
