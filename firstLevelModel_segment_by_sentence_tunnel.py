@@ -52,6 +52,8 @@ def load_regressor(sub,story):
 #
 #   Constants
 #
+
+#the name of the task should be changed at some point for a loop through all of them
 story = "tunnel"
 testSubject = [1]
 # this is the number of segments that will be selected for trials (this should be changed at some point)
