@@ -53,17 +53,19 @@ def load_regressor(sub,story):
 #   Constants
 #
 
-#the name of the task should be changed at some point for a loop through all of them
+#the name of the task (story) should be changed at some point for a loop through all of them
 story = "tunnel"
+#each task (story) should have a different test subject number
 testSubject = [1]
-# this is the number of segments that will be selected for trials (this should be changed at some point)
+# this is the number of segments that will be selected for trials (this should be changed at some point to reflect a dynamic selection, based on SD or something like it)
 numberOfTopSegments = 4
 
 alias_data_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\allDataAliases\\fmriprep"
 alias_confounds_dir = ""
-segmentFileDF = pd.read_excel("./foundationScores/tunnel_transcript_segment_MFT_MAC.xlsx")
 processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
 
+# this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
+segmentFileDF = pd.read_excel("./foundationScores/"+story+"_transcript_segment_MFT_MAC.xlsx")
 sentenceValues = segmentFileDF[['segment',
                                'MFT_a_care_virtue',
                                'MFT_a_fairness_virtue',
@@ -118,8 +120,6 @@ segmentValues = segmentFileDF[['segment',
 
 eventFoundations = segmentValues.drop_duplicates(subset=['segment'], keep='first', ignore_index=True)
 #sentenceFoundations = sentenceValues.drop_duplicates(subset=['segment'], keep='first', ignore_index=True)
-valueWithSegment = []
-listOfFoundationsWithValuesAndSegments = []
 
 #
 #   prepare for modeling and data transform
@@ -135,21 +135,24 @@ for event in range(len(eventFoundations)):
 #print( eventNames, onsets, durations, sep='\n' )
 
 # selects and orders values of foundations, removing sentences from the same segment that are not with the highest foundation score
+valueWithSegment = []
+listOfFoundationsWithValuesAndSegments = []
 for column in sentenceValues.columns[1:]:
     #print(column)
     for cell in sentenceValues.iterrows():
         tuple = cell[1]['segment'], cell[1][column]
         valueWithSegment.append(tuple)
-
+    #sort by value the list of tuples created from the segment name and value for foundation (the outer loop keeps track of which column)
     sortedByValues = sorted(valueWithSegment, key=lambda x: x[1], reverse=True)
+    #this eliminates tuples from the list that list the same segment, keeping the one with the highest value
     mydict = {}
     for key, val in sortedByValues:
         mydict.setdefault(key, val)
+    #sort the dictionary again, by value, turning it into a list
     sortedByValues = sorted(mydict.items(), key=lambda x: x[1], reverse=True)
-
     listOfFoundationsWithValuesAndSegments.append((column, sortedByValues[:numberOfTopSegments]))
+    valueWithSegment = [] #this clears out the list of values so that it can be used again for the next column
 
-    valueWithSegment = []
 #print(*listOfFoundationsWithValuesAndSegments,sep='\n' )
 
 # this creates a helper dictionary with 'foundation name' as key and a list of top N segment numbers as value
@@ -161,33 +164,26 @@ for foundation, list in listOfFoundationsWithValuesAndSegments:
     topSegments[foundation] = segmentNumbers
 #print(topSegments,sep='\n')
 
-
 #
 #   Data transform
 #
-
 for participant in load_participants(story):
     print ("Building first-level models for participant %s" % (participant))
     epi_data_NIFTI_original = load_epi_data(participant, story)
-
     df = load_regressor(participant, story)
     confound_file1 = df[['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
-    #print( listOfFoundationsWithValuesAndSegments )
     for foundationUsedForModel, topSegmentsForFoundation in listOfFoundationsWithValuesAndSegments:
         events = pd.DataFrame({"trial_type": sorted([int(x) for x in eventNames]), "onset": onsets, "duration": durations})
         # now use events from the list of top segments per foundation
         modulationValues = eventFoundations[ "seg_" + foundationUsedForModel ]
         for Trial in range(len(modulationValues) ):
             if str( Trial + 1 ) not in topSegments[foundationUsedForModel]:
-                #print( "dropping segment %s" % ( str( Trial + 1 ) ) )
                 events = events.drop(Trial)
-
         events['trial_type'] = str(foundationUsedForModel)
         print( events.to_string(index=False) )
 
         # Make an average
         mean_img = image.mean_img(epi_data_NIFTI_original, copy_header=True, verbose=11)
-
         mask = masking.compute_epi_mask(mean_img, lower_cutoff=0.2, upper_cutoff=0.85, opening=3, connected=True)
 
         # Clean and smooth data
@@ -196,13 +192,11 @@ for participant in load_participants(story):
 
         # get fdata
         epi_data = epi_data_NIFTI.get_fdata()
-
         frame_times = (
                 np.arange(epi_data.shape[3]) * 1.5
         )
 
         # baseline first level model
-
         X_base = make_first_level_design_matrix(
             frame_times,
             events,
@@ -210,12 +204,10 @@ for participant in load_participants(story):
             add_reg_names=['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z'],
             hrf_model='glover',
         )
-
         FM1 = FirstLevelModel(mask_img=mask)
         FM1 = FM1.fit(epi_data_NIFTI, design_matrices=X_base)
 
         # contrast first level model
-
         # Let's compare it to the unmodulated block design
         fig, (ax1) = plt.subplots(
             figsize=(10, 6), nrows=1, ncols=1, constrained_layout=True
