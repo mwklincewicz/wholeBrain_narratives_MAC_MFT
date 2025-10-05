@@ -3,21 +3,19 @@ import pandas as pd
 import os
 import nibabel as nib
 import matplotlib.pyplot as plt
-from click import pause
-import itertools
-
+from subprocess import call
 from nilearn import image, masking
 from nilearn.glm.first_level import make_first_level_design_matrix
 from nilearn.plotting import plot_design_matrix
 from nilearn.glm.first_level import FirstLevelModel
 from nilearn.masking import compute_epi_mask, apply_mask, unmask
 from nilearn import plotting
-from subprocess import call
+
 
 #
 # USE FOUNDATION PER SENTENCE PEAKS AS KEYS FOR SEGMENTS TO BE USED AS TRIALS IN THE CONTRAST IMAGE
 #
-
+#
 #   Helper functions
 #
 def load_participants(story):
