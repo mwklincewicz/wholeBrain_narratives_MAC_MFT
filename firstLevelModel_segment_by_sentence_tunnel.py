@@ -231,7 +231,7 @@ for participant in load_participants(story):
         z_map_masked = unmask(masked_data, mask)
 
         # save contrast image for the participant (to be used at second level)
-        os.makedirs(processed_dir+story+"\\"+foundationUsedForModel, mode=0o777, exist_ok=True)
+        os.makedirs(processed_dir+story+"\\"+foundationUsedForModel, mode=0o777, exist_ok=True) #this checks if the directory exists and creates it, if not
         z_map_masked.to_filename((processed_dir+story+"\\"+foundationUsedForModel + "\\"+ "%03s_"+story+"_"+str(foundationUsedForModel)+"_perSentence.nii.gz") % (participant))
 
         plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
