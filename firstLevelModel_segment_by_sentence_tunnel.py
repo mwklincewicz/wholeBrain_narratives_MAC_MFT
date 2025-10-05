@@ -28,7 +28,7 @@ testSubject = [1]
 alias_data_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\allDataAliases\\fmriprep"
 alias_confounds_dir = ""
 segmentFileDF = pd.read_excel("./foundationScores/tunnel_transcript_segment_MFT_MAC.xlsx")
-processed_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\processedFirstLevel_per_sentence\\tunnel"
+processed_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\processedFirstLevel_per_sentence\\tunnel\\"
 
 #filter to keep all values above .2 in the MAC Family Virtue column and change the rest to .000001
 #segmentFileDF_social['familyMAC_filterAbovePointOneNine']  = segmentFileDF_social['seg_MAC_a_family_virtue'].apply(lambda x: x if x >= .19 else 0.000001)
@@ -117,21 +117,24 @@ for foundation, list in listOfFoundationsWithValuesAndSegments:
     for tuple in list[:]:
         segmentNumbers.append(tuple[1].split('_')[2].split('.')[0])
     topSegments[foundation] = segmentNumbers
-print(topSegments,sep='\n')
+#print(topSegments,sep='\n')
 
-#These create the events and durations
-#onsets = [15,37,49,71,91,103,117,145,180,199,226,261,275,297,318,333,356,388,416,430,475,517]
-#durations = [22,12,22,20,12,14,28,35,19,27,35,14,22,21,15,23,32,28,14,45,42,35]
+#These create the events and durations FOR DESIGN MATRIX
 
 eventNames = []
 onsets = []
 durations = []
 
-print( eventFoundations.shape[0] )
+#onsets = [15,37,49,71,91,103,117,145,180,199,226,261,275,297,318,333,356,388,416,430,475,517]
+#durations = [22,12,22,20,12,14,28,35,19,27,35,14,22,21,15,23,32,28,14,45,42,35]
+
+#this is just a dummy loop before we get work done on events/durations
+
 for event in range(len(eventFoundations)):
-    eventNames.append(str(event))
-    onsets.append(str(event))
-    durations.append(str(event))
+    eventNames.append(str(event+1))
+    onsets.append(str(event+1))
+    durations.append(str(event+1))
+#print( eventNames, onsets, durations, sep='\n' )
 
 #   Helper functions
 #
@@ -173,31 +176,30 @@ def load_regressor(sub,story):
 
 for participant in load_participants("tunnel"):
     print ("Building first-level models for participant %s" % (participant))
-    epi_data_NIFTI = load_epi_data(participant, story)
+    epi_data_NIFTI_original = load_epi_data(participant, story)
 
     df = load_regressor(participant, story)
     confound_file1 = df[['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
     #print( listOfFoundationsWithValuesAndSegments )
     for foundationUsedForModel, topSegmentsForFoundation in listOfFoundationsWithValuesAndSegments:
-        events = pd.DataFrame(
-            {"trial_type": sorted([int(x) for x in eventNames]), "onset": onsets, "duration": durations})
+        events = pd.DataFrame({"trial_type": sorted([int(x) for x in eventNames]), "onset": onsets, "duration": durations})
         # now use events from the list of top segments per foundation
         modulationValues = eventFoundations[ "seg_" + foundationUsedForModel ]
-        for Trial in range(len(modulationValues)):
+        for Trial in range(len(modulationValues) ):
             if str( Trial + 1 ) not in topSegments[foundationUsedForModel]:
                 #print( "dropping segment %s" % ( str( Trial + 1 ) ) )
                 events = events.drop(Trial)
 
         events['trial_type'] = str(foundationUsedForModel)
-        print( events )
+        print( events.to_string(index=False) )
 
         # Make an average
-        mean_img = image.mean_img(epi_data_NIFTI)
+        mean_img = image.mean_img(epi_data_NIFTI_original, copy_header=True, verbose=11)
 
         mask = masking.compute_epi_mask(mean_img, lower_cutoff=0.2, upper_cutoff=0.85, opening=3, connected=True)
 
         # Clean and smooth data
-        epi_data_NIFTI = image.clean_img(epi_data_NIFTI, standardize=False)
+        epi_data_NIFTI = image.clean_img(epi_data_NIFTI_original, standardize=False)
         epi_data_NIFTI = image.smooth_img(epi_data_NIFTI, 6.0)
 
         # get fdata
@@ -244,6 +246,7 @@ for participant in load_participants("tunnel"):
         z_map_masked = unmask(masked_data, mask)
 
         # save contrast image for the testsubject (to be used at second level)
+        os.makedirs(processed_dir+foundationUsedForModel, mode=0o777, exist_ok=False)
         z_map_masked.to_filename((processed_dir + "%03s_"+story+"_"+str(foundationUsedForModel)+"_perSentence.nii.gz") % (participant))
 
         plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
