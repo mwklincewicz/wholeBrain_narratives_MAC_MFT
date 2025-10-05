@@ -18,20 +18,51 @@ from subprocess import call
 # USE FOUNDATION PER SENTENCE PEAKS AS KEYS FOR SEGMENTS TO BE USED AS TRIALS IN THE CONTRAST IMAGE
 #
 
+#   Helper functions
+#
+def load_participants(story):
+    #return a list of all participant numbers for a story
+    participants = []
+    for root, dirs, files in os.walk(alias_data_dir):
+        for file in files:
+            if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
+                participant_number = file[4:7]
+                #print("Getting participant number %03s for %04s" % (participant_number, story))
+                participants.append(participant_number)
+    return participants
+
+def load_epi_data(sub,story):
+    # Load MRI file (in Nifti format)
+    for root, dirs, files in os.walk(alias_data_dir):
+        for file in files:
+            if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz") and "sub-"+str(sub) in file:
+                epi_in = os.path.join(alias_data_dir,"sub-%03s/func/sub-%03s_task-%s_space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz" % (sub, sub, story))
+                epi_data = nib.load(epi_in)
+                print("Loading data from %s" % (epi_in))
+    return epi_data
+
+def load_regressor(sub,story):
+    # Load tsv file with regressors
+    for root, dirs, files in os.walk(alias_data_dir):
+        for file in files:
+            if story in file and file.endswith("desc-confounds_regressors.tsv") and "sub-"+sub in file:
+                regressor_location = os.path.join(alias_data_dir,"sub-%03s/func/sub-%03s_task-%04s_desc-confounds_regressors.tsv" % (sub, sub, story))
+                print("Loading regressors from %s" % (regressor_location))
+                regressor = pd.read_csv(regressor_location, sep='\t')
+    return regressor
+
 #
 #   Constants
 #
 story = "tunnel"
-
 testSubject = [1]
+# this is the number of segments that will be selected for trials (this should be changed at some point)
+numberOfTopSegments = 4
 
 alias_data_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\allDataAliases\\fmriprep"
 alias_confounds_dir = ""
 segmentFileDF = pd.read_excel("./foundationScores/tunnel_transcript_segment_MFT_MAC.xlsx")
 processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
-
-#filter to keep all values above .2 in the MAC Family Virtue column and change the rest to .000001
-#segmentFileDF_social['familyMAC_filterAbovePointOneNine']  = segmentFileDF_social['seg_MAC_a_family_virtue'].apply(lambda x: x if x >= .19 else 0.000001)
 
 sentenceValues = segmentFileDF[['segment',
                                'MFT_a_care_virtue',
@@ -88,14 +119,22 @@ segmentValues = segmentFileDF[['segment',
 eventFoundations = segmentValues.drop_duplicates(subset=['segment'], keep='first', ignore_index=True)
 #sentenceFoundations = sentenceValues.drop_duplicates(subset=['segment'], keep='first', ignore_index=True)
 valueWithSegment = []
-tempValueWithSegment = []
 listOfFoundationsWithValuesAndSegments = []
 
-# this is the number of segments that will be selected for trials (this should be changed at some point)
-numberOfTopSegments = 4
+#
+#   prepare for modeling and data transform
+#
 
-# selects and orders values of foundations, removing sentences from the same segment that are not with the highest score
-# FOR SOME REASON THIS SOMETIMES RESULTS IN ONLY 3 SEGMENTS FOR A FOUNDATION (RARE); FIND OUT WHY
+#This creates the events and durations FOR DESIGN MATRIX
+eventNames = []
+onsets = [0,14,39,63,79,95,125,136,164,187,203,219,227,250,258,294,306,323,328,359,367,397,438,460,487,505,527, 543, 568,633,654,688,733,756,769,790,814,824,859,875,901,920,943,963,982,992,1022,1046,1071,1107,1133,1150,1170,1183,1203,1234,1241,1272,1294,1307,1335,1368,1392,1440,1473,1510]
+durations = [6,24,23,3,15,23,10,21,22,15,15,6,15,7,25,21,9,4,32,7,28,30,15,26,15,35,15,24,39,20,18,44,14,12,20,22,9,24,15,25,18,22,19,12,9,26,23,24,35,25,16,19,12,15,30,6,30,21,12,27,32,11,47,32,23,8]
+
+for event in range(len(eventFoundations)):
+    eventNames.append(str(event+1))
+#print( eventNames, onsets, durations, sep='\n' )
+
+# selects and orders values of foundations, removing sentences from the same segment that are not with the highest foundation score
 for column in sentenceValues.columns[1:]:
     #print(column)
     for cell in sentenceValues.iterrows():
@@ -113,7 +152,7 @@ for column in sentenceValues.columns[1:]:
     valueWithSegment = []
 #print(*listOfFoundationsWithValuesAndSegments,sep='\n' )
 
-# this creates a helper list with tuples of 'foundation name' and a list of top N segments for it
+# this creates a helper dictionary with 'foundation name' as key and a list of top N segment numbers as value
 topSegments = {}
 for foundation, list in listOfFoundationsWithValuesAndSegments:
     segmentNumbers = []
@@ -122,53 +161,12 @@ for foundation, list in listOfFoundationsWithValuesAndSegments:
     topSegments[foundation] = segmentNumbers
 #print(topSegments,sep='\n')
 
-#This creates the events and durations FOR DESIGN MATRIX
-eventNames = []
-onsets = [0,14,39,63,79,95,125,136,164,187,203,219,227,250,258,294,306,323,328,359,367,397,438,460,487,505,527, 543, 568,633,654,688,733,756,769,790,814,824,859,875,901,920,943,963,982,992,1022,1046,1071,1107,1133,1150,1170,1183,1203,1234,1241,1272,1294,1307,1335,1368,1392,1440,1473,1510]
-durations = [6,24,23,3,15,23,10,21,22,15,15,6,15,7,25,21,9,4,32,7,28,30,15,26,15,35,15,24,39,20,18,44,14,12,20,22,9,24,15,25,18,22,19,12,9,26,23,24,35,25,16,19,12,15,30,6,30,21,12,27,32,11,47,32,23,8]
-
-for event in range(len(eventFoundations)):
-    eventNames.append(str(event+1))
-#print( eventNames, onsets, durations, sep='\n' )
-
-#   Helper functions
-#
-def load_participants(story):
-    #return a list of all participant numbers for a story
-    participants = []
-    for root, dirs, files in os.walk(alias_data_dir):
-        for file in files:
-            if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
-                participant_number = file[4:7]
-                #print("Getting participant number %03s for %04s" % (participant_number, story))
-                participants.append(participant_number)
-    return participants
-
-def load_epi_data(sub,story):
-    # Load MRI file (in Nifti format)
-    for root, dirs, files in os.walk(alias_data_dir):
-        for file in files:
-            if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz") and "sub-"+str(sub) in file:
-                epi_in = os.path.join(alias_data_dir,"sub-%03s/func/sub-%03s_task-%s_space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz" % (sub, sub, story))
-                epi_data = nib.load(epi_in)
-                print("Loading data from %s" % (epi_in))
-    return epi_data
-
-def load_regressor(sub,story):
-    # Load tsv file with regressors
-    for root, dirs, files in os.walk(alias_data_dir):
-        for file in files:
-            if story in file and file.endswith("desc-confounds_regressors.tsv") and "sub-"+sub in file:
-                regressor_location = os.path.join(alias_data_dir,"sub-%03s/func/sub-%03s_task-%04s_desc-confounds_regressors.tsv" % (sub, sub, story))
-                print("Loading regressors from %s" % (regressor_location))
-                regressor = pd.read_csv(regressor_location, sep='\t')
-    return regressor
 
 #
 #   Data transform
 #
 
-for participant in load_participants("tunnel"):
+for participant in load_participants(story):
     print ("Building first-level models for participant %s" % (participant))
     epi_data_NIFTI_original = load_epi_data(participant, story)
 
