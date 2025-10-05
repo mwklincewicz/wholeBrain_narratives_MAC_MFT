@@ -229,7 +229,7 @@ for participant in load_participants(story):
         masked_data = apply_mask(z_map, mask)
         z_map_masked = unmask(masked_data, mask)
 
-        # save contrast image for the testsubject (to be used at second level)
+        # save contrast image for the participant (to be used at second level)
         os.makedirs(processed_dir+story+"\\"+foundationUsedForModel, mode=0o777, exist_ok=True)
         z_map_masked.to_filename((processed_dir+story+"\\"+foundationUsedForModel + "\\"+ "%03s_"+story+"_"+str(foundationUsedForModel)+"_perSentence.nii.gz") % (participant))
 
