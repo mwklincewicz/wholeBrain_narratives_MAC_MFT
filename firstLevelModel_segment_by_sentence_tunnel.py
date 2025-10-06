@@ -216,7 +216,7 @@ for participant in load_participants(story):
 
         plot_design_matrix(X_base)
         ax1.set_title("Block design matrix", fontsize=12)
-
+        plt.show()
 
         ## create contrast image
         contrast_name = str(foundationUsedForModel)
@@ -235,4 +235,3 @@ for participant in load_participants(story):
         z_map_masked.to_filename((processed_dir+story+"\\"+foundationUsedForModel + "\\"+ "%03s_"+story+"_"+str(foundationUsedForModel)+"_perSentence.nii.gz") % (participant))
 
         plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
-        #plt.show()
