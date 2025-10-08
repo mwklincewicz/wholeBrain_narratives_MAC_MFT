@@ -55,11 +55,11 @@ if excelToProcess == 'y':
 
 print("---------------------------------------")
 print("DIRECTORY NAME FOR TEXT TO PROCESS (root: /text_to_be_segmented, press Enter):  ")
-directory_text = str(input())
-if directory_text == '':
+directory_input = str(input())
+if directory_input == '':
     directory_text = 'text_to_be_segmented'
 else:
-    directory_text = 'text_to_be_segmented/' + directory_text
+    directory_text = 'text_to_be_segmented/' + directory_input
 print("---------------------------------------")
 print("DIRECTORY NAME FOR SEGMENTS TO PROCESS (root: /segments, press Enter):  ")
 directory = str(input())
@@ -93,6 +93,27 @@ if outputStyle == '':
     outputStyle = 2
 outputStyle = int(outputStyle)
 originalSysOutput = sys.stdout
+
+#load file with word timestamps for the text being analyzed, if it exists
+transcriptionSentences = []
+transcriptionSentence = ""
+sentenceStart = 0.0
+sentenceEnd = 0.0
+if os.path.exists('./word_timestamps/'+directory_input+'_transcription.csv'):
+   print("Reading in audio transcription with time stamps csv file (./word_timestamps/"+directory_input+"_transcription.csv)...")
+   wordTimestamps_df = pd.read_csv('./word_timestamps/' + directory_input + '_transcription.csv', header=None)
+
+   for word in wordTimestamps_df[1:].itertuples():
+       if transcriptionSentence == "": sentenceStart = float(word[3])
+       transcriptionSentence = transcriptionSentence + str(word[2]) + " "
+       if transcriptionSentence.endswith('. '):
+           sentenceEnd = float(word[4])
+           sentenceTimestamps = ((transcriptionSentence, sentenceStart, sentenceEnd))
+           transcriptionSentences.append( (sentenceTimestamps)  )
+           transcriptionSentence = ""
+else:
+   print("The audio transcription "+directory_input+"_transcription.csv file does not exist in /word_timestamps/")
+
 
 # Turn file into individual sentences and score them with MAC and MFT; whatever dictionary you put into 'merge' will be in .xslx
 for filename in os.listdir("./"+directory_text):
@@ -224,7 +245,7 @@ for filename in os.listdir("./"+directory_text):
             index += 1
 
     # Look through segments in <segments> directory and match them with sentences in dataframe that contains sentence scores
-    index = 0
+    index = 0 #this is for keeping track of sentence index as we go through the segments
     fragmentFiles = os.listdir("./" + directory)
     fragmentFiles.sort(reverse=True)
     fragmentFiles.sort(key=str.lower)
@@ -236,7 +257,7 @@ for filename in os.listdir("./"+directory_text):
     for segments in fragmentFiles:
         if segments.endswith('.txt'):
             segmentIndex = segmentIndex+1
-            print( "Reading text from segment file: " + segments + " which is " + segmentIndex + " of " + str(len(fragmentFiles)))
+            print( "Reading text from segment file: " + str(segments) + " which is " + str(segmentIndex) + " of " + str(len(fragmentFiles)))
             with open("./" + directory + "/" + segments, encoding='utf-8') as f1:
                 segment = f1.read()
                 f2 = open(os.path.join('my_temp_file'), 'w', encoding='utf-8')
@@ -328,12 +349,15 @@ for filename in os.listdir("./"+directory_text):
             }
 
             for sentence in (exp2_text.split(". ")):
-                print( sentence )
+                print( "Segment sentence: " + sentence )
                 if  fuzz.ratio(dataFrameForSaving.iloc[index]['sentence'], sentence) > 65:
                     print(" -- match")
                     #print(dataFrameForSaving.iloc[index]['sentence'])
                     dataFrameForSaving.loc[index, 'segment'] = str(segments)
                     dataFrameForSaving.loc[index, 'seg_sentence'] = str(sentence)
+                    dataFrameForSaving.loc[index, 'trans_sentence'] = str( transcriptionSentences[index][0] )
+                    dataFrameForSaving.loc[index, 'start_sentence'] = str( transcriptionSentences[index][1] )
+                    dataFrameForSaving.loc[index, 'end_sentence'] = str( transcriptionSentences[index][2] )
                     dataFrameForSaving.loc[index, "seg_MFT_a_care_virtue"] = mft_virtue_vice_all.get("seg_MFT_a_care_virtue")
                     dataFrameForSaving.loc[index, "seg_MFT_a_fairness_virtue"] = mft_virtue_vice_all.get("seg_MFT_a_fairness_virtue")
                     dataFrameForSaving.loc[index, "seg_MFT_a_loyalty_virtue"] = mft_virtue_vice_all.get("seg_MFT_a_loyalty_virtue")
@@ -358,6 +382,7 @@ for filename in os.listdir("./"+directory_text):
                     dataFrameForSaving.loc[index, "seg_MAC_a_reciprocity_vice"] = mac_virtue_vice_all.get("seg_MAC_a_reciprocity_vice")
                     dataFrameForSaving.loc[index, "seg_MAC_a_family_vice"] = mac_virtue_vice_all.get("seg_MAC_a_family_vice")
                     dataFrameForSaving.loc[index, "seg_MAC_a_property_vice"] = mac_virtue_vice_all.get("seg_MAC_a_property_vice")
+
                     index += 1
 
     # Save dataframe with both sentence and segment scores to xlsx
