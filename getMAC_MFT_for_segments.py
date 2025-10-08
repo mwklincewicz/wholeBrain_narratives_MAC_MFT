@@ -403,34 +403,20 @@ t_index = 1
 t_sentence = ""
 t = 0
 for sentence in (exp2_text.split(". ")):
-    print("Transcript sentence: " + sentence)
-    #print( t_index )
-    for tuple in wordTimestamps_df[t_index:].itertuples():
-        print( tuple[2] )
-        t_sentence = t_sentence + str(tuple[2]) + " "
-        if fuzz.token_sort_ratio(t_sentence, sentence) > 96:
-            t += 1
-            t_sentence2 = t_sentence + wordTimestamps_df.loc[t_index+t][2]
-            t_sentence3 = t_sentence2 + wordTimestamps_df.loc[t_index + t+1][2]
-
-            if fuzz.token_sort_ratio(t_sentence, sentence) < fuzz.token_sort_ratio(t_sentence2, sentence):
-                t += 1
-                print(f"Match between {bcolors.WARNING}<" + sentence + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence2 + f"{bcolors.END} using " + str(t) + " transcription words.")
-                t_sentence = ""
-                if fuzz.token_sort_ratio(t_sentence2, sentence) < fuzz.token_sort_ratio(t_sentence3, sentence):
-                    t += 1
-                    print(
-                        f"Match between {bcolors.WARNING}<" + sentence + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence3 + f"{bcolors.END} using " + str(t) + " transcription words.")
-                    t_sentence = ""
-                    break
-                break
-            else:
-                #t+=1
+    for tuple in wordTimestamps_df[:].itertuples():
+        while fuzz.token_sort_ratio(t_sentence, sentence, full_process=True) < 100:
+            print( "Initial fuzz: " +str(fuzz.token_sort_ratio(t_sentence, sentence, full_process=True)))
+            t_sentence = t_sentence + " " + wordTimestamps_df.loc[t_index + t][1]
+            if fuzz.ratio(t_sentence, sentence) >= fuzz.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t+1][1], sentence) and \
+                fuzz.ratio(t_sentence, sentence) > fuzz.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t+2][1], sentence):
+                print ( "Lookahead fuzz: " + str(fuzz.ratio(sentence, t_sentence + " " + wordTimestamps_df.loc[t_index + t+1][1])))
                 print(f"Match between {bcolors.WARNING}<" + sentence + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
                 t_sentence = ""
+                t += 1
                 break
-        else:
-            t=t+1
+            else:
+                t += 1
+        break
     t_index = t_index + t
     print( t_index )
     t = 0
