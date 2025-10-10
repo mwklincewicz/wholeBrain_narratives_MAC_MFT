@@ -402,9 +402,7 @@ for filename in os.listdir("./"+directory_text):
         print("Initial fuzz: " + str(fuzz.token_sort_ratio(t_sentence, sentence, full_process=True)))
         t_sentence = t_sentence + " " + wordTimestamps_df.loc[t_index + t][1]
         if len(wordTimestamps_df) == t_index + t or len(wordTimestamps_df) == t_index + t + 1:
-            print(
-                f"!Match between {bcolors.WARNING}<" + sentence + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(
-                    t) + " transcription words.")
+            print(f"!Match between {bcolors.WARNING}<" + sentence + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
             dataFrameForSaving[counter, 'end'] = wordTimestamps_df.loc[t_index + t][3]
             dataFrameForSaving[counter, 't_sentence'] = t_sentence
             t_sentence = ""
@@ -414,11 +412,8 @@ for filename in os.listdir("./"+directory_text):
                 t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1][1], sentence) and \
                 fuzz.ratio(t_sentence, sentence) > fuzz.ratio(
             t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2][1], sentence):
-            print("Lookahead fuzz: " + str(
-                fuzz.ratio(sentence, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1][1])))
-            print(
-                f"Match between {bcolors.WARNING}<" + sentence + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(
-                    t) + " transcription words.")
+            print("Lookahead fuzz: " + str(fuzz.ratio(sentence, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1][1])))
+            print(f"Match between {bcolors.WARNING}<" + sentence + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
             dataFrameForSaving.loc[counter, 'end'] = wordTimestamps_df.loc[t_index + t][3]
             dataFrameForSaving.loc[counter, 't_sentence'] = t_sentence
             t_sentence = ""
