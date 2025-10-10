@@ -384,19 +384,18 @@ for filename in os.listdir("./"+directory_text):
 
                     index += 1
 
-    sentenceStart = 0.0
-    sentenceEnd = 0.0
-    # load file with word timestamps for the text being analyzed, if it exists
-    if os.path.exists('./word_timestamps/' + directory_input + '_transcription_per_word_x.csv'):
-        print("Reading in audio transcription with time stamps csv file (./word_timestamps/" + directory_input + "_transcription_per_word_x.csv)...")
-        wordTimestamps_df = pd.read_csv('./word_timestamps/' + directory_input + '_transcription_per_word_x.csv', header=None)
-    else:
-        break
+sentenceStart = 0.0
+sentenceEnd = 0.0
+# load file with word timestamps for the text being analyzed, if it exists
+if os.path.exists('./word_timestamps/' + directory_input + '_transcription_per_word_x.csv'):
+    print("Reading in audio transcription with time stamps csv file (./word_timestamps/" + directory_input + "_transcription_per_word_x.csv)...")
+    wordTimestamps_df = pd.read_csv('./word_timestamps/' + directory_input + '_transcription_per_word_x.csv', header=None)
 
-    t_index = 1
-    t_sentence = ""
-    t = 0
-    counter = 0
+t_index = 1
+t_sentence = ""
+t = 0
+counter = 0
+for sentence in (exp2_text.split(". ")):
     dataFrameForSaving[counter, 'start'] = wordTimestamps_df.loc[t_index + t][2]
     while fuzz.token_sort_ratio(t_sentence, sentence, full_process=True) < 100:
         print("Initial fuzz: " + str(fuzz.token_sort_ratio(t_sentence, sentence, full_process=True)))
