@@ -31,6 +31,16 @@ from emacscore.scoring import score_docs as emac_score_docs
 #   emfdscore from git
 #   emacscore best to download zip and install with pip
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    END = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 pd.set_option('display.width', 400)
 pd.set_option('display.max_columns', 100)
@@ -40,6 +50,8 @@ my_translator = GoogleTranslator(source='auto', target='en')
 my_nl_translator = GoogleTranslator(source='auto', target='nl')
 
 sentimentAnalysisVader = SentimentIntensityAnalyzer()
+
+spacy.load('en_core_web_sm')
 
 print("---------------------------------------")
 print("WILL YOU BE CREATING SEGMENTS FROM AN EXCEL FILE?  y/n ")
@@ -129,317 +141,297 @@ for filename in os.listdir("./"+directory_text):
         sentences = exp2_text.split('. ')
 
         index = 0
-    #     for sentence in sentences:
-    #         #sys.stdout = open('./sentences/' + filename.split('.')[0] + "_" + str(index) + '_' + str(decimal) + "_" + foundation + '.txt', "w")
-    #         #sys.stdout = open('./_processed/'+directory_text+'/sentences/'+ "scored"+filename.split('.')[0] + "_" + str(index) + '_' + str(decimal) + "_" + foundation + '.txt', "w")
-    #         exp2_text = sentence
-    #         #print( exp2_text )
-    #         sentiment_dict = sentimentAnalysisVader.polarity_scores(exp2_text)
-    #
-    #         neg = sentiment_dict['neg'] * 100
-    #         pos = sentiment_dict['pos'] * 100
-    #         neu = sentiment_dict['neu'] * 100
-    #         com = sentiment_dict['compound'] * 100
-    #
-    #         # Parse with MFT dictionary and MAC dictionary
-    #         tempDf = pd.DataFrame([exp2_text])
-    #         #tempDf.to_csv('emfdTemp.csv', index=False, header=False)
-    #         #tempDf = pd.read_csv('emfdTemp.csv', header=None)
-    #         length = len(tempDf)
-    #
-    #         eMFD_df = emfd_score_docs(tempDf, 'emfd', 'single', 'bow', 'vice-virtue', length)
-    #         eMAC_df = emac_score_docs(tempDf, 'emac', 'single', 'bow', 'vice-virtue', length)
-    #         eMFD_df_all = emfd_score_docs(tempDf, 'emfd', 'all', 'bow', 'vice-virtue', length)
-    #         eMAC_df_all = emac_score_docs(tempDf, 'emac', 'all', 'bow', 'vice-virtue', length)
-    #
-    #         eMFD_df.drop( columns=['moral_nonmoral_ratio', 'f_var'],  inplace=True)
-    #         eMFD_df_all.drop( columns=['moral_nonmoral_ratio', 'f_var'], inplace=True)
-    #
-    #         eMAC_df.drop( columns=['moral_nonmoral_ratio', 'f_var'], inplace=True)
-    #         eMAC_df_all.drop( columns=['moral_nonmoral_ratio', 'f_var'], inplace=True)
-    #
-    #         # MFT virtue-vice bow per word
-    #         mft_virtue_vice_word = {
-    #             "MFT_w_care_virtue" : eMFD_df['care.virtue'].values[0] ,
-    #             "MFT_w_fairness_virtue" : eMFD_df['fairness.virtue'].values[0] ,
-    #             "MFT_w_loyalty_virtue" : eMFD_df['loyalty.virtue'].values[0] ,
-    #             "MFT_w_authority_virtue" : eMFD_df['authority.virtue'].values[0] ,
-    #             "MFT_w_sanctity_virtue" : eMFD_df['sanctity.virtue'].values[0] ,
-    #             "MFT_w_care_vice" : eMFD_df['care.vice'].values[0] ,
-    #             "MFT_w_fairness_vice" : eMFD_df['fairness.vice'].values[0] ,
-    #             "MFT_w_loyalty_vice" : eMFD_df['loyalty.vice'].values[0] ,
-    #             "MFT_w_authority_vice" : eMFD_df['authority.vice'].values[0] ,
-    #             "MFT_w_sanctity_vice" : eMFD_df['sanctity.vice'].values[0]
-    #         }
-    #
-    #         # MAC virtue-vice bow per word
-    #         mac_virtue_vice_word ={
-    #             "MAC_w_fairness_virtue" : eMAC_df['fairness.virtue'].values[0],
-    #             "MAC_w_group_virtue" : eMAC_df['group.virtue'].values[0],
-    #             "MAC_w_deference" : eMAC_df['deference.virtue'].values[0],
-    #             "MAC_w_heroism" : eMAC_df['heroism.virtue'].values[0],
-    #             "MAC_w_reciprocity" : eMAC_df['reciprocity.virtue'].values[0],
-    #             "MAC_w_family_virtue" : eMAC_df['family.virtue'].values[0],
-    #             "MAC_w_property_virtue" : eMAC_df['property.virtue'].values[0],
-    #             "MAC_w_fairness_vice" : eMAC_df['fairness.vice'].values[0],
-    #             "MAC_w_group_vice" : eMAC_df['group.vice'].values[0],
-    #             "MAC_w_deference_vice" : eMAC_df['deference.vice'].values[0],
-    #             "MAC_w_heroism_vice" : eMAC_df['heroism.vice'].values[0],
-    #             "MAC_w_reciprocity_vice" : eMAC_df['reciprocity.vice'].values[0],
-    #             "MAC_w_family_vice" : eMAC_df['family.vice'].values[0],
-    #             "MAC_w_property_vice" : eMAC_df['property.vice'].values[0]
-    #         }
-    #
-    #         # MFT virtue-vice bow all
-    #         mft_virtue_vice_all = {
-    #             "MFT_a_care_virtue" : eMFD_df_all['care.virtue'].values[0],
-    #             "MFT_a_fairness_virtue" : eMFD_df_all['fairness.virtue'].values[0],
-    #             "MFT_a_loyalty_virtue" : eMFD_df_all['loyalty.virtue'].values[0],
-    #             "MFT_a_authority_virtue" : eMFD_df_all['authority.virtue'].values[0],
-    #             "MFT_a_sanctity_virtue" : eMFD_df_all['sanctity.virtue'].values[0],
-    #             "MFT_a_care_vice" : eMFD_df_all['care.vice'].values[0],
-    #             "MFT_a_fairness_vice" : eMFD_df_all['fairness.vice'].values[0],
-    #             "MFT_a_loyalty_vice" : eMFD_df_all['loyalty.vice'].values[0],
-    #             "MFT_a_authority_vice" : eMFD_df_all['authority.vice'].values[0],
-    #             "MFT_a_sanctity_vice" : eMFD_df_all['sanctity.vice'].values[0]
-    #         }
-    #
-    #         # MAC virtue-vice bow all
-    #         mac_virtue_vice_all = {
-    #             "MAC_a_fairness_virtue" : eMAC_df_all['fairness.virtue'].values[0],
-    #             "MAC_a_group_virtue" : eMAC_df_all['group.virtue'].values[0],
-    #             "MAC_a_deference_virtue" : eMAC_df_all['deference.virtue'].values[0],
-    #             "MAC_a_heroism_virtue" : eMAC_df_all['heroism.virtue'].values[0],
-    #             "MAC_a_reciprocity_virtue" : eMAC_df_all['reciprocity.virtue'].values[0],
-    #             "MAC_a_family_virtue" : eMAC_df_all['family.virtue'].values[0],
-    #             "MAC_a_property_virtue" : eMAC_df_all['property.virtue'].values[0],
-    #             "MAC_a_fairness_vice" : eMAC_df_all['fairness.vice'].values[0],
-    #             "MAC_a_group_vice" : eMAC_df_all['group.vice'].values[0],
-    #             "MAC_a_deference_vice" : eMAC_df_all['deference.vice'].values[0],
-    #             "MAC_a_heroism_vice" : eMAC_df_all['heroism.vice'].values[0],
-    #             "MAC_a_reciprocity_vice" : eMAC_df_all['reciprocity.vice'].values[0],
-    #             "MAC_a_family_vice" : eMAC_df_all['family.vice'].values[0],
-    #             "MAC_a_property_vice" : eMAC_df_all['property.vice'].values[0]
-    #         }
-    #
-    #         merged = { **mft_virtue_vice_all , **mac_virtue_vice_all }
-    #
-    #         if index == 0:
-    #             dataFrameForSaving = pd.DataFrame.from_dict(merged, orient='index').transpose()
-    #             dataFrameForSaving.insert(0, "full_text", filename)
-    #             dataFrameForSaving.insert(0, "sentence", sentence)
-    #         elif index > 0 and index < len(sentences):
-    #             newIndex = len(dataFrameForSaving)
-    #             dataFrameForSaving.loc[newIndex] = merged
-    #             dataFrameForSaving.loc[newIndex, "full_text"] = filename
-    #             dataFrameForSaving.loc[newIndex, 'sentence'] = sentence
-    #         index += 1
-    #
-    # # Look through segments in <segments> directory and match them with sentences in dataframe that contains sentence scores
-    # index = 0 #this is for keeping track of sentence index as we go through the segments
-    # fragmentFiles = os.listdir("./" + directory)
-    # fragmentFiles.sort(reverse=True)
-    # fragmentFiles.sort(key=str.lower)
-    # fragmentFiles.sort(key=len)
-    # print("Reading fragment files: " + str(fragmentFiles))
-    #
-    # segmentIndex = 0
-    #
-    # for segments in fragmentFiles:
-    #     if segments.endswith('.txt'):
-    #         segmentIndex = segmentIndex+1
-    #         print( "Reading text from segment file: " + str(segments) + " which is " + str(segmentIndex) + " of " + str(len(fragmentFiles)))
-    #         with open("./" + directory + "/" + segments, encoding='utf-8') as f1:
-    #             segment = f1.read()
-    #             f2 = open(os.path.join('my_temp_file'), 'w', encoding='utf-8')
-    #             f2.write(segment)
-    #             f2.close()
-    #         file = open(os.path.join('my_temp_file'), 'r', encoding='utf-8')
-    #         exp2_text = file.read()
-    #
-    #         # Parse with MFT dictionary and MAC dictionary
-    #         tempDf = pd.DataFrame([exp2_text])
-    #         print( "Reading fragment from temp file: " + str(tempDf.values) )
-    #         tempDf.to_csv('emfdTemp.csv', index=False, header=False)
-    #         tempDf = pd.read_csv('emfdTemp.csv', header=None)
-    #         length = len(tempDf)
-    #
-    #         eMFD_df = emfd_score_docs(tempDf, 'emfd', 'single', 'bow', 'vice-virtue', length)
-    #         eMAC_df = emac_score_docs(tempDf, 'emac', 'single', 'bow', 'vice-virtue', length)
-    #         eMFD_df_all = emfd_score_docs(tempDf, 'emfd', 'all', 'bow', 'vice-virtue', length)
-    #         eMAC_df_all = emac_score_docs(tempDf, 'emac', 'all', 'bow', 'vice-virtue', length)
-    #
-    #         eMFD_df.drop(columns=['moral_nonmoral_ratio', 'f_var'], inplace=True)
-    #         eMFD_df_all.drop(columns=['moral_nonmoral_ratio', 'f_var'], inplace=True)
-    #
-    #         eMAC_df.drop(columns=['moral_nonmoral_ratio', 'f_var'], inplace=True)
-    #         eMAC_df_all.drop(columns=['moral_nonmoral_ratio', 'f_var'], inplace=True)
-    #
-    #         # MFT virtue-vice bow per word
-    #         mft_virtue_vice_word = {
-    #             "seg_MFT_w_care_virtue": eMFD_df['care.virtue'].values[0],
-    #             "seg_MFT_w_fairness_virtue": eMFD_df['fairness.virtue'].values[0],
-    #             "seg_MFT_w_loyalty_virtue": eMFD_df['loyalty.virtue'].values[0],
-    #             "seg_MFT_w_authority_virtue": eMFD_df['authority.virtue'].values[0],
-    #             "seg_MFT_w_sanctity_virtue": eMFD_df['sanctity.virtue'].values[0],
-    #             "seg_MFT_w_care_vice": eMFD_df['care.vice'].values[0],
-    #             "seg_MFT_w_fairness_vice": eMFD_df['fairness.vice'].values[0],
-    #             "seg_MFT_w_loyalty_vice": eMFD_df['loyalty.vice'].values[0],
-    #             "seg_MFT_w_authority_vice": eMFD_df['authority.vice'].values[0],
-    #             "seg_MFT_w_sanctity_vice": eMFD_df['sanctity.vice'].values[0]
-    #         }
-    #
-    #         # MAC virtue-vice bow per word
-    #         mac_virtue_vice_word = {
-    #             "seg_MAC_w_fairness_virtue": eMAC_df['fairness.virtue'].values[0],
-    #             "seg_MAC_w_group_virtue": eMAC_df['group.virtue'].values[0],
-    #             "seg_MAC_w_deference": eMAC_df['deference.virtue'].values[0],
-    #             "seg_MAC_w_heroism": eMAC_df['heroism.virtue'].values[0],
-    #             "seg_MAC_w_reciprocity": eMAC_df['reciprocity.virtue'].values[0],
-    #             "seg_MAC_w_family_virtue": eMAC_df['family.virtue'].values[0],
-    #             "seg_MAC_w_property_virtue": eMAC_df['property.virtue'].values[0],
-    #             "seg_MAC_w_fairness_vice": eMAC_df['fairness.vice'].values[0],
-    #             "seg_MAC_w_group_vice": eMAC_df['group.vice'].values[0],
-    #             "seg_MAC_w_deference_vice": eMAC_df['deference.vice'].values[0],
-    #             "seg_MAC_w_heroism_vice": eMAC_df['heroism.vice'].values[0],
-    #             "seg_MAC_w_reciprocity_vice": eMAC_df['reciprocity.vice'].values[0],
-    #             "seg_MAC_w_family_vice": eMAC_df['family.vice'].values[0],
-    #             "seg_MAC_w_property_vice": eMAC_df['property.vice'].values[0]
-    #         }
-    #
-    #         # MFT virtue-vice bow all
-    #         mft_virtue_vice_all = {
-    #             "seg_MFT_a_care_virtue": eMFD_df_all['care.virtue'].values[0],
-    #             "seg_MFT_a_fairness_virtue": eMFD_df_all['fairness.virtue'].values[0],
-    #             "seg_MFT_a_loyalty_virtue": eMFD_df_all['loyalty.virtue'].values[0],
-    #             "seg_MFT_a_authority_virtue": eMFD_df_all['authority.virtue'].values[0],
-    #             "seg_MFT_a_sanctity_virtue": eMFD_df_all['sanctity.virtue'].values[0],
-    #             "seg_MFT_a_care_vice": eMFD_df_all['care.vice'].values[0],
-    #             "seg_MFT_a_fairness_vice": eMFD_df_all['fairness.vice'].values[0],
-    #             "seg_MFT_a_loyalty_vice": eMFD_df_all['loyalty.vice'].values[0],
-    #             "seg_MFT_a_authority_vice": eMFD_df_all['authority.vice'].values[0],
-    #             "seg_MFT_a_sanctity_vice": eMFD_df_all['sanctity.vice'].values[0]
-    #         }
-    #
-    #         # MAC virtue-vice bow all
-    #         mac_virtue_vice_all = {
-    #             "seg_MAC_a_fairness_virtue": eMAC_df_all['fairness.virtue'].values[0],
-    #             "seg_MAC_a_group_virtue": eMAC_df_all['group.virtue'].values[0],
-    #             "seg_MAC_a_deference_virtue": eMAC_df_all['deference.virtue'].values[0],
-    #             "seg_MAC_a_heroism_virtue": eMAC_df_all['heroism.virtue'].values[0],
-    #             "seg_MAC_a_reciprocity_virtue": eMAC_df_all['reciprocity.virtue'].values[0],
-    #             "seg_MAC_a_family_virtue": eMAC_df_all['family.virtue'].values[0],
-    #             "seg_MAC_a_property_virtue": eMAC_df_all['property.virtue'].values[0],
-    #             "seg_MAC_a_fairness_vice": eMAC_df_all['fairness.vice'].values[0],
-    #             "seg_MAC_a_group_vice": eMAC_df_all['group.vice'].values[0],
-    #             "seg_MAC_a_deference_vice": eMAC_df_all['deference.vice'].values[0],
-    #             "seg_MAC_a_heroism_vice": eMAC_df_all['heroism.vice'].values[0],
-    #             "seg_MAC_a_reciprocity_vice": eMAC_df_all['reciprocity.vice'].values[0],
-    #             "seg_MAC_a_family_vice": eMAC_df_all['family.vice'].values[0],
-    #             "seg_MAC_a_property_vice": eMAC_df_all['property.vice'].values[0]
-    #         }
-    #
-    #         for sentence in (exp2_text.split(". ")):
-    #             print( "Segment sentence: " + sentence )
-    #             if  fuzz.ratio(dataFrameForSaving.iloc[index]['sentence'], sentence) > 65:
-    #                 print(" -- match between segment and sentence")
-    #                 #print(dataFrameForSaving.iloc[index]['sentence'])
-    #                 dataFrameForSaving.loc[index, 'segment'] = str(segments)
-    #                 dataFrameForSaving.loc[index, 'seg_sentence'] = str(sentence)
-    #                 dataFrameForSaving.loc[index, 'trans_sentence'] = str(  )
-    #                 dataFrameForSaving.loc[index, 'start_sentence'] = str(  )
-    #                 dataFrameForSaving.loc[index, 'end_sentence'] = str( )
-    #                 dataFrameForSaving.loc[index, "seg_MFT_a_care_virtue"] = mft_virtue_vice_all.get("seg_MFT_a_care_virtue")
-    #                 dataFrameForSaving.loc[index, "seg_MFT_a_fairness_virtue"] = mft_virtue_vice_all.get("seg_MFT_a_fairness_virtue")
-    #                 dataFrameForSaving.loc[index, "seg_MFT_a_loyalty_virtue"] = mft_virtue_vice_all.get("seg_MFT_a_loyalty_virtue")
-    #                 dataFrameForSaving.loc[index, "seg_MFT_a_authority_virtue"] = mft_virtue_vice_all.get("seg_MFT_a_authority_virtue")
-    #                 dataFrameForSaving.loc[index, "seg_MFT_a_sanctity_virtue"] = mft_virtue_vice_all.get("seg_MFT_a_sanctity_virtue")
-    #                 dataFrameForSaving.loc[index, "seg_MFT_a_care_vice"] = mft_virtue_vice_all.get("seg_MFT_a_care_vice")
-    #                 dataFrameForSaving.loc[index, "seg_MFT_a_fairness_vice"] = mft_virtue_vice_all.get("seg_MFT_a_fairness_vice")
-    #                 dataFrameForSaving.loc[index, "seg_MFT_a_loyalty_vice"] = mft_virtue_vice_all.get("seg_MFT_a_loyalty_vice")
-    #                 dataFrameForSaving.loc[index, "seg_MFT_a_authority_vice"] = mft_virtue_vice_all.get("seg_MFT_a_authority_vice")
-    #                 dataFrameForSaving.loc[index, "seg_MFT_a_sanctity_vice"] = mft_virtue_vice_all.get("seg_MFT_a_sanctity_vice")
-    #                 dataFrameForSaving.loc[index, "seg_MAC_a_fairness_virtue"] = mac_virtue_vice_all.get("seg_MAC_a_fairness_virtue")
-    #                 dataFrameForSaving.loc[index, "seg_MAC_a_group_virtue"] = mac_virtue_vice_all.get("seg_MAC_a_group_virtue")
-    #                 dataFrameForSaving.loc[index, "seg_MAC_a_deference_virtue"] = mac_virtue_vice_all.get("seg_MAC_a_deference_virtue")
-    #                 dataFrameForSaving.loc[index, "seg_MAC_a_heroism_virtue"] = mac_virtue_vice_all.get("seg_MAC_a_heroism_virtue")
-    #                 dataFrameForSaving.loc[index, "seg_MAC_a_reciprocity_virtue"] = mac_virtue_vice_all.get("seg_MAC_a_reciprocity_virtue")
-    #                 dataFrameForSaving.loc[index, "seg_MAC_a_family_virtue"] = mac_virtue_vice_all.get("seg_MAC_a_family_virtue")
-    #                 dataFrameForSaving.loc[index, "seg_MAC_a_property_virtue"] = mac_virtue_vice_all.get("seg_MAC_a_property_virtue")
-    #                 dataFrameForSaving.loc[index, "seg_MAC_a_fairness_vice"] = mac_virtue_vice_all.get("seg_MAC_a_fairness_vice")
-    #                 dataFrameForSaving.loc[index, "seg_MAC_a_group_vice"] = mac_virtue_vice_all.get("seg_MAC_a_group_vice")
-    #                 dataFrameForSaving.loc[index, "seg_MAC_a_deference_vice"] = mac_virtue_vice_all.get("seg_MAC_a_deference_vice")
-    #                 dataFrameForSaving.loc[index, "seg_MAC_a_heroism_vice"] = mac_virtue_vice_all.get("seg_MAC_a_heroism_vice")
-    #                 dataFrameForSaving.loc[index, "seg_MAC_a_reciprocity_vice"] = mac_virtue_vice_all.get("seg_MAC_a_reciprocity_vice")
-    #                 dataFrameForSaving.loc[index, "seg_MAC_a_family_vice"] = mac_virtue_vice_all.get("seg_MAC_a_family_vice")
-    #                 dataFrameForSaving.loc[index, "seg_MAC_a_property_vice"] = mac_virtue_vice_all.get("seg_MAC_a_property_vice")
-    #
-    #                 index += 1
+        for sentence in sentences:
+            #sys.stdout = open('./sentences/' + filename.split('.')[0] + "_" + str(index) + '_' + str(decimal) + "_" + foundation + '.txt', "w")
+            #sys.stdout = open('./_processed/'+directory_text+'/sentences/'+ "scored"+filename.split('.')[0] + "_" + str(index) + '_' + str(decimal) + "_" + foundation + '.txt', "w")
+            exp2_text = sentence
+            #print( exp2_text )
+            sentiment_dict = sentimentAnalysisVader.polarity_scores(exp2_text)
 
+            neg = sentiment_dict['neg'] * 100
+            pos = sentiment_dict['pos'] * 100
+            neu = sentiment_dict['neu'] * 100
+            com = sentiment_dict['compound'] * 100
 
-#load file with word timestamps for the text being analyzed, if it exists
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    END = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+            # Parse with MFT dictionary and MAC dictionary
+            tempDf = pd.DataFrame([exp2_text])
+            #tempDf.to_csv('emfdTemp.csv', index=False, header=False)
+            #tempDf = pd.read_csv('emfdTemp.csv', header=None)
+            length = len(tempDf)
 
-transcriptionSentences = []
-transcriptionSentence = ""
-sentenceStart = 0.0
-sentenceEnd = 0.0
-if os.path.exists('./word_timestamps/'+directory_input+'_transcription_per_word_x.csv'):
-   print("Reading in audio transcription with time stamps csv file (./word_timestamps/"+directory_input+"_transcription_per_word_x.csv)...")
-   wordTimestamps_df = pd.read_csv('./word_timestamps/' + directory_input + '_transcription_per_word_x.csv', header=None)
-    #creates a list of tuples
-   for word in wordTimestamps_df[1:].itertuples():
-       if transcriptionSentence == "": sentenceStart = float(word[3])
-       transcriptionSentence = transcriptionSentence + str(word[2]) + " "
-       if transcriptionSentence.endswith('. '):
-           sentenceEnd = float(word[4])
-           sentenceTimestamps = ((transcriptionSentence, sentenceStart, sentenceEnd))
-           transcriptionSentences.append( (sentenceTimestamps)  )
-           transcriptionSentence = ""
-else:
-   print(f"The audio transcription{bcolors.WARNING}"+ directory_input+f"{bcolors.END}_transcription_per_word_x.csv file does not exist in /word_timestamps/")
+            eMFD_df = emfd_score_docs(tempDf, 'emfd', 'single', 'bow', 'vice-virtue', length)
+            eMAC_df = emac_score_docs(tempDf, 'emac', 'single', 'bow', 'vice-virtue', length)
+            eMFD_df_all = emfd_score_docs(tempDf, 'emfd', 'all', 'bow', 'vice-virtue', length)
+            eMAC_df_all = emac_score_docs(tempDf, 'emac', 'all', 'bow', 'vice-virtue', length)
 
-t_index = 1
-t_sentence = ""
-t = 0
-for sentence in (exp2_text.split(". ")):
-    for tuple in wordTimestamps_df[:].itertuples():
-        while fuzz.token_sort_ratio(t_sentence, sentence, full_process=True) < 100:
-            print( "Initial fuzz: " +str(fuzz.token_sort_ratio(t_sentence, sentence, full_process=True)))
-            t_sentence = t_sentence + " " + wordTimestamps_df.loc[t_index + t][1]
-            if fuzz.ratio(t_sentence, sentence) >= fuzz.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t+1][1], sentence) and \
-                fuzz.ratio(t_sentence, sentence) > fuzz.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t+2][1], sentence):
-                print ( "Lookahead fuzz: " + str(fuzz.ratio(sentence, t_sentence + " " + wordTimestamps_df.loc[t_index + t+1][1])))
-                print(f"Match between {bcolors.WARNING}<" + sentence + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
-                t_sentence = ""
-                t += 1
-                break
-            else:
-                t += 1
+            eMFD_df.drop( columns=['moral_nonmoral_ratio', 'f_var'],  inplace=True)
+            eMFD_df_all.drop( columns=['moral_nonmoral_ratio', 'f_var'], inplace=True)
+
+            eMAC_df.drop( columns=['moral_nonmoral_ratio', 'f_var'], inplace=True)
+            eMAC_df_all.drop( columns=['moral_nonmoral_ratio', 'f_var'], inplace=True)
+
+            # MFT virtue-vice bow per word
+            mft_virtue_vice_word = {
+                "MFT_w_care_virtue" : eMFD_df['care.virtue'].values[0] ,
+                "MFT_w_fairness_virtue" : eMFD_df['fairness.virtue'].values[0] ,
+                "MFT_w_loyalty_virtue" : eMFD_df['loyalty.virtue'].values[0] ,
+                "MFT_w_authority_virtue" : eMFD_df['authority.virtue'].values[0] ,
+                "MFT_w_sanctity_virtue" : eMFD_df['sanctity.virtue'].values[0] ,
+                "MFT_w_care_vice" : eMFD_df['care.vice'].values[0] ,
+                "MFT_w_fairness_vice" : eMFD_df['fairness.vice'].values[0] ,
+                "MFT_w_loyalty_vice" : eMFD_df['loyalty.vice'].values[0] ,
+                "MFT_w_authority_vice" : eMFD_df['authority.vice'].values[0] ,
+                "MFT_w_sanctity_vice" : eMFD_df['sanctity.vice'].values[0]
+            }
+
+            # MAC virtue-vice bow per word
+            mac_virtue_vice_word ={
+                "MAC_w_fairness_virtue" : eMAC_df['fairness.virtue'].values[0],
+                "MAC_w_group_virtue" : eMAC_df['group.virtue'].values[0],
+                "MAC_w_deference" : eMAC_df['deference.virtue'].values[0],
+                "MAC_w_heroism" : eMAC_df['heroism.virtue'].values[0],
+                "MAC_w_reciprocity" : eMAC_df['reciprocity.virtue'].values[0],
+                "MAC_w_family_virtue" : eMAC_df['family.virtue'].values[0],
+                "MAC_w_property_virtue" : eMAC_df['property.virtue'].values[0],
+                "MAC_w_fairness_vice" : eMAC_df['fairness.vice'].values[0],
+                "MAC_w_group_vice" : eMAC_df['group.vice'].values[0],
+                "MAC_w_deference_vice" : eMAC_df['deference.vice'].values[0],
+                "MAC_w_heroism_vice" : eMAC_df['heroism.vice'].values[0],
+                "MAC_w_reciprocity_vice" : eMAC_df['reciprocity.vice'].values[0],
+                "MAC_w_family_vice" : eMAC_df['family.vice'].values[0],
+                "MAC_w_property_vice" : eMAC_df['property.vice'].values[0]
+            }
+
+            # MFT virtue-vice bow all
+            mft_virtue_vice_all = {
+                "MFT_a_care_virtue" : eMFD_df_all['care.virtue'].values[0],
+                "MFT_a_fairness_virtue" : eMFD_df_all['fairness.virtue'].values[0],
+                "MFT_a_loyalty_virtue" : eMFD_df_all['loyalty.virtue'].values[0],
+                "MFT_a_authority_virtue" : eMFD_df_all['authority.virtue'].values[0],
+                "MFT_a_sanctity_virtue" : eMFD_df_all['sanctity.virtue'].values[0],
+                "MFT_a_care_vice" : eMFD_df_all['care.vice'].values[0],
+                "MFT_a_fairness_vice" : eMFD_df_all['fairness.vice'].values[0],
+                "MFT_a_loyalty_vice" : eMFD_df_all['loyalty.vice'].values[0],
+                "MFT_a_authority_vice" : eMFD_df_all['authority.vice'].values[0],
+                "MFT_a_sanctity_vice" : eMFD_df_all['sanctity.vice'].values[0]
+            }
+
+            # MAC virtue-vice bow all
+            mac_virtue_vice_all = {
+                "MAC_a_fairness_virtue" : eMAC_df_all['fairness.virtue'].values[0],
+                "MAC_a_group_virtue" : eMAC_df_all['group.virtue'].values[0],
+                "MAC_a_deference_virtue" : eMAC_df_all['deference.virtue'].values[0],
+                "MAC_a_heroism_virtue" : eMAC_df_all['heroism.virtue'].values[0],
+                "MAC_a_reciprocity_virtue" : eMAC_df_all['reciprocity.virtue'].values[0],
+                "MAC_a_family_virtue" : eMAC_df_all['family.virtue'].values[0],
+                "MAC_a_property_virtue" : eMAC_df_all['property.virtue'].values[0],
+                "MAC_a_fairness_vice" : eMAC_df_all['fairness.vice'].values[0],
+                "MAC_a_group_vice" : eMAC_df_all['group.vice'].values[0],
+                "MAC_a_deference_vice" : eMAC_df_all['deference.vice'].values[0],
+                "MAC_a_heroism_vice" : eMAC_df_all['heroism.vice'].values[0],
+                "MAC_a_reciprocity_vice" : eMAC_df_all['reciprocity.vice'].values[0],
+                "MAC_a_family_vice" : eMAC_df_all['family.vice'].values[0],
+                "MAC_a_property_vice" : eMAC_df_all['property.vice'].values[0]
+            }
+
+            merged = { **mft_virtue_vice_all , **mac_virtue_vice_all }
+
+            if index == 0:
+                dataFrameForSaving = pd.DataFrame.from_dict(merged, orient='index').transpose()
+                dataFrameForSaving.insert(0, "full_text", filename)
+                dataFrameForSaving.insert(0, "sentence", sentence)
+            elif index > 0 and index < len(sentences):
+                newIndex = len(dataFrameForSaving)
+                dataFrameForSaving.loc[newIndex] = merged
+                dataFrameForSaving.loc[newIndex, "full_text"] = filename
+                dataFrameForSaving.loc[newIndex, 'sentence'] = sentence
+            index += 1
+
+    # Look through segments in <segments> directory and match them with sentences in dataframe that contains sentence scores
+    index = 0 #this is for keeping track of sentence index as we go through the segments
+    fragmentFiles = os.listdir("./" + directory)
+    fragmentFiles.sort(reverse=True)
+    fragmentFiles.sort(key=str.lower)
+    fragmentFiles.sort(key=len)
+    print("Reading fragment files: " + str(fragmentFiles))
+
+    segmentIndex = 0
+
+    for segments in fragmentFiles:
+        if segments.endswith('.txt'):
+            segmentIndex = segmentIndex+1
+            print( "Reading text from segment file: " + str(segments) + " which is " + str(segmentIndex) + " of " + str(len(fragmentFiles)))
+            with open("./" + directory + "/" + segments, encoding='utf-8') as f1:
+                segment = f1.read()
+                f2 = open(os.path.join('my_temp_file'), 'w', encoding='utf-8')
+                f2.write(segment)
+                f2.close()
+            file = open(os.path.join('my_temp_file'), 'r', encoding='utf-8')
+            exp2_text = file.read()
+
+            # Parse with MFT dictionary and MAC dictionary
+            tempDf = pd.DataFrame([exp2_text])
+            print( "Reading fragment from temp file: " + str(tempDf.values) )
+            tempDf.to_csv('emfdTemp.csv', index=False, header=False)
+            tempDf = pd.read_csv('emfdTemp.csv', header=None)
+            length = len(tempDf)
+
+            eMFD_df = emfd_score_docs(tempDf, 'emfd', 'single', 'bow', 'vice-virtue', length)
+            eMAC_df = emac_score_docs(tempDf, 'emac', 'single', 'bow', 'vice-virtue', length)
+            eMFD_df_all = emfd_score_docs(tempDf, 'emfd', 'all', 'bow', 'vice-virtue', length)
+            eMAC_df_all = emac_score_docs(tempDf, 'emac', 'all', 'bow', 'vice-virtue', length)
+
+            eMFD_df.drop(columns=['moral_nonmoral_ratio', 'f_var'], inplace=True)
+            eMFD_df_all.drop(columns=['moral_nonmoral_ratio', 'f_var'], inplace=True)
+
+            eMAC_df.drop(columns=['moral_nonmoral_ratio', 'f_var'], inplace=True)
+            eMAC_df_all.drop(columns=['moral_nonmoral_ratio', 'f_var'], inplace=True)
+
+            # MFT virtue-vice bow per word
+            mft_virtue_vice_word = {
+                "seg_MFT_w_care_virtue": eMFD_df['care.virtue'].values[0],
+                "seg_MFT_w_fairness_virtue": eMFD_df['fairness.virtue'].values[0],
+                "seg_MFT_w_loyalty_virtue": eMFD_df['loyalty.virtue'].values[0],
+                "seg_MFT_w_authority_virtue": eMFD_df['authority.virtue'].values[0],
+                "seg_MFT_w_sanctity_virtue": eMFD_df['sanctity.virtue'].values[0],
+                "seg_MFT_w_care_vice": eMFD_df['care.vice'].values[0],
+                "seg_MFT_w_fairness_vice": eMFD_df['fairness.vice'].values[0],
+                "seg_MFT_w_loyalty_vice": eMFD_df['loyalty.vice'].values[0],
+                "seg_MFT_w_authority_vice": eMFD_df['authority.vice'].values[0],
+                "seg_MFT_w_sanctity_vice": eMFD_df['sanctity.vice'].values[0]
+            }
+
+            # MAC virtue-vice bow per word
+            mac_virtue_vice_word = {
+                "seg_MAC_w_fairness_virtue": eMAC_df['fairness.virtue'].values[0],
+                "seg_MAC_w_group_virtue": eMAC_df['group.virtue'].values[0],
+                "seg_MAC_w_deference": eMAC_df['deference.virtue'].values[0],
+                "seg_MAC_w_heroism": eMAC_df['heroism.virtue'].values[0],
+                "seg_MAC_w_reciprocity": eMAC_df['reciprocity.virtue'].values[0],
+                "seg_MAC_w_family_virtue": eMAC_df['family.virtue'].values[0],
+                "seg_MAC_w_property_virtue": eMAC_df['property.virtue'].values[0],
+                "seg_MAC_w_fairness_vice": eMAC_df['fairness.vice'].values[0],
+                "seg_MAC_w_group_vice": eMAC_df['group.vice'].values[0],
+                "seg_MAC_w_deference_vice": eMAC_df['deference.vice'].values[0],
+                "seg_MAC_w_heroism_vice": eMAC_df['heroism.vice'].values[0],
+                "seg_MAC_w_reciprocity_vice": eMAC_df['reciprocity.vice'].values[0],
+                "seg_MAC_w_family_vice": eMAC_df['family.vice'].values[0],
+                "seg_MAC_w_property_vice": eMAC_df['property.vice'].values[0]
+            }
+
+            # MFT virtue-vice bow all
+            mft_virtue_vice_all = {
+                "seg_MFT_a_care_virtue": eMFD_df_all['care.virtue'].values[0],
+                "seg_MFT_a_fairness_virtue": eMFD_df_all['fairness.virtue'].values[0],
+                "seg_MFT_a_loyalty_virtue": eMFD_df_all['loyalty.virtue'].values[0],
+                "seg_MFT_a_authority_virtue": eMFD_df_all['authority.virtue'].values[0],
+                "seg_MFT_a_sanctity_virtue": eMFD_df_all['sanctity.virtue'].values[0],
+                "seg_MFT_a_care_vice": eMFD_df_all['care.vice'].values[0],
+                "seg_MFT_a_fairness_vice": eMFD_df_all['fairness.vice'].values[0],
+                "seg_MFT_a_loyalty_vice": eMFD_df_all['loyalty.vice'].values[0],
+                "seg_MFT_a_authority_vice": eMFD_df_all['authority.vice'].values[0],
+                "seg_MFT_a_sanctity_vice": eMFD_df_all['sanctity.vice'].values[0]
+            }
+
+            # MAC virtue-vice bow all
+            mac_virtue_vice_all = {
+                "seg_MAC_a_fairness_virtue": eMAC_df_all['fairness.virtue'].values[0],
+                "seg_MAC_a_group_virtue": eMAC_df_all['group.virtue'].values[0],
+                "seg_MAC_a_deference_virtue": eMAC_df_all['deference.virtue'].values[0],
+                "seg_MAC_a_heroism_virtue": eMAC_df_all['heroism.virtue'].values[0],
+                "seg_MAC_a_reciprocity_virtue": eMAC_df_all['reciprocity.virtue'].values[0],
+                "seg_MAC_a_family_virtue": eMAC_df_all['family.virtue'].values[0],
+                "seg_MAC_a_property_virtue": eMAC_df_all['property.virtue'].values[0],
+                "seg_MAC_a_fairness_vice": eMAC_df_all['fairness.vice'].values[0],
+                "seg_MAC_a_group_vice": eMAC_df_all['group.vice'].values[0],
+                "seg_MAC_a_deference_vice": eMAC_df_all['deference.vice'].values[0],
+                "seg_MAC_a_heroism_vice": eMAC_df_all['heroism.vice'].values[0],
+                "seg_MAC_a_reciprocity_vice": eMAC_df_all['reciprocity.vice'].values[0],
+                "seg_MAC_a_family_vice": eMAC_df_all['family.vice'].values[0],
+                "seg_MAC_a_property_vice": eMAC_df_all['property.vice'].values[0]
+            }
+            for sentence in (exp2_text.split(". ")):
+                print( "Segment sentence: " + sentence )
+                if  fuzz.ratio(dataFrameForSaving.iloc[index]['sentence'], sentence) > 65:
+                    print(" -- match between segment and sentence")
+                    #print(dataFrameForSaving.iloc[index]['sentence'])
+                    dataFrameForSaving.loc[index, 'segment'] = str(segments)
+                    dataFrameForSaving.loc[index, 'seg_sentence'] = str(sentence)
+                    dataFrameForSaving.loc[index, "seg_MFT_a_care_virtue"] = mft_virtue_vice_all.get("seg_MFT_a_care_virtue")
+                    dataFrameForSaving.loc[index, "seg_MFT_a_fairness_virtue"] = mft_virtue_vice_all.get("seg_MFT_a_fairness_virtue")
+                    dataFrameForSaving.loc[index, "seg_MFT_a_loyalty_virtue"] = mft_virtue_vice_all.get("seg_MFT_a_loyalty_virtue")
+                    dataFrameForSaving.loc[index, "seg_MFT_a_authority_virtue"] = mft_virtue_vice_all.get("seg_MFT_a_authority_virtue")
+                    dataFrameForSaving.loc[index, "seg_MFT_a_sanctity_virtue"] = mft_virtue_vice_all.get("seg_MFT_a_sanctity_virtue")
+                    dataFrameForSaving.loc[index, "seg_MFT_a_care_vice"] = mft_virtue_vice_all.get("seg_MFT_a_care_vice")
+                    dataFrameForSaving.loc[index, "seg_MFT_a_fairness_vice"] = mft_virtue_vice_all.get("seg_MFT_a_fairness_vice")
+                    dataFrameForSaving.loc[index, "seg_MFT_a_loyalty_vice"] = mft_virtue_vice_all.get("seg_MFT_a_loyalty_vice")
+                    dataFrameForSaving.loc[index, "seg_MFT_a_authority_vice"] = mft_virtue_vice_all.get("seg_MFT_a_authority_vice")
+                    dataFrameForSaving.loc[index, "seg_MFT_a_sanctity_vice"] = mft_virtue_vice_all.get("seg_MFT_a_sanctity_vice")
+                    dataFrameForSaving.loc[index, "seg_MAC_a_fairness_virtue"] = mac_virtue_vice_all.get("seg_MAC_a_fairness_virtue")
+                    dataFrameForSaving.loc[index, "seg_MAC_a_group_virtue"] = mac_virtue_vice_all.get("seg_MAC_a_group_virtue")
+                    dataFrameForSaving.loc[index, "seg_MAC_a_deference_virtue"] = mac_virtue_vice_all.get("seg_MAC_a_deference_virtue")
+                    dataFrameForSaving.loc[index, "seg_MAC_a_heroism_virtue"] = mac_virtue_vice_all.get("seg_MAC_a_heroism_virtue")
+                    dataFrameForSaving.loc[index, "seg_MAC_a_reciprocity_virtue"] = mac_virtue_vice_all.get("seg_MAC_a_reciprocity_virtue")
+                    dataFrameForSaving.loc[index, "seg_MAC_a_family_virtue"] = mac_virtue_vice_all.get("seg_MAC_a_family_virtue")
+                    dataFrameForSaving.loc[index, "seg_MAC_a_property_virtue"] = mac_virtue_vice_all.get("seg_MAC_a_property_virtue")
+                    dataFrameForSaving.loc[index, "seg_MAC_a_fairness_vice"] = mac_virtue_vice_all.get("seg_MAC_a_fairness_vice")
+                    dataFrameForSaving.loc[index, "seg_MAC_a_group_vice"] = mac_virtue_vice_all.get("seg_MAC_a_group_vice")
+                    dataFrameForSaving.loc[index, "seg_MAC_a_deference_vice"] = mac_virtue_vice_all.get("seg_MAC_a_deference_vice")
+                    dataFrameForSaving.loc[index, "seg_MAC_a_heroism_vice"] = mac_virtue_vice_all.get("seg_MAC_a_heroism_vice")
+                    dataFrameForSaving.loc[index, "seg_MAC_a_reciprocity_vice"] = mac_virtue_vice_all.get("seg_MAC_a_reciprocity_vice")
+                    dataFrameForSaving.loc[index, "seg_MAC_a_family_vice"] = mac_virtue_vice_all.get("seg_MAC_a_family_vice")
+                    dataFrameForSaving.loc[index, "seg_MAC_a_property_vice"] = mac_virtue_vice_all.get("seg_MAC_a_property_vice")
+
+                    index += 1
+
+    sentenceStart = 0.0
+    sentenceEnd = 0.0
+    # load file with word timestamps for the text being analyzed, if it exists
+    if os.path.exists('./word_timestamps/' + directory_input + '_transcription_per_word_x.csv'):
+        print("Reading in audio transcription with time stamps csv file (./word_timestamps/" + directory_input + "_transcription_per_word_x.csv)...")
+        wordTimestamps_df = pd.read_csv('./word_timestamps/' + directory_input + '_transcription_per_word_x.csv', header=None)
+    else:
         break
+
+    t_index = 1
+    t_sentence = ""
+    t = 0
+    counter = 0
+    dataFrameForSaving[counter, 'start'] = wordTimestamps_df.loc[t_index + t][2]
+    while fuzz.token_sort_ratio(t_sentence, sentence, full_process=True) < 100:
+        print("Initial fuzz: " + str(fuzz.token_sort_ratio(t_sentence, sentence, full_process=True)))
+        t_sentence = t_sentence + " " + wordTimestamps_df.loc[t_index + t][1]
+        if len(wordTimestamps_df) == t_index + t or len(wordTimestamps_df) == t_index + t + 1:
+            print(
+                f"!Match between {bcolors.WARNING}<" + sentence + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(
+                    t) + " transcription words.")
+            dataFrameForSaving[counter, 'end'] = wordTimestamps_df.loc[t_index + t][3]
+            dataFrameForSaving[counter, 't_sentence'] = t_sentence
+            t_sentence = ""
+            t += 1
+            break
+        if fuzz.ratio(t_sentence, sentence) >= fuzz.ratio(
+                t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1][1], sentence) and \
+                fuzz.ratio(t_sentence, sentence) > fuzz.ratio(
+            t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2][1], sentence):
+            print("Lookahead fuzz: " + str(
+                fuzz.ratio(sentence, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1][1])))
+            print(
+                f"Match between {bcolors.WARNING}<" + sentence + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(
+                    t) + " transcription words.")
+            dataFrameForSaving.loc[counter, 'end'] = wordTimestamps_df.loc[t_index + t][3]
+            dataFrameForSaving.loc[counter, 't_sentence'] = t_sentence
+            t_sentence = ""
+            t += 1
+            break
+        else:
+            t += 1
+    counter += 1
     t_index = t_index + t
-    print( t_index )
+    print(t_index)
     t = 0
     t_sentence = ""
 
-        # print(dataFrameForSaving.iloc[index]['sentence'])
-        # dataFrameForSaving.loc[index, 'trans_sentence'] = str()
-        # dataFrameForSaving.loc[index, 'start_sentence'] = str()
-        # dataFrameForSaving.loc[index, 'end_sentence'] = str()
-
-# transcriptionSentences[index][0]
-# transcriptionSentences[index][1]
-# transcriptionSentences[index][2]
-#
 # # Save dataframe with both sentence and segment scores to xlsx
-# #dataFrameForSaving.to_excel('sentence_segment_MFT_MAC.xlsx')
-# dataFrameForSaving.to_excel(directory.split('.')[0] + '_segment_MFT_MAC.xlsx')
+#dataFrameForSaving.to_excel('sentence_segment_MFT_MAC.xlsx')
+dataFrameForSaving.to_excel(directory.split('.')[0] + '_segment_MFT_MAC.xlsx')
