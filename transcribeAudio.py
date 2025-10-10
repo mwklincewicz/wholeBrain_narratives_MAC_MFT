@@ -2,6 +2,12 @@ import whisper
 import whisper_timestamped as wt
 import pandas as pd
 
+#
+#   Use PYTHON 12, ffmpeg needs to be installed, latest everything else
+#
+#   This transcribes audio files in using WHISPER
+#
+
 stories = ['tunnel','21styear','bronx','pieman','piemanpni']
 #stories = ["bronx"]
 

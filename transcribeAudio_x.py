@@ -3,12 +3,18 @@ import gc
 import os
 import pandas as pd
 
-stories = ['tunnel','21styear','bronx','pieman','piemanpni']
+#
+#   Use PYTHON 12, ffmpeg needs to be installed, latest everything else
+#
+#   This transcribes audio files in using WHISPERX, which builds on OpenAI whisper model for speech-to-text
+#
+
+stories = ['tunnel']#,'21styear','bronx','pieman','piemanpni']
 #stories = ['bronx']
 device = "cpu"
-batch_size = 16 # reduce if low on GPU mem
+batch_size = 4 # reduce if low on GPU mem
 compute_type = "int8" # change to "int8" if low on GPU mem (may reduce accuracy)
-model = whisperx.load_model("large-v2", device, compute_type=compute_type)
+model = whisperx.load_model("large-v3", device, compute_type=compute_type)
 transcript_text = ""
 
 for task in stories:

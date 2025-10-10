@@ -10,8 +10,6 @@ import os
 from openpyxl.reader.excel import load_workbook
 from scipy.optimize import direct
 
-#has to be spacy 3.4
-#typing-extensions has to be 4.4
 print("spaCy version:", spacy.__version__)
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from deep_translator import GoogleTranslator
@@ -22,6 +20,17 @@ import pandas as pd
 print("pandas version:", pd.__version__)
 from emfdscore.scoring import score_docs as emfd_score_docs
 from emacscore.scoring import score_docs as emac_score_docs
+
+#
+#   Use Python 3.8, with a batch file that installs
+#   spacy 3.4
+#   typing-extensions has to be 4.4
+#   has to be pandas 1.5.3
+#   also install scikit-learn 1.3
+#   also install openpyxl
+#   emfdscore from git
+#   emacscore best to download zip and install with pip
+
 
 pd.set_option('display.width', 400)
 pd.set_option('display.max_columns', 100)
@@ -384,9 +393,9 @@ transcriptionSentences = []
 transcriptionSentence = ""
 sentenceStart = 0.0
 sentenceEnd = 0.0
-if os.path.exists('./word_timestamps/'+directory_input+'_transcription.csv'):
-   print("Reading in audio transcription with time stamps csv file (./word_timestamps/"+directory_input+"_transcription.csv)...")
-   wordTimestamps_df = pd.read_csv('./word_timestamps/' + directory_input + '_transcription.csv', header=None)
+if os.path.exists('./word_timestamps/'+directory_input+'_transcription_per_word_x.csv'):
+   print("Reading in audio transcription with time stamps csv file (./word_timestamps/"+directory_input+"_transcription_per_word_x.csv)...")
+   wordTimestamps_df = pd.read_csv('./word_timestamps/' + directory_input + '_transcription_per_word_x.csv', header=None)
     #creates a list of tuples
    for word in wordTimestamps_df[1:].itertuples():
        if transcriptionSentence == "": sentenceStart = float(word[3])
@@ -397,7 +406,7 @@ if os.path.exists('./word_timestamps/'+directory_input+'_transcription.csv'):
            transcriptionSentences.append( (sentenceTimestamps)  )
            transcriptionSentence = ""
 else:
-   print(f"The audio transcription{bcolors.WARNING}"+ directory_input+f"{bcolors.END}_transcription.csv file does not exist in /word_timestamps/")
+   print(f"The audio transcription{bcolors.WARNING}"+ directory_input+f"{bcolors.END}_transcription_per_word_x.csv file does not exist in /word_timestamps/")
 
 t_index = 1
 t_sentence = ""

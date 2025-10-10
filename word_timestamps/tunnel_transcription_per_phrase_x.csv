@@ -1,8 +1,9 @@
 text,start,end
-" Tonight, a story by Frederick Pohl, Tunnel Under the World.",0.031,4.697
-"On the morning of June 15, Guy Burkhardt woke up screaming.",4.737,18.456
+" Tonight, a story by Frederick Pohl.",0.031,2.374
+Tunnel Under the World.,3.215,4.697
+"On the morning of June 15th, Guy Burkhardt woke up screaming.",4.737,18.456
 It was more real than any dream he had ever had in his life.,22.382,25.566
-" He could still hear and feel that sharp, metal-ripping explosion, that searing wave of heat.",26.272,33.383
+" He could still hear and feel that sharp metal ripping explosion, that searing wave of heat.",26.272,33.383
 He sat up.,33.403,33.904
 Mary!,34.265,34.465
 Mary!,35.467,35.747
@@ -12,7 +13,7 @@ Where are you?,37.89,38.331
 "Guy, what's wrong?",38.972,40.254
 You're trembling.,40.334,41.276
 Where were you?,41.296,41.717
-"In the kitchen, cooking breakfast.",41.897,43.179
+In the kitchen cooking breakfast.,41.897,43.179
 What is it?,43.199,43.68
 I don't know.,44.681,45.062
 "A dream, I guess.",45.082,45.743
@@ -22,9 +23,10 @@ Yes.,48.768,49.068
 But that's the dream I had.,49.309,51.031
 What?,51.853,52.093
  I dreamed there was a big explosion and then something sort of hit me on the head.,52.495,56.281
-"Holy smokes, maybe there really was some sort of explosion that started us dreaming.",57.302,62.15
-"Well, there'll be an explosion down at your office if you don't hurry and get to work.",63.031,76.832
-" Coming in on the bus, Burkhart watched to see if there was any evidence of an explosion.",78.517,83.644
+"Holy smokes, maybe there really was some sort of explosion at the start of the streaming.",57.302,62.15
+"Well, there'll be an explosion down at your office if you don't hurry and get to work.",63.031,66.376
+THE END,68.559,76.832
+" Coming in on the bus, Burkhardt watched to see if there was any evidence of an explosion.",78.517,83.644
 There wasn't.,84.485,84.925
 "If anything, the town looked better than ever.",85.766,87.669
 The only thing that seemed strange to him was the fact that none of the usual crowd was on the bus.,87.709,94.157
@@ -33,9 +35,8 @@ Excuse me.,101.026,101.507
 Henry!,102.508,102.869
 "Pardon me, sir.",102.909,105.512
 "Henry, what's the matter with you?",105.532,106.434
-"It's me, Guy Burkhart.",106.474,107.595
- Burkhardt?,108.132,108.653
-"Sorry, I don't believe we've met.",109.113,110.194
+"It's me, Guy Burkhardt.",106.474,107.595
+" Burkhardt, sorry, I don't believe we've met.",108.132,110.194
 What?,110.975,111.215
 "Henry, for Pete's sake, it's me.",111.936,113.217
 "If you'll excuse me, this is my stop.",113.337,115.059
@@ -50,24 +51,25 @@ Feckle freezers are better freezers.,148.973,150.936
 Most wives would do anything for a feckle freezer.,151.376,154.52
 "Friends, are you happy with your present home freezer?",154.921,156.963
 "Morning, Miss Horne.",163.852,164.412
-"Good morning, Mr. Bearkite.",164.773,165.854
+"Good morning, Mr. Burkard.",164.773,165.854
 "Well, new hairdo, I see, huh?",166.455,168.177
 " Why, yes.",168.494,169.255
 Do you like it?,169.275,169.836
-Makes a lot of difference in your appearance.,170.597,171.879
-Is Mr. Barth in?,172.901,173.462
+It makes a lot of difference in your appearance.,170.537,171.879
+Mr. Barth in?,172.961,173.462
 "No, sir.",173.983,174.784
-He had an appointment with Mr. Dorchen of the Human Research Institute.,174.804,178.951
+He had an appointment with Mr. Dorchin of the Human Research Institute.,174.804,178.951
 Today?,178.971,179.291
-But today is the 15th of June.,179.371,181.274
+But today's the 15th of June.,179.371,181.274
 He has to sign the quarterly statement.,181.675,182.917
 He said he wouldn't be in.,183.317,184.099
-That's mighty peculiar.,184.139,186.142
+Huh.,185.12,185.2
+That's mighty peculiar.,185.341,186.142
 "Yes, sir.",186.743,188.265
 "Oh, by the way, Miss Horne, what the devil is a feckle freezer?",188.285,192.171
 A feckle freezer?,192.712,193.654
 There's some new copy on the elevator commercial.,194.195,196.358
- Dorch must have landed in another account.,197.08,198.601
+ Dorch must have landed another account.,197.08,198.601
 Feckle freezes.,198.642,199.542
 "I really don't know, Mr. Burkhardt.",200.103,201.805
 It's a funny day.,204.207,204.847
@@ -75,8 +77,9 @@ It's a funny day.,204.207,204.847
 He couldn't shake the thought out of his mind.,215.538,217.84
 It persisted all through the day and through dinner.,218.561,220.663
 He was still brooding as he and Mary got ready for bed.,221.343,225.147
-" Tired, dear?",226.915,229.197
-"Oh, no.",229.217,229.837
+" Tired, dear?",226.915,227.876
+Hmm?,227.896,229.197
+"Oh, uh, no.",229.217,229.837
 Anything wrong?,230.498,231.079
 I don't know.,232.159,232.7
 "Well, I guess I'll get a good night's sleep.",233.901,235.502
@@ -84,8 +87,8 @@ Coming?,235.963,236.263
 I think I'll sit up and read for a while.,237.024,238.245
 "Well, good night, darling.",238.965,240.887
 "Night, dear.",241.227,241.507
-"At exactly midnight, Guy Burkhardt lapsed into a sudden deep sleep.",250.175,256.5
-" And the following morning, he woke up, screaming.",257.189,260.715
+"At exactly midnight, Guy Burkhardt lapsed into a sudden, deep sleep.",250.175,256.5
+" And the following morning, he woke up screaming.",257.189,260.715
 "Darling, what is it?",263.68,264.542
 What's wrong?,264.882,265.323
 "Oh, nothing.",267.346,269.089
@@ -96,42 +99,40 @@ Really?,276.442,276.843
 "Yes, the one I had yesterday.",277.784,278.946
 This was the same.,279.006,280.569
 A big explosion and then nothing.,280.589,282.893
- You had a dream yesterday.,283.295,284.516
-Of course I did.,285.577,286.218
+ You had a dream yesterday?,283.295,284.516
+"Well, of course I did.",285.457,286.218
 You had the same sort of dream.,286.238,287.359
 I?,287.92,288.04
 "Guy, you're mistaken.",289.141,289.982
-I don't remember dreaming.,290.262,291.724
-"Mary, you told me.",291.744,292.625
+I don't remember dreaming.,290.262,291.524
+"Oh, now, Mary, you told me.",291.544,292.625
 "Guy, you're mistaken.",292.805,293.666
-Mary!,293.966,294.667
-Maybe you dreamed I had a dream.,294.687,296.649
-Maybe...,296.909,297.33
-"Yes, I might have done that, I suppose.",297.35,299.292
+"But, Mary, you... Maybe you dreamed I had a dream.",293.706,296.649
+"Maybe... Oh, yes, I might have done that, I suppose.",296.909,299.292
 Everything did seem sort of strange yesterday.,300.733,302.535
-That's probably it.,302.815,303.796
+"Oh, that's probably it.",302.735,303.796
 "You better get dressed, dear.",304.237,305.158
 Today's the 15th.,305.198,305.999
-That's when the quarterly statement... 15th?,306.199,309.583
-Yes.,309.603,309.683
-It must have been a dream because yesterday was the 15th.,309.703,311.985
-" Guy Burkhardt got up, dressed, ate breakfast, and took the usual bus to work.",320.808,328.335
+That's when the quarterly statement... 15th?,306.199,308.161
+Yes.,308.181,309.562
+"Well, it must have been a dream, because yesterday was the 15th.",309.583,311.985
+" Guy Burkhart got up, dressed, ate breakfast, and took the usual bus to work.",320.808,328.335
 "Once again, everything seemed even brighter and newer than usual.",328.355,331.979
 "And once again, he was puzzled when he noticed none of the old crowd on the bus.",332.84,336.984
 "Pardon me, please.",339.727,340.487
 "Look, don't shove so.",341.228,342.309
 "Oh, morning, Henry.",343.33,343.931
 Morning.,344.892,345.152
-"For God's sake, don't talk to me.",345.873,347.254
+"For God's sake, don't talk.",345.873,347.254
  No.,350.643,350.943
 I was sure you remembered.,352.045,353.506
 Remembered what?,353.526,354.147
 I can't talk.,354.327,354.988
 This is my stuff.,356.109,356.79
 "Will you excuse me, please?",356.81,357.851
-Henry!,357.971,358.211
-"Henry, for Pete's sake!",358.732,367.782
-"As in yesterday's dream, Guy Burkhardt got off at his stop and took the elevator to the 98th floor.",369.083,375.77
+Henry.,357.971,358.211
+"Henry, for Pete's sake.",358.732,367.782
+"As in yesterday's dream, Guy Burkhart got off at his stop and took the elevator to the 98th floor.",369.083,375.77
 The speaker in the elevator purred a new commercial this time.,376.471,379.975
  Marlin cigarettes.,381.102,382.944
 They're sanitized.,382.964,384.126
@@ -140,13 +141,13 @@ Does your present cigarette make your throat feel raspy and unpleasant?,384.766,
 Marlin cigarettes.,399.924,401.246
 Marlin cigarettes.,402.227,406.592
 He walked down the marble corridor to his office.,406.612,409.776
-" Good morning, Mr. Vericar.",413.789,415.191
+" Good morning, Mr. Burkhardt.",413.789,415.211
 "Good morning, Miss Horne.",415.711,416.612
 Do you like my new hairdo?,417.593,418.935
-Yes.,421.598,422.018
+"Uh, yes.",421.517,422.018
 Is Mr. Barth in?,422.939,424.06
 "No, sir.",424.781,425.462
-He had an appointment with Mr. Dorchen at the Research Institute.,425.482,429.346
+He had an appointment with Mr. Dorchin at the Research Institute.,425.482,429.346
 I know.,429.546,430.047
 You know?,430.868,431.408
 "Well, I guessed it anyway.",431.468,432.429
@@ -157,29 +158,32 @@ Try one of these.,440.618,441.399
 They're Marlins.,442.04,443.121
  Never heard of Marlins before today.,443.438,445.22
 "What are we, a bunch of guinea pigs?",445.261,446.462
-"Something wrong, Mr. Burkle?",447.223,448.825
+"Something wrong, Mr. Burkard?",447.223,448.825
 Wrong?,448.846,449.346
-"Perish the thought, Miss Horn.",450.408,451.709
+"Perish the thought, Miss Horne.",450.408,451.73
 Perish the thought.,451.85,452.791
 He went to his desk and stared at the mail.,460.642,463.906
 "Before he opened it, he knew that the factory distributor's envelope contained an order for 12 new electronic computers.",463.926,470.796
- He knew that the development journal contained an article about a new method of transprinting selective brain circuits of human engineers onto the electric brain circuits of robot engineers to facilitate the operation of automatic factories.,471.417,485.95
+ He knew that the development journal contained an article about a new method of transplanting selective brain circuits of human engineers onto the electric brain circuits of robot engineers to facilitate the operation of automatic factories.,471.417,485.95
 He knew that there was a complaint from Feinbeck and Sons about the Controchemicals' newest household robot circuit.,486.611,494.558
 "After a long while, he forced himself to open them.",494.578,498.522
  They were exactly as he suspected.,499.43,501.753
 Hello?,505.478,506.7
-"This is Swanson, Henry Swanson.",506.72,509.283
+This is Swanson.,506.72,507.481
+Henry Swanson.,507.761,509.283
 What is it?,509.303,509.664
 Do you remember?,510.384,511.346
 Remember what?,511.366,511.927
 Just remember.,512.107,512.808
-"All right, now listen, Henry, let's stop playing games.",513.809,515.571
+"All right, now listen, Henry.",513.809,514.51
+Let's stop playing games.,514.53,515.571
 "Yesterday, either I was dreaming or you stubbed me on the bus.",516.272,518.956
 "Today, the same thing happens.",519.056,520.137
-"Oh, you do remember, thank heavens.",520.578,522.901
-"I thought so when I saw you, but I couldn't be sure.",522.921,525.344
-"Now, what is it you want?",525.364,526.025
-"Listen, tomorrow morning,",526.686,528.188
+"Oh, you do remember.",520.578,521.339
+Thank heavens.,521.399,522.901
+"I thought so when I saw you, but I couldn't be sure.",522.921,525.324
+"Well, what is it you want?",525.344,526.025
+"Listen, tomorrow morning...",526.686,528.188
  when I get off the bus.,528.488,529.449
 You get off with me.,530.311,531.032
 Be casual.,532.153,533.215
@@ -187,12 +191,12 @@ They may be watching.,533.235,535.057
 Who may be watching?,535.077,535.979
 Swanson!,537.541,539.263
 Hello!,539.283,539.644
-"You buzzed, Mr. Bearcar?",547.134,548.496
+"You buzzed, Mr. Bearcarter?",547.134,548.496
 "Yes, I'm still out of cigarettes.",548.697,550.058
 Would you buy me a pack of Kelvins?,550.399,551.581
 Wouldn't you rather have Marlins?,552.061,553.343
 I smoke Kelvins.,554.525,555.346
-"But, Mr. Bearcar,",555.807,556.808
+"But, Mr. Bearcarter,",555.807,556.808
 " Marlins have that soft, creamy smoke that's so soothing to your throat.",557.092,561.497
 "Oh, you really believe that stuff?",561.517,563.699
 "Well, it's true.",563.86,564.6
@@ -202,23 +206,23 @@ I see.,576.033,576.374
 I know how troubled you've been.,584.903,586.525
 " Well, you've never mentioned your feelings before, Miss Horne.",587.72,591.645
 April.,591.966,592.406
-My first name's April.,594.009,596.993
-"Well, that's a pretty name.",597.013,598.154
+My first name's April.,594.009,597.033
+"Oh, that's a pretty name.",597.053,598.154
 "You see, I do have your welfare at heart.",598.174,600.557
-"That's why, when I see you smoking Kelvins, and I know Marlins are so much better, won't you let me buy some of them for you?",600.938,608.628
-"Well, I suppose so.",611.312,612.954
+"That's why when I see you smoking Kelvins, and I know Marlins are so much better, won't you let me buy some of them for you, huh?",600.938,611.352
+"Well, I suppose so.",611.372,612.954
 Why not?,613.775,614.076
-"Here, bring me a carton.",615.057,616.579
-" Thank you, Mr. Biscott.",617.167,618.648
+"Here, bring me a carton.",615.057,615.858
+Oh.,616.339,616.579
+" Thank you, Mr. Durkheim.",617.167,619.649
 Guy.,619.669,622.192
-"I, uh...",622.212,623.433
-I think you ought to go.,623.453,624.454
+"I, uh, I think you ought to go.",622.212,624.454
 I'll be back.,624.494,625.996
 There was something wrong.,633.543,634.764
 Something definitely peculiar about what was happening.,635.805,638.648
 The call from Henry Swanson.,639.328,640.469
-"The strange behavior of his secretary, Miss Horn.",641.43,643.973
-"These new products, the dream.",644.654,646.195
+"The strange behavior of his secretary, Miss Horne.",641.43,643.993
+"These new products, the dreams.",644.654,646.195
  Guy Burkhart went home that night feeling like a man in a nightmare.,647.491,652.218
 "Is that you, dear?",654.02,654.701
 It's me.,654.741,656.203
@@ -228,7 +232,7 @@ Fair.,657.465,658.367
 The switch in the hall closet blew out.,662.773,664.395
 I shut it off.,664.756,665.337
 Okay.,665.957,666.338
-"Supper will be ready in a minute, so don't start fooling around with that old boathull you've been building.",666.779,670.684
+"Supper will be ready in a minute, so don't start fooling around with that old boat hull you've been building.",666.779,670.684
 I won't.,670.864,671.305
  Mary!,676.499,688.195
 Mary!,688.976,689.237
@@ -238,7 +242,7 @@ Hurry up.,692.02,692.341
 What is it?,695.285,695.665
 I don't know.,696.266,696.547
 I'm not sure.,696.567,697.147
-"I was looking for a fuse, and I thought maybe I'd dropped one under the boathouse, so I scratched around.",697.167,702.154
+"I was looking for a fuse, and I thought maybe I'd drop one under the boathouse, so I scratched around.",697.167,702.154
 Look.,702.975,703.176
 Let me put the flashlight on it.,703.897,704.818
  Well?,706.148,706.509
@@ -258,7 +262,7 @@ Metal.,729.525,730.386
 "Mary, I know this sounds crazy, but somebody, for reasons I can't even begin to guess, has taken this house and replaced it with a clever imitation.",734.518,740.487
 Guy!,740.647,741.388
 "Mary, I'm going to look around a little more.",741.408,742.67
-"Well, your dinner will be ready in... All right, save it for me.",742.81,744.633
+"Well, your dinner will be ready in a... All right, save it for me.",742.81,744.633
 There are a couple of things I've got to figure out.,745.514,747.157
 "The following morning, Guy Burkhardt woke up screaming.",755.148,759.595
  He dragged himself into the kitchen where his wife Mary was preparing breakfast and discovered it was still June 15th.,760.351,767.421
@@ -272,8 +276,8 @@ Today's the day Mr. Barth fills out the quarterly tax return.,779.858,782.521
 "Oh, no, it isn't.",782.882,783.543
 Why?,783.883,784.164
 He won't be there.,784.204,785.245
- He'll be at a meeting with that crackpot Dorchen at the Human Research Institute.,785.748,788.991
-Mr. Dorchen?,789.051,789.732
+ He'll be at a meeting with that crackpot Dorchin at the Human Research Institute.,785.748,788.991
+Mr. Dorchin?,789.051,789.732
 He'll be there.,789.792,790.353
 "And Miss Horne will have a new hairdo, and the elevator will be selling some new product, and Swanson... What about Swanson?",790.413,797.98
 "Swanson, he said...",798.0,798.721
@@ -284,10 +288,10 @@ Where's my coat?,807.37,807.87
 You haven't had any breakfast yet.,807.89,808.831
 I don't want to miss my bus.,808.871,809.772
 I'll see you tonight.,809.832,810.793
- Guy Burkhardt got on his bus.,813.625,815.769
+ Guy Burkhart got on his bus.,813.625,815.769
 "There were the same unfamiliar faces, the same unusually new-looking buildings, the same unusually bright sunshine.",816.329,823.061
 "And on the customary corner, Henry Swanson, pale and furtive, climbed aboard.",823.762,829.131
-"Uh, excuse me, sir.",832.957,833.858
+"Excuse me, sir.",833.217,833.858
 It's quite all right.,834.439,834.98
 Do you remember the phone call?,835.842,837.304
  Yes.,837.419,837.8
@@ -297,9 +301,10 @@ Where are you going?,841.124,841.745
 There's an excavation for a building about a block down.,842.266,844.569
 Make sure you aren't followed.,845.591,846.712
 I'll go first.,847.233,847.774
-Burkhardt.,850.398,859.551
+Burkhart.,850.398,859.531
 "Here, behind the fence.",860.853,861.854
-"All right now, Henry, what's this all about?",863.937,865.64
+"All right, now.",863.937,864.498
+"Henry, what's this all about?",864.578,865.64
 I'm not sure.,865.9,867.122
  First I thought perhaps they were Russians.,867.878,869.341
 Now I'm beginning to think they're Martians.,870.283,871.846
@@ -307,7 +312,7 @@ No humans could have accomplished what they've accomplished.,872.748,874.912
 "Now, wait a minute.",874.932,875.854
 "Start from the beginning, Henry.",875.874,877.036
 What's going on?,877.056,877.797
-"Look, Burkhardt, peculiar things have been happening to you, right?",878.278,881.685
+"Look, Burkhart, peculiar things have been happening to you, right?",878.278,881.685
  Yes?,882.577,882.917
 A lot of your friends are missing.,883.618,884.92
 Your house seems changed.,884.94,886.221
@@ -325,20 +330,22 @@ I think it's some sort of mass hypnosis or something.,904.882,907.625
 "Well, why doesn't it work for us?",907.645,909.327
 " My wife, Mary, doesn't remember a thing.",909.492,910.953
 "Somehow, when it happened, they missed us.",911.474,913.495
-"We were protected from the full force of the rays, or whatever they used.",914.396,918.219
-"Burkhardt, where were you on the night of the 14th, about midnight?",919.981,923.023
-"Let me see, that was Sunday night.",924.084,925.165
+We were protected from the full force of the rays or whatever they used.,914.396,918.219
+"Burkhart, where were you on the night of the 14th about midnight?",919.981,923.023
+Let me see.,924.084,924.385
+That was Sunday night.,924.405,925.165
 Yes.,925.185,925.405
-"Yeah, I was down in the cellar, under the Bodahn building.",926.807,929.289
-"I was in my darkroom, developing some pictures.",930.089,932.171
+"Yeah, I was down in the cellar under the boat I'm building.",926.807,929.289
+I was in my darkroom developing some pictures.,930.089,932.171
 This just doesn't make any sense to me.,933.512,935.174
-"Russians, Martians, what makes you think that?",935.334,937.496
+"Russians, Martians.",935.334,936.595
+What makes you think that?,936.675,937.496
 I've seen them.,938.536,939.297
  Where?,940.323,940.624
 At the end of the tunnel.,941.205,942.046
 What tunnel?,942.346,942.907
-The one they built under Tyler Town.,943.008,944.751
-A tunnel under Tyler Town?,945.732,947.035
+The one they built under Tylertown.,943.008,944.751
+A tunnel under Tylertown?,945.732,947.035
 "Yes, that's right.",947.115,947.816
 It's made out of copper or some alloy.,948.517,950.521
 Copper?,951.362,951.643
@@ -352,14 +359,15 @@ It's at the bottom of this excavation.,960.097,961.74
 "Henry, why don't we tell the police?",964.341,965.444
 Because we can't trust them.,965.585,966.989
 Even the police may be Martians in disguise.,967.551,969.558
-"Oh, come on now, you're being melodramatic.",969.578,970.862
+"Oh, come on.",969.578,969.919
+Are you being melodramatic?,969.959,970.862
 "Oh, am I?",970.882,971.283
 "Well, you just come with me.",972.026,972.889
 Where?,973.049,973.33
 Into the tunnel.,973.691,974.313
 I'll show you.,974.514,975.156
- Henry Swanson led Guy Burkhardt to a small hole on the side of the excavation.,981.042,985.81
-There he removed a cut out piece of metallic substance and they crawled into a dimly lighted tunnel.,985.87,990.999
+ Henry Swanson led Guy Burkhart to a small hole on the side of the excavation.,981.042,985.81
+There he removed a cut-out piece of metallic substance and they crawled into a dimly lighted tunnel.,985.87,990.999
 They walked for what seemed like two miles until Swanson held his finger to his lips.,991.039,996.087
 We've got to be quiet now.,998.291,999.313
 "Henry, this is fantastic.",1000.034,1002.077
@@ -368,16 +376,16 @@ They've got a tunnel right under the whole town.,1002.097,1004.061
  There's a room a little farther down.,1006.675,1008.177
 We'll be able to look through a glass in the door.,1008.738,1010.64
 Is it safe?,1011.101,1011.581
-"It's perfectly safe, unless one of them comes along.",1012.663,1016.347
-"Now, come on.",1016.367,1016.828
+"It's perfectly safe, unless one of them comes along.",1012.663,1016.507
+Come on.,1016.527,1016.828
 Okay.,1017.028,1017.308
 Here.,1021.874,1022.094
 "Now, Burkhardt, look through this glass.",1024.277,1025.919
 "Now, just so I know I'm not completely insane, tell me what you see.",1027.581,1031.446
 Good Lord.,1033.389,1033.969
-"Well,",1034.55,1035.231
- Tremendous panel with dozens of telescreens.,1036.021,1038.966
-"And in front of each, a servo robot.",1040.147,1041.97
+Well...,1034.55,1035.231
+ A tremendous panel with dozens of telescreens.,1036.021,1038.966
+And in front of each a servo robot.,1040.147,1041.97
 They seem to be computing something.,1043.693,1044.875
 "Yes, I've watched.",1045.516,1046.137
 They're evaluating data from the screens.,1046.157,1050.504
@@ -398,10 +406,10 @@ But don't interfere with the robots.,1084.229,1085.59
 Don't worry.,1085.75,1086.151
 "Here, let's look at this screen.",1087.652,1088.553
 Listen to this.,1090.915,1091.796
-" Tests in the 47K12 group of Marlon cigarettes pulled 80% using the soft, feminine approach.",1093.092,1099.719
+ Tests in the 47K12 group of Marlin cigarettes pulled 80% using the soft feminine approach.,1093.092,1099.719
 Indications are that an extension of this approach would influence at least 70% nationwide.,1100.34,1105.465
 The direct elevator pitch pulled only 10%.,1106.526,1108.348
-This should be abandoned and a new series of high-persuasion personal elements introduced.,1108.548,1114.995
+This should be abandoned and a new series of high persuasion personal elements introduced.,1108.548,1114.995
 "Henry, do you know what this means?",1115.015,1115.956
 I haven't the faintest idea.,1116.997,1118.138
  I don't blame you.,1118.438,1119.121
@@ -415,11 +423,12 @@ Humans who are interested in developing the perfect propaganda machine.,1128.959
 What?,1132.244,1132.505
 "I don't know who they are or how they've done it, but somehow they've taken Tyler Town over.",1132.905,1137.973
 Hypnosis?,1138.874,1139.495
-"Hypnosis, drugs, maybe some kind of a ray or something.",1139.595,1141.999
+"Hypnosis, drugs, maybe some kind of array or something.",1139.595,1141.999
 "However they do it, what happens is that they let us live through a single day.",1142.019,1145.424
 "During that day, they pour all kinds of suggestions and propaganda into us.",1146.125,1149.229
-"At the end of the day, they evaluate the results, see how we've reacted, and at midnight,",1150.03,1155.178
-" They wash the day out of our minds, and the next morning, we start the same day over again with different stimuli.",1155.479,1159.644
+"At the end of the day, they evaluate the results, see how we've reacted.",1150.03,1153.696
+"And at midnight,",1154.297,1155.178
+" They wash the day out of our minds, and the next morning we start the same day over again with different stimuli.",1155.479,1159.644
 "Do you know what that means, Henry?",1159.664,1160.706
 Suppose one man learned how to influence people 100%.,1161.987,1164.31
 "Why, in a year, he could sell us anything from freezers to political candidates.",1164.33,1169.537
@@ -427,8 +436,8 @@ Wait a minute.,1169.557,1170.118
 "We're guinea pigs, Henry.",1170.238,1171.239
 This whole community is one big test tube for Dorchen's propaganda research.,1172.161,1175.825
 "Burkhardt, what do we do?",1176.386,1177.307
-"I don't know, but somehow we've got to get out of this town and get to the FBI.",1177.588,1179.911
-Do you think we can?,1179.951,1180.612
+"I don't know, but somehow we've got to get out of this town and get to the FBI.",1177.588,1179.831
+How do you think we can?,1179.851,1180.612
 It's worth a try.,1180.712,1181.373
 Come on.,1181.433,1181.773
  Wait.,1182.547,1182.787
@@ -436,16 +445,15 @@ What is it?,1183.268,1183.568
 Look through the door.,1184.709,1185.33
 There's somebody coming down the tunnel.,1186.351,1187.452
 We've got to hide.,1187.812,1188.313
-Behind the circuit box.,1188.853,1189.694
-Shh.,1189.714,1189.854
+Behind the circuit box.,1188.853,1189.854
 "Good Lord, it's Dorjan, the head of the Research Institute.",1193.398,1196.02
-"Shh, quiet.",1196.501,1204.068
+Quiet.,1196.601,1204.068
 "All right, Burkhardt, come out.",1204.088,1205.95
 We know you're in this room.,1207.852,1209.313
  Miss Horne has informed us that you remember.,1211.133,1213.496
 I must warn you that it's useless to buck us.,1215.86,1218.483
 Come out peacefully.,1219.385,1220.466
-"Let our maintenance crew adjust you properly, so you don't remember from one experiment to the next.",1221.187,1226.675
+Let our maintenance crew adjust you properly so you don't remember from one experiment to the next.,1221.187,1226.675
 It will be quite painless.,1227.576,1228.617
 "If you don't come out peacefully, we'll have to get you.",1230.921,1233.685
 "Henry, take this wrench.",1233.725,1235.807
@@ -455,9 +463,8 @@ We've got nothing to lose.,1238.752,1239.773
  Very well.,1241.103,1241.744
 I'm coming after you.,1242.965,1244.087
 No!,1246.57,1246.75
-Burkhardt!,1251.857,1252.658
-I've killed him!,1252.678,1253.238
-"No, wait.",1253.258,1254.14
+"Burkhart, I've killed him.",1251.857,1253.318
+Wait.,1253.339,1254.14
 Get his coat unbuttoned.,1254.16,1254.921
 Maybe his heart is still beating.,1255.501,1256.503
 Henry!,1259.406,1259.687
@@ -467,30 +474,29 @@ Look underneath his coat.,1261.449,1262.29
 Heaven help us.,1264.352,1265.153
 It's a robot.,1265.494,1266.876
 A humanoid robot.,1266.896,1267.937
- Designed to look like Dorchen.,1268.373,1269.675
+ Designed to look like Dorchin.,1268.373,1269.675
 "Come on, let's get out of here.",1269.695,1270.676
 Wait.,1270.797,1271.337
 What's that?,1271.758,1272.038
 It's a loudspeaker.,1272.439,1273.02
 "I told you it was useless, gentlemen.",1273.4,1275.363
 Who are you?,1276.505,1276.926
-"Mr. Dorchen, naturally.",1277.386,1278.949
-The real Mr. Dorchen.,1278.989,1282.254
+"Mr. Dorchin, naturally.",1277.386,1278.949
+The real Mr. Dorchin.,1278.989,1282.254
 What are you trying to do to us?,1282.274,1283.295
 "Merely trying to prevent you from damaging my experiment, gentlemen.",1283.836,1287.802
-"You can't get away with this, Dorchen.",1287.822,1289.865
+"You can't get away with this, Dorchin.",1287.822,1289.865
 "Sooner or later, somebody, the FBI or somebody, is going to get wind of this madness.",1289.885,1293.23
 "Really, Burkhardt, you're quite naive.",1293.33,1296.034
- Now why not be reasonable and let the maintenance crews adjust you?,1296.959,1300.324
-And if I refuse?,1300.885,1301.646
-I suppose you'll kill me.,1301.666,1303.348
+" Now, why not be reasonable and let the maintenance crews adjust you?",1296.959,1300.324
+"And if I refuse, I suppose you'll kill me.",1300.885,1303.348
 That would be quite impossible.,1303.929,1305.532
 Oh?,1306.573,1307.534
 "You see, Burkhardt, you're already dead.",1307.555,1310.319
 Dead?,1312.101,1312.362
 You're shocked.,1313.183,1313.884
 It's quite true.,1314.785,1315.506
-You and everyone else in this town were killed by a premature atomic blast at the Contro Chemical Plant.,1316.628,1322.897
+You and everyone else in this town were killed by a premature atomic blast at the Contro chemical plant.,1316.628,1322.897
 The blast occurred at 7 a.m. on June 15th.,1323.778,1326.342
  That is the last thing imprinted on your minds.,1327.064,1329.306
 That is why you wake up screaming each morning.,1330.047,1331.929
@@ -502,23 +508,26 @@ Do you think I believe a fantastic tale like that?,1345.364,1347.426
 I imagine you find it incredible.,1347.886,1349.588
 "Of course, we didn't rebuild everything exactly.",1350.409,1352.631
 "After all, it only has to last for a single day, June 15th.",1353.392,1356.936
- At midnight we turn off the power and wash out the memory of the day.,1357.726,1360.804
+" At midnight, we turn off the power and wash out the memory of the day.",1357.726,1360.804
 "You and your friend Swanson, unfortunately...",1360.824,1364.344
-" have defective circuits, you remember.",1364.611,1366.975
-"Burkhardt, it's no use.",1367.355,1368.237
+ Have defective circuits.,1364.611,1365.953
+You remember.,1366.073,1366.975
+"Burkhart, it's no use.",1367.355,1368.237
 We're trapped.,1368.257,1368.737
 Give up.,1368.818,1369.218
 "No, not me.",1369.238,1369.719
 What can we do?,1370.12,1370.741
 We can make a run for it down the tunnel.,1370.781,1372.023
 Come on.,1372.043,1372.323
-"It's useless, Burkhardt.",1372.684,1374.366
+"It's useless, Burkhart.",1372.684,1374.366
 Keep going.,1374.406,1374.827
-"It's useless, useless, useless.",1375.107,1388.188
+It's useless.,1375.107,1376.65
+Useless.,1376.67,1377.211
+Useless.,1377.611,1388.188
 " Now, now, this door is open.",1392.995,1394.997
-It opens!,1396.659,1397.4
-"Oh, no!",1397.42,1401.444
-"No, I don't believe it!",1402.605,1403.366
+It opens.,1396.659,1397.4
+"Oh, no.",1397.42,1401.444
+"No, I don't believe it.",1402.605,1403.366
 "Swanson, look!",1404.688,1411.715
 "They were standing on a ledge of smooth, finished metal.",1411.735,1414.939
 "At their feet, the ledge dropped away into a chasm so deep they could not see the bottom.",1415.74,1421.466
@@ -526,18 +535,19 @@ It opens!,1396.659,1397.4
 "And yet, just at the limit of their vision, something towered.",1428.417,1435.168
 Something so huge it was almost inconceivable.,1435.188,1438.393
 Something.,1439.655,1440.096
-Burkhard?,1440.937,1443.161
+Worker?,1440.937,1443.161
 Yes?,1443.181,1443.601
-This is Dorchen.,1443.621,1445.204
+This is Dorchin.,1443.621,1445.204
 Now do you understand why it's useless?,1446.346,1448.449
  The great looming figure moved closer.,1450.117,1452.681
 "It seemed to take shape now, and yet it was so gigantic as to be unbelievable.",1452.721,1459.31
 It came closer.,1460.132,1460.893
 The glare was partially blocked.,1461.834,1463.496
-And then Guy Burkhardt knew that the towering shape was none other than Dorchen himself.,1464.378,1471.468
+"And then, Guy Burkhardt knew that the towering shape was none other than Dorchin himself.",1464.378,1471.468
 "You see how I did it, Burkhardt?",1472.51,1475.494
 I took your brain circuits and had them reduced.,1475.514,1478.959
  so they could be transferred to tiny humanoid mannequins.,1479.597,1484.087
-"That's what you are, Burkhardt, a tiny miniature of yourself.",1484.107,1488.115
+"That's what you are, Burkhart.",1484.107,1485.269
+A tiny miniature of yourself.,1485.89,1488.115
 "And this city, this whole experiment I'm conducting, is built on a tabletop.",1488.997,1495.21
-" It was the morning of June 15, and Guy Burkhardt woke up out of a dream, screaming.",1509.5,1520.488
+" It was the morning of June 15th, and Guy Burkhardt woke up out of a dream, screaming.",1509.5,1520.488
