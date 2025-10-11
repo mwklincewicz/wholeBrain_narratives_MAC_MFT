@@ -53,71 +53,27 @@ sentimentAnalysisVader = SentimentIntensityAnalyzer()
 
 spacy.load('en_core_web_sm')
 
-print("---------------------------------------")
-print("WILL YOU BE CREATING SEGMENTS FROM AN EXCEL FILE?  y/n ")
-excelToProcess = str(input())
-if excelToProcess == 'y':
-    print("---------------------------------------")
-    print("DIRECTORY WHERE EXCEL IS (root: /excel, press Enter):  ")
-    directory_excel = str(input())
-    if directory_excel == '':
-        directory_excel = 'excel'
-    else:
-        directory_excel = 'excel/' + directory_excel
-    print("---------------------------------------")
-    print("COLUMN NAME WHERE SEGMENTS ARE:  ")
-    column = str(input())
-    for filenameExcel in os.listdir("./" + directory_excel):
-        if filenameExcel.endswith('.xlsx'):
-            df = pd.read_excel('./'+directory_excel+'/'+filenameExcel)
-            df.dropna(subset=[column], inplace=True)
-            #df = pd.read_excel(str(filenameExcel))
-            segments = df[column].tolist()
-            # print( segments )
+# print("---------------------------------------")
+# print("DIRECTORY NAME FOR TEXT TO PROCESS (root: /text_to_be_segmented, press Enter):  ")
+# directory_input = str(input())
+# if directory_input == '':
+#     directory_text = 'text_to_be_segmented'
+# else:
+#     directory_text = 'text_to_be_segmented/' + directory_input
+# print("---------------------------------------")
+# print("DIRECTORY NAME FOR SEGMENTS TO PROCESS (root: /segments, press Enter):  ")
+# directory = str(input())
+# if directory == '':
+#     directory = 'segments'
+# else:
+#     subDirectory = directory
+#     directory = 'segments/' + directory
 
-print("---------------------------------------")
-print("DIRECTORY NAME FOR TEXT TO PROCESS (root: /text_to_be_segmented, press Enter):  ")
-directory_input = str(input())
-if directory_input == '':
-    directory_text = 'text_to_be_segmented'
-else:
-    directory_text = 'text_to_be_segmented/' + directory_input
-print("---------------------------------------")
-print("DIRECTORY NAME FOR SEGMENTS TO PROCESS (root: /segments, press Enter):  ")
-directory = str(input())
-if directory == '':
-    directory = 'segments'
-else:
-    subDirectory = directory
-    directory = 'segments/' + directory
-    index = 0
-    if excelToProcess == 'y':
-        for segment in segments:
-            index += 1
-            f2 = open(os.path.join(directory+'/'+filenameExcel.split('.')[0]+'_'+subDirectory+str(index)+'.txt'), 'w', encoding='utf-8')
-            f2.write(str(segment))
-            f2.close()
-print("---------------------------------------")
-print("MAC or MFT FOUNDATION TO RANK WITH OR 'ALL' FOR MFT/MAC SCORES FOR HIGHEST FOUNDATION PER UNIT (e.g., mac_reciprocity_vice):  ")
-print("MFT: mft_harm_(care/vice), mft_fairness_(care/vice), mft_loyalty_(care/vice), mft_authority_(care/vice), mft_sanctity_(care/vice)", )
-print("MAC: mac_fairness_(care/vice), mac_group_(care/vice), mac_deference_(care/vice), mac_heroism_(care/vice), mac_reciprocity_(care/vice), mac_family_(care/vice), mac_property_(care/vice)")
-foundation = str(input())
-print("---------------------------------------")
-print("PRECISION (for default: 4, press Enter):  ")
-decimal = str(input())
-if decimal == '':
-    decimal = 4
-decimal = int(decimal)
-print("---------------------------------------")
-print("OUTPUT STYLE: 1 - console; 2 -  filename_PRECISION.txt (default 2, press Enter):")
-outputStyle = str(input())
-if outputStyle == '':
-    outputStyle = 2
-outputStyle = int(outputStyle)
-originalSysOutput = sys.stdout
 
-# Turn file into individual sentences and score them with MAC and MFT; whatever dictionary you put into 'merge' will be in .xslx
-exp2_text = ""
+index = 0
+directory_input="bronx"
+directory_text="bronx"
+directory="bronx"
 
 for filename in os.listdir("./"+directory_text):
     if filename.endswith('.txt'):
@@ -127,26 +83,16 @@ for filename in os.listdir("./"+directory_text):
             f2.write(lines)
             f2.close()
         file = open(os.path.join('my_temp_file'), 'r', encoding='utf-8', errors='ignore')
-        exp2_text = file.read()
-        sys.stdout = originalSysOutput
-        #print( exp2_text )
-        if outputStyle == 1:
-            print("NO OUTPUT FILES!")
-        elif outputStyle == 2:
-            if not os.path.exists('./_processed/'+directory_text+"/sentences"):
-                os.makedirs('./_processed/'+directory_text+"/sentences")
-            if not os.path.exists('./_processed/' + directory_text + "/segments"):
-                os.makedirs('./_processed/' + directory_text + "/segments")
 
-        sentences = exp2_text.split('. ')
+        exp2_text = file.read()
+        sentences = exp2_text.split('. ') # do this so you can keep track of the original length of text for later
 
         index = 0
         for sentence in sentences:
             #sys.stdout = open('./sentences/' + filename.split('.')[0] + "_" + str(index) + '_' + str(decimal) + "_" + foundation + '.txt', "w")
             #sys.stdout = open('./_processed/'+directory_text+'/sentences/'+ "scored"+filename.split('.')[0] + "_" + str(index) + '_' + str(decimal) + "_" + foundation + '.txt', "w")
-            exp2_text = sentence
             #print( exp2_text )
-            sentiment_dict = sentimentAnalysisVader.polarity_scores(exp2_text)
+            sentiment_dict = sentimentAnalysisVader.polarity_scores(sentence)
 
             neg = sentiment_dict['neg'] * 100
             pos = sentiment_dict['pos'] * 100
@@ -154,7 +100,7 @@ for filename in os.listdir("./"+directory_text):
             com = sentiment_dict['compound'] * 100
 
             # Parse with MFT dictionary and MAC dictionary
-            tempDf = pd.DataFrame([exp2_text])
+            tempDf = pd.DataFrame([sentence])
             #tempDf.to_csv('emfdTemp.csv', index=False, header=False)
             #tempDf = pd.read_csv('emfdTemp.csv', header=None)
             length = len(tempDf)
@@ -390,42 +336,42 @@ sentenceEnd = 0.0
 if os.path.exists('./word_timestamps/' + directory_input + '_transcription_per_word_x.csv'):
     print("Reading in audio transcription with time stamps csv file (./word_timestamps/" + directory_input + "_transcription_per_word_x.csv)...")
     wordTimestamps_df = pd.read_csv('./word_timestamps/' + directory_input + '_transcription_per_word_x.csv', header=None)
-
+else:
+    print(f"{bcolors.FAIL}Per word timestamps in{bcolors.END} ./word_timestamps/" + directory_input + f"_transcription_per_word_x.csv {bcolors.FAIL}FAILED TO LOAD!{bcolors.END}")
 t_index = 1
 t_sentence = ""
 t = 0
 counter = 0
-for sentence in (exp2_text.split(". ")):
-    dataFrameForSaving[counter, 'start'] = wordTimestamps_df.loc[t_index + t][2]
-    while fuzz.token_sort_ratio(t_sentence, sentence, full_process=True) < 100:
-        print("Initial fuzz: " + str(fuzz.token_sort_ratio(t_sentence, sentence, full_process=True)))
-        t_sentence = t_sentence + " " + wordTimestamps_df.loc[t_index + t][1]
+for s in dataFrameForSaving['sentence'].values:
+    print(s)
+    while fuzz.partial_ratio(t_sentence, s) < 100:
+        print("Initial fuzz: " + str(fuzz.token_sort_ratio(t_sentence, s, full_process=True)))
+        t_sentence = t_sentence + " " + wordTimestamps_df.loc[t_index + t, 1]
+        print(t_sentence)
         if len(wordTimestamps_df) == t_index + t or len(wordTimestamps_df) == t_index + t + 1:
-            print(f"!Match between {bcolors.WARNING}<" + sentence + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
-            dataFrameForSaving[counter, 'end'] = wordTimestamps_df.loc[t_index + t][3]
-            dataFrameForSaving[counter, 't_sentence'] = t_sentence
+            print(f"!Match between {bcolors.WARNING}<" + s + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
+            dataFrameForSaving.loc[counter, 'start'] = wordTimestamps_df.loc[t_index][2]
+            dataFrameForSaving.loc[counter, 'end'] = wordTimestamps_df.loc[t_index + t][3]
             t_sentence = ""
             t += 1
             break
-        if fuzz.ratio(t_sentence, sentence) >= fuzz.ratio(
-                t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1][1], sentence) and \
-                fuzz.ratio(t_sentence, sentence) > fuzz.ratio(
-            t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2][1], sentence):
-            print("Lookahead fuzz: " + str(fuzz.ratio(sentence, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1][1])))
-            print(f"Match between {bcolors.WARNING}<" + sentence + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
+        if fuzz.ratio(t_sentence, s) >= fuzz.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1, 1], s) and fuzz.ratio(t_sentence, s) >= fuzz.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2, 1], s):
+            print("Lookahead fuzz 1: " + str(fuzz.ratio(s, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1, 1])))
+            print("Lookahead fuzz 2: " + str(fuzz.ratio(s, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2, 1])))
+            print(f"Match between {bcolors.WARNING}<" + s + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
+            dataFrameForSaving.loc[counter, 'start'] = wordTimestamps_df.loc[t_index][2]
             dataFrameForSaving.loc[counter, 'end'] = wordTimestamps_df.loc[t_index + t][3]
-            dataFrameForSaving.loc[counter, 't_sentence'] = t_sentence
             t_sentence = ""
             t += 1
             break
         else:
             t += 1
-    counter += 1
     t_index = t_index + t
     print(t_index)
+    counter += 1
     t = 0
     t_sentence = ""
 
 # # Save dataframe with both sentence and segment scores to xlsx
 #dataFrameForSaving.to_excel('sentence_segment_MFT_MAC.xlsx')
-dataFrameForSaving.to_excel(directory.split('.')[0] + '_segment_MFT_MAC.xlsx')
+dataFrameForSaving.to_excel("./foundationScores/" + directory_input + '_MFT_MAC.xlsx')
