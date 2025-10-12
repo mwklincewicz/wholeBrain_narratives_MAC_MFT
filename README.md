@@ -1,8 +1,8 @@
 # MORALITY IN THE BRAIN - NARRATIVES
 
-### I.      Find neural correlates of foundation scores through whole-brain analysis MAC family foundation peaks
+### I.      Find neural correlates of foundation scores through whole-brain analysis
 
-### II.     Peaks for other foundations from narratives < .1 in any
+### II.     Peaks for other foundations from narratives < .1 in any; highest segments; etc.
 
 ### III.    Do per segment and per sentence analysis for all foundations for each story, showing whole brain activations
 
