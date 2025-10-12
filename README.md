@@ -1,8 +1,8 @@
 THE BIG IDEA
 
-1) Find neural correlates of foundation scores through whole-brain analysis MAC family foundation peaks
-2) Peaks for other foundations from narratives < .1 in any
-3) Do per segment and per sentence analysis for all foundations for each story, showing whole brain activations
+I.      Find neural correlates of foundation scores through whole-brain analysis MAC family foundation peaks
+II.     Peaks for other foundations from narratives < .1 in any
+III.    Do per segment and per sentence analysis for all foundations for each story, showing whole brain activations
 
 The pipeline for analysis is the following:
 
@@ -19,12 +19,12 @@ The pipeline for analysis is the following:
 
 Some notable ways to break things:
 
-1) MAC and MFT scoring in (5) above uses libraries that have dependencies on outdated versions of spacy, typing extensions, etc., so downgrade to Python 3.8 and follow instructions from comments in getMAC_MFT_for_segments.py to complete step (5) ONLY
-2) (4) depends on ffmpeg.  Follow online instructions to install it or you will get a mysterious File missing error
-3) Other types of analysis, Jupyter Notebooks, etc., all have their own directories, so pay attention when executing anything that you are in the right directory
-4) .\results, .\testData, are not used, but can be for debugging and not breaking things, so use them!
-5) .\data\audio, .\data\allDataAliases have datafiles from Princeton (Ken Norman Lab), which are both large, and not yours. They are in .gitignore, so they don't get pushed with commits
-6) my_temp_file and emfdTemp.csv are recreated every time you do (5) and they are there to easily and slowly handle character encoding issues; they sometimes tick around and this is a pain right now and slows things down, so it needs a better method.
-7) .\text\Narratives_participants.csv holds information about the order in which participants heard social and physical shapes stories
-8) emacscore-master.zip needs to be used to install MAC dictionary scoring for (5), keep it in the directory and use pip
-9) drive G: on WHITE_LADY, which syncs with Google Drive, sometimes does not have a check for directories; manually make them.  
+a) MAC and MFT scoring in (5) above uses libraries that have dependencies on outdated versions of spacy, typing extensions, etc., so downgrade to Python 3.8 and follow instructions from comments in getMAC_MFT_for_segments.py to complete step (5) ONLY
+b) (4) depends on ffmpeg.  Follow online instructions to install it or you will get a mysterious File missing error
+c) Other types of analysis, Jupyter Notebooks, etc., all have their own directories, so pay attention when executing anything that you are in the right directory
+d) .\results, .\testData, are not used, but can be for debugging and not breaking things, so use them!
+e) .\data\audio, .\data\allDataAliases have datafiles from Princeton (Ken Norman Lab), which are both large, and not yours. They are in .gitignore, so they don't get pushed with commits
+f) my_temp_file and emfdTemp.csv are recreated every time you do (5) and they are there to easily and slowly handle character encoding issues; they sometimes tick around and this is a pain right now and slows things down, so it needs a better method.
+g) .\text\Narratives_participants.csv holds information about the order in which participants heard social and physical shapes stories
+h) emacscore-master.zip needs to be used to install MAC dictionary scoring for (5), keep it in the directory and use pip
+i) drive G: on WHITE_LADY, which syncs with Google Drive, sometimes does not have a check for directories; manually make them.  
