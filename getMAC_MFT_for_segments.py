@@ -39,7 +39,7 @@ pd.set_option('display.max_rows', 400)
 
 my_translator = GoogleTranslator(source='auto', target='en')
 sentimentAnalysisVader = SentimentIntensityAnalyzer()
-spacy.load('en_core_web_sm')
+spacy.load('en_core_web_sm') #may work better with a bigger model
 
 #
 #   Main loop over narrative files for processing
@@ -66,11 +66,8 @@ for story in stories:
 
             index = 0
             for sentence in sentences:
-                #sys.stdout = open('./sentences/' + filename.split('.')[0] + "_" + str(index) + '_' + str(decimal) + "_" + foundation + '.txt', "w")
-                #sys.stdout = open('./_processed/'+directory_text+'/sentences/'+ "scored"+filename.split('.')[0] + "_" + str(index) + '_' + str(decimal) + "_" + foundation + '.txt', "w")
-                #print( exp2_text )
                 sentiment_dict = sentimentAnalysisVader.polarity_scores(sentence)
-
+                print(f"{bcolors.OKCYAN}Sentiment for {bcolors.END}" + sentence)
                 neg = sentiment_dict['neg'] * 100
                 pos = sentiment_dict['pos'] * 100
                 neu = sentiment_dict['neu'] * 100
@@ -81,7 +78,7 @@ for story in stories:
                 #tempDf.to_csv('emfdTemp.csv', index=False, header=False)
                 #tempDf = pd.read_csv('emfdTemp.csv', header=None)
                 length = len(tempDf)
-
+                print(f"{bcolors.OKCYAN}MAC and MFT scores for {bcolors.END}" + sentence)
                 eMFD_df = emfd_score_docs(tempDf, 'emfd', 'single', 'bow', 'vice-virtue', length)
                 eMAC_df = emac_score_docs(tempDf, 'emac', 'single', 'bow', 'vice-virtue', length)
                 eMFD_df_all = emfd_score_docs(tempDf, 'emfd', 'all', 'bow', 'vice-virtue', length)
@@ -194,11 +191,11 @@ for story in stories:
 
                 # Parse with MFT dictionary and MAC dictionary
                 tempDf = pd.DataFrame([exp2_text])
-                print( "Reading fragment from temp file: " + str(tempDf.values) )
+                #print( "Reading fragment from temp file: " + str(tempDf.values) )
                 tempDf.to_csv('emfdTemp.csv', index=False, header=False)
                 tempDf = pd.read_csv('emfdTemp.csv', header=None)
                 length = len(tempDf)
-
+                print(f"{bcolors.OKCYAN}MAC and MFT foundations for {bcolors.END}" + str(tempDf.values) )
                 eMFD_df = emfd_score_docs(tempDf, 'emfd', 'single', 'bow', 'vice-virtue', length)
                 eMAC_df = emac_score_docs(tempDf, 'emac', 'single', 'bow', 'vice-virtue', length)
                 eMFD_df_all = emfd_score_docs(tempDf, 'emfd', 'all', 'bow', 'vice-virtue', length)
@@ -273,10 +270,10 @@ for story in stories:
                     "seg_MAC_a_family_vice": eMAC_df_all['family.vice'].values[0],
                     "seg_MAC_a_property_vice": eMAC_df_all['property.vice'].values[0]
                 }
-                for sentence in (exp2_text.split(". ")):
-                    print( "Segment sentence: " + sentence )
+                for sentence in (exp2_text.split(". ")): #this loop matches segments to sentences
+                    #print( "Segment sentence: " + sentence )
                     if  fuzz.ratio(dataFrameForSaving.iloc[index]['sentence'], sentence) > 65:
-                        print(" -- match between segment and sentence")
+                        #print(" -- match between segment and sentence")
                         #print(dataFrameForSaving.iloc[index]['sentence'])
                         dataFrameForSaving.loc[index, 'segment'] = str(segments)
                         dataFrameForSaving.loc[index, 'seg_sentence'] = str(sentence)
@@ -315,7 +312,7 @@ for story in stories:
     sentenceEnd = 0.0
     # load file with word timestamps for the text being analyzed, if it exists
     if os.path.exists('./word_timestamps/' + directory_input + '_transcription_per_word_x.csv'):
-        print("Reading in audio transcription with time stamps csv file (./word_timestamps/" + directory_input + "_transcription_per_word_x.csv)...")
+        print(f"{bcolors.OKCYAN}Reading in audio transcription with time stamps csv file (./word_timestamps/" + directory_input + f"_transcription_per_word_x.csv)...{bcolors.END}")
         wordTimestamps_df = pd.read_csv('./word_timestamps/' + directory_input + '_transcription_per_word_x.csv', header=None)
     else:
         print(f"{bcolors.FAIL}Per word timestamps in{bcolors.END} ./word_timestamps/" + directory_input + f"_transcription_per_word_x.csv {bcolors.FAIL}FAILED TO LOAD!{bcolors.END}")
@@ -326,10 +323,10 @@ for story in stories:
     counter = 0
     for s in sentences:
         while levenshtein.ratio(t_sentence, s) < 100:
-            print("Initial fuzz: " + str(levenshtein.ratio(t_sentence, s)))
+            #print("Initial fuzz: " + str(levenshtein.ratio(t_sentence, s)))
             t_sentence = t_sentence + " " + wordTimestamps_df.loc[t_index + t, 1]
             if len(wordTimestamps_df) == t_index + t or len(wordTimestamps_df) == t_index + t + 1:
-                print(f"!Match between {bcolors.WARNING}<" + s + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
+                #print(f"!Match between {bcolors.WARNING}<" + s + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
                 dataFrameForSaving.loc[counter, 'start'] = wordTimestamps_df.loc[t_index][2]
                 dataFrameForSaving.loc[counter, 'end'] = wordTimestamps_df.loc[t_index + t][3]
                 t_sentence = ""
@@ -337,9 +334,9 @@ for story in stories:
                 break
             if levenshtein.ratio(t_sentence, s) >= levenshtein.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1, 1], s) \
                 and levenshtein.ratio(t_sentence, s) >= levenshtein.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2, 1], s):
-                print("Lookahead fuzz 1: " + str(levenshtein.ratio(s, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1, 1])))
-                print("Lookahead fuzz 2: " + str(levenshtein.ratio(s, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2, 1])))
-                print(f"Match between {bcolors.WARNING}<" + s + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
+                #print("Lookahead fuzz 1: " + str(levenshtein.ratio(s, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1, 1])))
+                #print("Lookahead fuzz 2: " + str(levenshtein.ratio(s, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2, 1])))
+                #print(f"Match between {bcolors.WARNING}<" + s + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
                 dataFrameForSaving.loc[counter, 'start'] = wordTimestamps_df.loc[t_index][2]
                 dataFrameForSaving.loc[counter, 'end'] = wordTimestamps_df.loc[t_index + t][3]
                 t_sentence = ""
@@ -348,7 +345,6 @@ for story in stories:
             else:
                 t += 1
         t_index = t_index + t
-        print(t_index)
         counter += 1
         t = 0
         t_sentence = ""
