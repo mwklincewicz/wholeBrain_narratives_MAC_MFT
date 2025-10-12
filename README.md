@@ -1,4 +1,4 @@
-# THE BIG IDEA
+# MORALITY IN THE BRAIN USING NATURALISTIC STIMULLI
 
 ### I.      Find neural correlates of foundation scores through whole-brain analysis MAC family foundation peaks
 
@@ -6,7 +6,7 @@
 
 ### III.    Do per segment and per sentence analysis for all foundations for each story, showing whole brain activations
 
-..........................................................
+............................................................................................
 #### **The pipeline for analysis is the following:**
 
 1) Get audio files from repo on Drive or Ken Normal lab files
@@ -20,7 +20,7 @@
 9) All processed data and plots will be stored in drive G: on WHITE_LADY, which syncs with Google Drive.  
 10) Delete .nii and .tsv files for a story using deleteWithDatalad.py (will have a prompt for task name)
 
-................................................
+............................................................................................
 #### **Some notable ways to break things:**
 
 a) MAC and MFT scoring in (5) above uses libraries that have dependencies on outdated versions of spacy, typing extensions, etc., so downgrade to Python 3.8 and follow instructions from comments in getMAC_MFT_for_segments.py to complete step (5) ONLY
