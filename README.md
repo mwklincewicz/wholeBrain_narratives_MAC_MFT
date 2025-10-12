@@ -16,11 +16,11 @@
 3) Manually, with ChatGPT, or some other means, generate segment .txt files and put them into .\text\segments
 4) Run transcribeAudio_x.py to obtain timestamp .csv files (per word/phrase) in .\text\timestamps
 5) Run getMAC_MFT.py to obtain MAC/MFT, all/per-word, vice/virtue, scores per sentence, per segment (from 3), and durations per sentence (from (4))
-6) Download .nii and .tsv files for a story using downloadWithDatalad.py into .\data\allDataAliases\fmriprep (will have a prompt for task name)
-7) Run firstLevelModel_XXXXXXXXXX.py, as for task, etc. TODO: make these generic
-8) Run secondLevelModel_XXXXXXXXX.py, as for task, etc. TODO: make these generic
+6) Download .nii and .tsv files for a story using downloadWithDatalad.py into .\data\allDataAliases\fmriprep (look 0)
+7) Run firstLevelModel_XXXXXXXXXX.py, as for task, etc. TODO: make these generic (look 0)
+8) Run secondLevelModel_XXXXXXXXX.py, as for task, etc. TODO: make these generic (look 0)
 9) All processed data and plots will be stored in drive G: on WHITE_LADY, which syncs with Google Drive.  
-10) Delete .nii and .tsv files for a story using deleteWithDatalad.py (will have a prompt for task name)
+10) Delete .nii and .tsv files for a story using deleteWithDatalad.py (look 0)
 
 ............................................................................................
 #### **Some notable ways to break things:**
