@@ -18,9 +18,6 @@ processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
 foundationScores_dir = "text/foundationScores/"
 
 #
-# USE FOUNDATION PER SENTENCE AS TRIALS
-#
-#
 #   Helper functions
 #
 
