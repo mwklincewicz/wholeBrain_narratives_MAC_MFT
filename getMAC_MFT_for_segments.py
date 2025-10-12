@@ -20,7 +20,7 @@ from emacscore.scoring import score_docs as emac_score_docs
 #   emacscore best to download zip and install with pip
 
 #stories = ['physical','social']
-#stories = ['tunnel','bronx','21styear','pieman','piemanpni'] #names of narrative files in 'text_to_be_segmented' subdir
+stories = ['tunnel','bronx','21styear','pieman','piemanpni'] #names of narrative files in 'text_to_be_segmented' subdir
 
 class bcolors:
     HEADER = '\033[95m'
