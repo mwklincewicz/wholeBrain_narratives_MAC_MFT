@@ -87,7 +87,7 @@ numberOfTopSegments = 4
 alias_data_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\allDataAliases\\fmriprep"
 alias_confounds_dir = ""
 processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
-foundationScores_dir = "./foundationScores/"
+foundationScores_dir = "text/foundationScores/"
 
 # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
 segmentFileDF = pd.read_excel("./foundationScores/"+story+"_transcript_segment_MFT_MAC.xlsx")

@@ -17,12 +17,12 @@ model = whisperx.load_model("large-v3", device, compute_type=compute_type)
 transcript_text = ""
 
 for task in stories:
-    audio_file = ".\\audio\\" + task + "_audio.wav"
+    audio_file = ".\\data\\audio\\" + task + "_audio.wav"
     if os.path.exists(audio_file):
         print("The audio file " + audio_file + " exists.")
     else:
         print("The audio file " + audio_file + " DOES NOT EXIST.")
-    print( "Speech to text from: ./audio/" + task + "_audio.wav")
+    print( "Speech to text from: ./data/audio/" + task + "_audio.wav")
     audio = whisperx.load_audio(audio_file)
     result = model.transcribe(audio, language="en", batch_size=batch_size)
     # print(result["segments"]) # before alignment

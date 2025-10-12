@@ -3,7 +3,7 @@
 import os
 from subprocess import run
 
-alias_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\allDataAliases\\fmriprep"
+alias_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\data\\allDataAliases\\fmriprep"
 
 task = input("Name of task (story) to download data files for: ")
 
