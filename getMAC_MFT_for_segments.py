@@ -50,7 +50,7 @@ for story in stories:
     directory_text="text_to_be_segmented/"+story
     directory=story
     print(f"{bcolors.OKCYAN}==========================================================================={bcolors.END}")
-    print(f"{bcolors.OKBLUE}Processing "+story+ f" narrarative for foundations, segments, and timestamps{bcolors.END}")
+    print(f"{bcolors.OKBLUE} Processing "+story+ f" narrarative for foundations, segments, and timestamps{bcolors.END}")
     print(f"{bcolors.OKCYAN}==========================================================================={bcolors.END}")
     for filename in os.listdir("./"+directory_text):
         if filename.endswith('.txt'):
