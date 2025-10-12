@@ -15,7 +15,7 @@
 2) Obtain a transcript (put it in .\text\text_to_be_segmented) or use the one generated via transcribeAudio_x.py (in .\text\timestamps)
 3) Manually, with ChatGPT, or some other means, generate segment .txt files and put them into .\text\segments
 4) Run transcribeAudio_x.py to obtain timestamp .csv files (per word/phrase) in .\text\timestamps
-5) Run getMAC_MFT_for_segments.py to obtain MAC/MFT, all/per-word, vice/virtue, scores per sentence, per segment (from 3), and durations per sentence (from (4))
+5) Run getMAC_MFT.py to obtain MAC/MFT, all/per-word, vice/virtue, scores per sentence, per segment (from 3), and durations per sentence (from (4))
 6) Download .nii and .tsv files for a story using downloadWithDatalad.py into .\data\allDataAliases\fmriprep (will have a prompt for task name)
 7) Run firstLevelModel_XXXXXXXXXX.py, as for task, etc. TODO: make these generic
 8) Run secondLevelModel_XXXXXXXXX.py, as for task, etc. TODO: make these generic
