@@ -1,3 +1,5 @@
+from turtledemo.penrose import start
+
 import numpy as np
 import pandas as pd
 import os
@@ -13,11 +15,33 @@ from nilearn import plotting
 
 
 #
-# USE FOUNDATION PER SENTENCE PEAKS AS KEYS FOR SEGMENTS TO BE USED AS TRIALS IN THE CONTRAST IMAGE
+# USE FOUNDATION PER SEGMENT PICKED BY HIGHEST SENTENCE AS TRIALS
 #
 #
 #   Helper functions
 #
+
+def load_onsets(story):
+    #return a list of timestamps for onset
+    onsets = []
+    for root, dirs, files in os.walk(foundationScores_dir):
+        for file in files:
+            if story in file:
+                print("Getting sentence onsets for %03s " % (story))
+                onsets = pd.read_excel(os.path.join(root, file), usecols=['start'] )
+    return onsets
+
+def load_durations(story):
+    #return a list of timestamps for onset
+    durations = []
+    for root, dirs, files in os.walk(foundationScores_dir):
+        for file in files:
+            if story in file:
+                print("Getting sentence durations for %03s " % (story))
+                df = pd.read_excel(os.path.join(root, file), usecols=['start', 'end'] )
+                durations.append( df['end'] - df['start'] )
+    return durations
+
 def load_participants(story):
     #return a list of all participant numbers for a story
     participants = []
@@ -63,6 +87,7 @@ numberOfTopSegments = 4
 alias_data_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\allDataAliases\\fmriprep"
 alias_confounds_dir = ""
 processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
+foundationScores_dir = "./foundationScores/"
 
 # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
 segmentFileDF = pd.read_excel("./foundationScores/"+story+"_transcript_segment_MFT_MAC.xlsx")
@@ -129,6 +154,9 @@ eventFoundations = segmentValues.drop_duplicates(subset=['segment'], keep='first
 eventNames = []
 onsets = [0,14,39,63,79,95,125,136,164,187,203,219,227,250,258,294,306,323,328,359,367,397,438,460,487,505,527, 543, 568,633,654,688,733,756,769,790,814,824,859,875,901,920,943,963,982,992,1022,1046,1071,1107,1133,1150,1170,1183,1203,1234,1241,1272,1294,1307,1335,1368,1392,1440,1473,1510]
 durations = [6,24,23,3,15,23,10,21,22,15,15,6,15,7,25,21,9,4,32,7,28,30,15,26,15,35,15,24,39,20,18,44,14,12,20,22,9,24,15,25,18,22,19,12,9,26,23,24,35,25,16,19,12,15,30,6,30,21,12,27,32,11,47,32,23,8]
+
+# onsets = load_onsets(story)
+# durations = load_durations(story)
 
 for event in range(len(eventFoundations)):
     eventNames.append(str(event+1))

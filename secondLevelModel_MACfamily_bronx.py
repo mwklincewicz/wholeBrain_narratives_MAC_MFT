@@ -9,7 +9,7 @@ contrastImg_dir = "G:/fMRI_project/processed_first_level_MAC_family/bronx/"
 
 contrastImg_Testdir = "./testData/processed_first_level_MAC_family/social/"
 
-processed_dir = "./processed_second_level_MAC_family/"
+processed_dir = "results/processed_second_level_MAC_family/"
 
 all_imgs = [
     os.path.join(contrastImg_dir, name)

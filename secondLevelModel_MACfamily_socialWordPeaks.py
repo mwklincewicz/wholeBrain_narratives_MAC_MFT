@@ -4,9 +4,9 @@ from nilearn.glm.second_level import SecondLevelModel
 from nilearn.glm import threshold_stats_img
 
 # # Second level model WORDPEAK SOCIAL
-contrastImg_wordpeak_social_dir = "./processed_first_level_MAC_family/wordpeak_social/"
+contrastImg_wordpeak_social_dir = "results/processed_first_level_MAC_family/wordpeak_social/"
 contrastImg_wordpeak_social_Testdir = "./testData/processed_first_level_MAC_family/wordpeak_social/"
-processed_dir = "./processed_second_level_MAC_family/"
+processed_dir = "results/processed_second_level_MAC_family/"
 
 all_imgs_wordpeak_social = [
     os.path.join(contrastImg_wordpeak_social_dir, name)

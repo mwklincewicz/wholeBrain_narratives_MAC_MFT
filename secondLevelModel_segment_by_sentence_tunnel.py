@@ -8,7 +8,7 @@ from nilearn.glm import threshold_stats_img
 task="tunnel"
 contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
 contrastImg_Testdir = "./testData/processed_first_level_MAC_family/social/"
-processed_dir = "./processed_second_level_per_sentence/"
+processed_dir = "results/processed_second_level_per_sentence/"
 
 #main loop over foundations
 for subdir in next(os.walk(contrastImg_dir+task))[1]:
