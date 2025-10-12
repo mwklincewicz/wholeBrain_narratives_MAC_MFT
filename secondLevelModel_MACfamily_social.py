@@ -5,10 +5,10 @@ from nilearn.glm.second_level import SecondLevelModel
 from nilearn.glm import threshold_stats_img
 
 # ## second level model SOCIAL STORY
-contrastImg_dir = "results/processed_first_level_MAC_family/social/"
-contrastImg_Testdir = "./testData/processed_first_level_MAC_family/shapessocial/"
+contrastImg_dir = "_results/processed_first_level_MAC_family/social/"
+contrastImg_Testdir = "./_testData/processed_first_level_MAC_family/shapessocial/"
 
-processed_dir = "results/processed_second_level_MAC_family/"
+processed_dir = "_results/processed_second_level_MAC_family/"
 
 all_imgs = [
     os.path.join(contrastImg_dir, name)

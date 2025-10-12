@@ -355,3 +355,5 @@ for story in stories:
     # # Save dataframe with both sentence and segment scores to xlsx
     #dataFrameForSaving.to_excel('sentence_segment_MFT_MAC.xlsx')
     dataFrameForSaving.to_excel("./foundationScores/" + directory_input + '_MFT_MAC.xlsx')
+    os.remove('emfdTemp.csv')
+    os.remove('my_temp_file')

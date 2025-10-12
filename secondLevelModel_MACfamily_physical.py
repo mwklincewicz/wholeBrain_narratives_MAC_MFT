@@ -6,9 +6,9 @@ from nilearn.glm.second_level import SecondLevelModel
 from nilearn.glm import threshold_stats_img
 
 # # Second Level Model PHYSICAL STORY
-contrastImg_physical_dir = "results/processed_first_level_MAC_family/physical/"
-contrastImg_physical_Testdir = "./testData/processed_first_level_MAC_family/shapesphysical/"
-processed_dir = "results/processed_second_level_MAC_family/"
+contrastImg_physical_dir = "_results/processed_first_level_MAC_family/physical/"
+contrastImg_physical_Testdir = "./_testData/processed_first_level_MAC_family/shapesphysical/"
+processed_dir = "_results/processed_second_level_MAC_family/"
 
 all_imgs_physical = [
     os.path.join(contrastImg_physical_dir, name)
@@ -60,7 +60,7 @@ plotting.plot_stat_map(
     threshold=threshold_physical,
 )
 
-contrastImg_dir = "results/processed_first_level_MAC_family/social/"
+contrastImg_dir = "_results/processed_first_level_MAC_family/social/"
 all_imgs = [
     os.path.join(contrastImg_dir, name)
     for name in os.listdir(contrastImg_dir)

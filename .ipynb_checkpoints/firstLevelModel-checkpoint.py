@@ -22,8 +22,8 @@ from nilearn import plotting
 #   Constants
 #
 
-epidataTest_dir = "./testData/fmri"
-confoundsTest_dir = "./testData/confounds/"
+epidataTest_dir = "./_testData/fmri"
+confoundsTest_dir = "./_testData/confounds/"
 
 epidata_dir = "C:/fmriData/"
 confounds_dir = "C:/fmriData/confounds/confounds/"
@@ -37,7 +37,7 @@ onsets = [44.7,62.6,76.4,110,145.4,154.6,182.7,199,213.8,232,243,263,281.2,302.5
 durations = [17.9,13.8,33.6,35.4,9.2,28.1,16.3,14.8,18.2,11,20,18.2,21.3,9.5,19.7,32,12.9,13.4,16,15,17.5,14.5]
 eventNames = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22"]
 
-segmentFileDF = pd.read_excel("testData/foundationScores/shapessocial_transcript_segment_MFT_MAC.xlsx")
+segmentFileDF = pd.read_excel("_testData/foundationScores/shapessocial_transcript_segment_MFT_MAC.xlsx")
 
 #filter to keep all values above .2 in the MAC Family Virtue column and change the rest to .000001
 segmentFileDF['familyMAC_filterAbovePointTwo']  = segmentFileDF['seg_MAC_a_family_virtue'].apply(lambda x: x if x >= .2 else 0.000001)

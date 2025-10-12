@@ -7,11 +7,11 @@ THE BIG IDEA
 The pipeline for analysis is the following:
 
 1) Get audio files from repo on Drive or Ken Normal lab files
-2) Obtain a transcript (put it in .\text_to_be_segmented) or use the one generated via transcribeAudio_x.py (in .\timestamps)
+2) Obtain a transcript (put it in .\text\text_to_be_segmented) or use the one generated via transcribeAudio_x.py (in .\text\timestamps)
 3) Manually, with ChatGPT, or some other means, generate segment .txt files and put them into .\segments
 4) Run transcribeAudio_x.py to obtain timestamp .csv files (per word/phrase) in .\timestamps
 5) Run getMAC_MFT_for_segments.py to obtain MAC/MFT a/per-word vice/virtue scores per sentence, per segment (from 3), and durations per sentence (from (4))
-6) Download .nii and .tsv files for a story using downloadWithDatalad.py (will have a prompt for task name)
+6) Download .nii and .tsv files for a story using downloadWithDatalad.py into .\data\allDataAliases\fmriprep (will have a prompt for task name)
 7) Run firstLevelModel_XXXXXXXXXX.py, as for task, etc. TODO: make these generic
 8) Run secondLevelModel_XXXXXXXXX.py, as for task, etc. TODO: make these generic
 9) All processed data and plots will be stored in drive G: on WHITE_LADY, which syncs with Google Drive.  
@@ -23,8 +23,8 @@ Some notable ways to break things:
 2) (5) depends on ffmpeg.  Follow online instructions to install it or you will get a mysterious File missing error
 3) Other types of analysis, Jupyter Notebooks, etc., all have their own directories, so pay attention when executing anything that you are in the right directory
 4) .\results, .\testData, are not used, but can be for debugging and not breaking things, so use them!
-5) .\data]audio, .\data\allDataAliases have datafiles from Princeton (Ken Norman Lab), which are both large, and not yours. They are in .gitignore, so they don't get pushed with commits
-6) my_temp_file and emfdTemp.csv are recreated every time you do (5) and they are there to easily and slowly handle charaxcter encoding issues; this is a pain right now and slows things down, so it needs a better method.
-7) Narratives participants holds information about the order in which participants heard social and physical shapes stories
+5) .\data\audio, .\data\allDataAliases have datafiles from Princeton (Ken Norman Lab), which are both large, and not yours. They are in .gitignore, so they don't get pushed with commits
+6) my_temp_file and emfdTemp.csv are recreated every time you do (5) and they are there to easily and slowly handle character encoding issues; they sometimes tick around and this is a pain right now and slows things down, so it needs a better method.
+7) .\text\Narratives_participants.csv holds information about the order in which participants heard social and physical shapes stories
 8) emacscore-master.zip needs to be used to install MAC dictionary scoring for (5), keep it in the directory and use pip
 9) drive G: on WHITE_LADY, which syncs with Google Drive, sometimes does not have a check for directories; manually make them.  
