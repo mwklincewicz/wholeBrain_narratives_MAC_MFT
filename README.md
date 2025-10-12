@@ -35,7 +35,7 @@ d) .\results, .\testData, are not used, but can be for debugging and not breakin
 
 e) .\data\audio, .\data\allDataAliases have datafiles from Princeton (Ken Norman Lab), which are both large, and not yours. They are in .gitignore, so they don't get pushed with commits
 
-f) my_temp_file and emfdTemp.csv are recreated every time you do (5) and they are there to easily and slowly handle character encoding issues; they sometimes tick around and this is a pain right now and slows things down, so it needs a better method.
+f) my_temp_file and emfdTemp.csv are recreated every time you do (5) and they are there to easily and slowly handle character encoding issues; they sometimes stick around and this is a pain right now and slows things down, so it needs a better method.
 
 g) .\text\Narratives_participants.csv holds information about the order in which participants heard social and physical shapes stories
 
