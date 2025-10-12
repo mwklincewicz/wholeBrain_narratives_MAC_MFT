@@ -9,7 +9,7 @@
 ............................................................................................
 #### **The pipeline for analysis is the following:**
 
-0) run execute.py for this except (5), because of (a).  Too big of a pain to load and re-load environment.  Just switch to 3.8 and follow comments to execute it.
+0) run execute.py for this except (5), because of (a).  Too big of a pain to load and re-load environment.  Just switch to Python 3.8 and follow comments to execute it.
 
 1) Get audio files from repo on Drive or Ken Norman lab files (put in .\data\audio\, if not there already)
 2) Obtain a transcript (put it in .\text\text_to_be_segmented) or use the one generated via transcribeAudio_x.py (in .\text\timestamps)
