@@ -9,7 +9,7 @@
 ............................................................................................
 #### **The pipeline for analysis is the following:**
 
-1) Get audio files from repo on Drive or Ken Normal lab files
+1) Get audio files from repo on Drive or Ken Normal lab files (put in .\data\audio\, if not there already)
 2) Obtain a transcript (put it in .\text\text_to_be_segmented) or use the one generated via transcribeAudio_x.py (in .\text\timestamps)
 3) Manually, with ChatGPT, or some other means, generate segment .txt files and put them into .\segments
 4) Run transcribeAudio_x.py to obtain timestamp .csv files (per word/phrase) in .\timestamps
