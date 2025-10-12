@@ -4,17 +4,15 @@ from nilearn import plotting
 from nilearn.glm.second_level import SecondLevelModel
 from nilearn.glm import threshold_stats_img
 
-# ## second level model directories for PER SENTENCE
-task="tunnel"
-contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/tunnel/7_MAC/Conjunction/" # Or /F_contrast/
-contrastImg_Testdir = ""
-processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/tunnel/7_MAC/SecondLevel_contrast/"
+# ## second level model SOCIAL STORY
+contrastImg_dir = "../_results/processed_first_level_MAC_family/social/"
+contrastImg_Testdir = "./_testData/processed_first_level_MAC_family/shapessocial/"
 
-#main loop over foundations
+processed_dir = "../_results/processed_second_level_MAC_family/"
+
 all_imgs = [
     os.path.join(contrastImg_dir, name)
     for name in os.listdir(contrastImg_dir)
-        if name.endswith(".nii.gz")
 ]
 
 second_level_input = all_imgs
@@ -25,25 +23,24 @@ design_matrix = pd.DataFrame(
     [1] * len(second_level_input),
     columns=["intercept"],
 )
-
+design_matrix
 # set up group analysis for one sample t test on the contrast images
-second_level_model = SecondLevelModel()
+second_level_model = SecondLevelModel() 
 second_level_model = second_level_model.fit(
     second_level_input,
     design_matrix=design_matrix,
 )
-
 # run one sample t test
 z_map = second_level_model.compute_contrast(
     second_level_contrast="intercept",
     output_type="z_score",
-)
-os.makedirs(processed_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
-(z_map.to_filename
- (processed_dir + "/" + "SecondLevel_CONJUNCTION_"+task+"_per_sentence_MACVirtues_zscore.nii.gz"))
+) 
+
+z_map.to_filename(processed_dir + "SecondLevel_Social_zscore_macFamily.nii.gz")
 
 #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
 # #### fdr correction
+
 
 thresholded_map, threshold = threshold_stats_img(
     stat_img=z_map,  # or p_map
@@ -55,8 +52,8 @@ thresholded_map, threshold = threshold_stats_img(
 print(f"The p<.05 FDR-corrected threshold is z score of {threshold:.3g}")
 
 # save as brain image
-thresholded_map.to_filename(processed_dir + "/threshold_"+f"{threshold:.3g}"+"_"+
-                            "SecondLevel_CONJUNCTION_"+task+"_fdrcorrect_per_sentence_MACVirtues.nii.gz")
+thresholded_map.to_filename(processed_dir + "threshold_"+f"{threshold:.3g}"+"_"+
+                            "SecondLevel_social_fdrcorrect_macFamily.nii.gz")
 # quick visualization
 plotting.plot_stat_map(
     thresholded_map,
@@ -85,8 +82,8 @@ thresholded_map2, threshold2 = threshold_stats_img(
 print(f"The p<.05 Bonferroni-corrected threshold is z score of {threshold2:.3g}")
 
 # save as brain image
-thresholded_map2.to_filename(processed_dir + "/threshold_"+f"{threshold2:.3g}"+"_"+
-                             "SecondLevel_CONJUNCTION_"+task+"_bonfcorrect_per_Sentence_MACVirtues.nii.gz")
+thresholded_map2.to_filename(processed_dir + "threshold_"+f"{threshold2:.3g}"+"_"+
+                             "SecondLevel_social_bonfcorrect_macFamily.nii.gz")
 
 # quick visualization
 plotting.plot_stat_map(

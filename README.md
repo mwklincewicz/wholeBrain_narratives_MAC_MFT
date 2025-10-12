@@ -37,6 +37,6 @@ f) my_temp_file and emfdTemp.csv are recreated every time you do (5) and they ar
 
 g) .\text\Narratives_participants.csv holds information about the order in which participants heard social and physical shapes stories
 
-h) emacscore-master.zip needs to be used to install MAC dictionary scoring for (5), keep it in the directory and use pip
+h) .\text\emacscore-master.zip needs to be used to install MAC dictionary scoring for (5), keep it in the directory and use pip
 
 i) drive G: on WHITE_LADY, which syncs with Google Drive, sometimes does not have a check for directories; manually make them.  

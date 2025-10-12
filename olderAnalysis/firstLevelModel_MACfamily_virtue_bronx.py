@@ -3,48 +3,47 @@ import pandas as pd
 import os
 import nibabel as nib
 import matplotlib.pyplot as plt
+
 from nilearn import image, masking
 from nilearn.glm.first_level import make_first_level_design_matrix
 from nilearn.plotting import plot_design_matrix
 from nilearn.glm.first_level import FirstLevelModel
 from nilearn.masking import compute_epi_mask, apply_mask, unmask
 from nilearn import plotting
-import datalad
 from subprocess import call
 
-
 #
-# USE MAC FOUNDATION FAMILY IMAGERY WORD PEAKS AS TRIALS IN PHYSICAL VERSION OF THE NARRATIVE
+# USE MAC FOUNDATION FAMILY VIRTUE PEAKS AS TRIALS IN SOCIAL VERSION OF THE NARRATIVE
 #
 
 #
 #   Constants
 #
+story = "bronx"
 
-testSubject = [221]
+testSubject = [315]
 # Define subjects
 participants = [49, 58, 95, 115, 127, 181, 186, 190, 191, 200, 201] + list(range(206, 238)) + list(range(239, 254))
 #exclude subj 238, see paper
 
-onsets = [44.7,62.6,76.4,110,145.4,154.6,182.7,199,213.8,232,243,263,281.2,302.5,312,331.7,363.7,376.6,390,406,421,438.5]
-durations = [17.9,13.8,33.6,35.4,9.2,28.1,16.3,14.8,18.2,11,20,18.2,21.3,9.5,19.7,32,12.9,13.4,16,15,17.5,14.5]
+onsets = [15,37,49,71,91,103,117,145,180,199,226,261,275,297,318,333,356,388,416,430,475,517]
+durations = [22,12,22,20,12,14,28,35,19,27,35,14,22,21,15,23,32,28,14,45,42,35]
 eventNames = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22"]
-wordPeaks = ["3","4","13","22"]
 
 epidataTest_dir = "_testData/fmri"
-confoundsTest_dir = "_testData/confounds/"
+confoundsTest_dir = "../_testData/confounds/"
 processed_Testdir = "./_testData/processed_first_level_MAC_family/"
 
 epidata_dir = "G:/fMRI_project/narrative_mri/data/"
 confounds_dir = "G:/fMRI_project/narrative_mri/confounds/"
 processed_dir = "G:/fMRI_project/processed_first_level_MAC_family/"
 
-alias_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\allDataAliases\\fmriprep"
+alias_data_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\allDataAliases\\fmriprep"
+alias_confounds_dir = ""
+segmentFileDF_social = pd.read_excel("./foundationScores/bronx_transcript_segment_MFT_MAC.xlsx")
 
-segmentFileDF_social = pd.read_excel("./foundationScores/shapessocial_transcript_segment_MFT_MAC.xlsx")
-
-#filter to keep all values in the MAC Family Virtue column for segments that have more than 12 'imagery' words
-segmentFileDF_social['wordPeaks'] = segmentFileDF_social['segment'].apply(lambda x: x if x in wordPeaks else "0")
+#filter to keep all values above .2 in the MAC Family Virtue column and change the rest to .000001
+segmentFileDF_social['familyMAC_filterAbovePointOneNine']  = segmentFileDF_social['seg_MAC_a_family_virtue'].apply(lambda x: x if x >= .19 else 0.000001)
 
 segmentValues_social = segmentFileDF_social[['segment',
                                'seg_MFT_a_care_virtue',
@@ -70,71 +69,86 @@ segmentValues_social = segmentFileDF_social[['segment',
                                'seg_MAC_a_heroism_vice',
                                'seg_MAC_a_reciprocity_vice',
                                'seg_MAC_a_family_vice',
-                               'seg_MAC_a_property_vice']]
+                               'seg_MAC_a_property_vice',
+                               'familyMAC_filterAbovePointOneNine']]
 
 eventFoundations_social = segmentValues_social.drop_duplicates(subset=['segment'], keep='first', ignore_index=True)
+
+
 
 #
 #   Helper functions
 #
 
-def load_epi_data_physical(sub):
-    # Load MRI file (in Nifti format)
-    epi_in = os.path.join(epidata_dir,"sub-%03d_task-shapesphysical_space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii" % (sub))
-    epi_data_physical = nib.load(epi_in)
-    print("Loading data from %s" % (epi_in))
-    return epi_data_physical
+def load_participants(story):
+    #return a list of all participant numbers for a story
+    participants = []
+    for root, dirs, files in os.walk(alias_data_dir):
+        for file in files:
+            if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
+                participant_number = file[4:7]
+                print("Getting participant number %03s for %04s" % (participant_number, story))
+                participants.append(participant_number)
+    return participants
 
-def load_epi_data_physical_alias(sub):
+def load_epi_data(sub,story):
     # Load MRI file (in Nifti format)
-    epi_in = os.path.join(alias_dir+"/sub-%03d/func/" %(sub),"sub-%03d_task-shapesphysical_space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz" % (sub))
-    epi_data_physical = nib.load(epi_in)
-    print("Loading data from %s" % (epi_in))
-    return epi_data_physical
+    for root, dirs, files in os.walk(alias_data_dir):
+        for file in files:
+            if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz") and "sub-"+str(sub) in file:
+                epi_in = os.path.join(alias_data_dir,"sub-%03s/func/sub-%03s_task-%s_space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz" % (sub, sub, story))
+                epi_data = nib.load(epi_in)
+                print("Loading data from %s" % (epi_in))
+    return epi_data
+
+def load_regressor(sub,story):
+    # Load tsv file with regressors
+    for root, dirs, files in os.walk(alias_data_dir):
+        for file in files:
+            if story in file and file.endswith("desc-confounds_regressors.tsv") and "sub-"+sub in file:
+                regressor_location = os.path.join(alias_data_dir,"sub-%03s/func/sub-%03s_task-%04s_desc-confounds_regressors.tsv" % (sub, sub, story))
+                print("Loading regressors from %s" % (regressor_location))
+                regressor = pd.read_csv(regressor_location, sep='\t')
+    return regressor
 
 #
 #   Data transform
 #
 
-for participant in testSubject:
+for participant in load_participants("bronx"):
     print ("Building first-level model for participant %s" % (participant))
-    epi_data_physicalNIFTI = load_epi_data_physical_alias(participant)
-
+    epi_data_socialNIFTI = load_epi_data(participant, story)
     events = pd.DataFrame({"trial_type": sorted([int(x) for x in eventNames]), "onset": onsets, "duration": durations})
-
-    fname2 = "sub-%03d_task-shapesphysical_desc-confounds_regressors.tsv" % participant
-    confoundsAll_physical = confounds_dir + fname2
-
-    df = pd.read_csv(confoundsAll_physical, sep='\t')
+    df = load_regressor(participant, story)
     confound_file1 = df[['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
 
-    # use segment column for determining modulation values
-    modulationValues = eventFoundations_social['segment']
+    # use only events from above .19 MAC family values
+    modulationValues = eventFoundations_social['familyMAC_filterAbovePointOneNine']
 
-    ## Keep the trials with sufficient 'imagination' words as trials [listed in wordPeaks]
+    ## only keep the rows with modulationValues above .2
     for Trial in range(len(modulationValues)):
-       #print('Processing Trial %s' % (Trial))
 
-        if Trial in wordPeaks:
-            events = events.drop(Trial)
+        #print('trial:', Trial)
 
+        if modulationValues[Trial] < .19:
+           events = events.drop(Trial)
 
-    events['trial_type'] = 'wordPeak'
+    events['trial_type'] = 'macFamily'
 
     # Make an average
-    mean_img = image.mean_img(epi_data_physicalNIFTI, copy_header=True)
+    mean_img = image.mean_img(epi_data_socialNIFTI, copy_header=True)
 
     mask = masking.compute_epi_mask(mean_img, lower_cutoff=0.2, upper_cutoff=0.85, opening=3, connected=True)
 
     # Clean and smooth data
-    epi_data_physicalNIFTI = image.clean_img(epi_data_physicalNIFTI, standardize=False)
-    epi_data_physicalNIFTI = image.smooth_img(epi_data_physicalNIFTI, 6.0)
+    epi_data_socialNIFTI = image.clean_img(epi_data_socialNIFTI, standardize=False)
+    epi_data_socialNIFTI = image.smooth_img(epi_data_socialNIFTI, 6.0)
 
     # get fdata
-    epi_data_physical = epi_data_physicalNIFTI.get_fdata()
+    epi_data_social = epi_data_socialNIFTI.get_fdata()
 
     frame_times = (
-            np.arange(epi_data_physical.shape[3]) * 1.5
+            np.arange(epi_data_social.shape[3]) * 1.5
     )
 
     # baseline first level model
@@ -148,7 +162,7 @@ for participant in testSubject:
     )
 
     FM1 = FirstLevelModel(mask_img=mask)
-    FM1 = FM1.fit(epi_data_physicalNIFTI, design_matrices=X_base)
+    FM1 = FM1.fit(epi_data_socialNIFTI, design_matrices=X_base)
 
     # contrast first level model
 
@@ -162,7 +176,7 @@ for participant in testSubject:
     #plt.show()
 
     ## create contrast image
-    contrast_name = "wordPeak"
+    contrast_name = "macFamily"
 
     z_map = FM1.compute_contrast(
         contrast_name,
@@ -174,7 +188,6 @@ for participant in testSubject:
     z_map_masked = unmask(masked_data, mask)
 
     # save contrast image for the testsubject (to be used at second level)
-    z_map_masked.to_filename((processed_Testdir + "%03d_physical_macFamily_wordPeak.nii.gz") % (participant))
-
+    z_map_masked.to_filename((processed_dir + "%03s_"+story+"_macFamily.nii.gz") % (participant))
 
     plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")

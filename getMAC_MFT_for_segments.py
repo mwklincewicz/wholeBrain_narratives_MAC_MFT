@@ -45,7 +45,8 @@ spacy.load('en_core_web_sm') #may work better with a bigger model
 #   Main loop over narrative files for processing
 #
 index = 0
-for story in stories:
+
+def run(story):
     directory_input=story
     if story == 'shapesphysical' or story == 'shapessocial':
         directory_text = "timestamps/" + story
@@ -55,9 +56,9 @@ for story in stories:
     print(f"{bcolors.OKCYAN}==========================================================================={bcolors.END}")
     print(f"{bcolors.OKBLUE} Processing "+story+ f" narrarative for foundations, segments, and timestamps{bcolors.END}")
     print(f"{bcolors.OKCYAN}==========================================================================={bcolors.END}")
-    for filename in os.listdir("./"+directory_text):
+    for filename in os.listdir("./text/"+directory_text):
         if filename.endswith('.txt'):
-            with open("./"+directory_text + "/" + filename, encoding='utf-8') as f1:
+            with open("./text/"+directory_text + "/" + filename, encoding='utf-8') as f1:
                 lines = f1.read()
                 f2 = open(os.path.join('my_temp_file'), 'w', encoding='utf-8')
                 f2.write(lines)
@@ -172,7 +173,7 @@ for story in stories:
 
         # Look through segments in <segments> directory and match them with sentences in dataframe that contains sentence scores
         index = 0 #this is for keeping track of sentence index as we go through the segments
-        fragmentFiles = os.listdir("./segments/" + directory)
+        fragmentFiles = os.listdir("./text/segments/" + directory)
         fragmentFiles.sort(reverse=True)
         fragmentFiles.sort(key=str.lower)
         fragmentFiles.sort(key=len)
@@ -184,7 +185,7 @@ for story in stories:
             if segments.endswith('.txt'):
                 segmentIndex = segmentIndex+1
                 print( "Reading text from segment file: " + str(segments) + " which is " + str(segmentIndex) + " of " + str(len(fragmentFiles)))
-                with open("./segments/" + directory + "/" + segments, encoding='utf-8') as f1:
+                with open("./text/segments/" + directory + "/" + segments, encoding='utf-8') as f1:
                     segment = f1.read()
                     f2 = open(os.path.join('my_temp_file'), 'w', encoding='utf-8')
                     f2.write(segment)
@@ -314,11 +315,11 @@ for story in stories:
     sentenceStart = 0.0
     sentenceEnd = 0.0
     # load file with word timestamps for the text being analyzed, if it exists
-    if os.path.exists('./timestamps/' +directory_input +"/"+ directory_input + '_transcription_per_word_x.csv'):
-        print(f"{bcolors.OKCYAN}Reading in audio transcription with time stamps csv file (./timestamps/" +directory_input +"/" + directory_input + f"_transcription_per_word_x.csv)...{bcolors.END}")
-        wordTimestamps_df = pd.read_csv('./timestamps/' +directory_input +"/"+ directory_input + '_transcription_per_word_x.csv', header=None)
+    if os.path.exists('./text/timestamps/' +directory_input +"/"+ directory_input + '_transcription_per_word_x.csv'):
+        print(f"{bcolors.OKCYAN}Reading in audio transcription with time stamps csv file (./text/timestamps/" +directory_input +"/" + directory_input + f"_transcription_per_word_x.csv)...{bcolors.END}")
+        wordTimestamps_df = pd.read_csv('./text/timestamps/' +directory_input +"/"+ directory_input + '_transcription_per_word_x.csv', header=None)
     else:
-        print(f"{bcolors.FAIL}Per word timestamps in{bcolors.END} ./timestamps/"+directory_input +"/" + directory_input + f"_transcription_per_word_x.csv {bcolors.FAIL}FAILED TO LOAD!{bcolors.END}")
+        print(f"{bcolors.FAIL}Per word timestamps in{bcolors.END} ./text/timestamps/"+directory_input +"/" + directory_input + f"_transcription_per_word_x.csv {bcolors.FAIL}FAILED TO LOAD!{bcolors.END}")
 
     t_index = 1
     t_sentence = ""
@@ -354,6 +355,10 @@ for story in stories:
 
     # # Save dataframe with both sentence and segment scores to xlsx
     #dataFrameForSaving.to_excel('sentence_segment_MFT_MAC.xlsx')
-    dataFrameForSaving.to_excel("./foundationScores/" + directory_input + '_MFT_MAC.xlsx')
-    os.remove('emfdTemp.csv')
+    dataFrameForSaving.to_excel("./text/foundationScores/" + directory_input + '_MFT_MAC.xlsx')
+
+    file.close()
     os.remove('my_temp_file')
+    os.remove('emfdTemp.csv')
+story = input("Enter the story you wish to analyze: ")
+run(story)

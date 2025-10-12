@@ -9,14 +9,13 @@ import pandas as pd
 #   This transcribes audio files in using WHISPERX, which builds on OpenAI whisper model for speech-to-text
 #
 
-stories = ['shapessocial','shapesphysical']#,'21styear','bronx','pieman','piemanpni','tunnel']
 device = "cpu"
 batch_size = 4 # reduce if low on GPU mem
 compute_type = "int8" # change to "int8" if low on GPU mem (may reduce accuracy)
 model = whisperx.load_model("large-v3", device, compute_type=compute_type)
 transcript_text = ""
 
-for task in stories:
+def run(task):
     audio_file = ".\\data\\audio\\" + task + "_audio.wav"
     if os.path.exists(audio_file):
         print("The audio file " + audio_file + " exists.")
@@ -46,7 +45,4 @@ for task in stories:
     with open("./timestamps/"+task+"_transcription_x.txt", "w+") as fh:
         fh.write(transcript_text)
 
-
-
-
-import gc; import torch; gc.collect(); torch.cuda.empty_cache(); del model_a
+    import gc; import torch; gc.collect(); torch.cuda.empty_cache(); del model_a

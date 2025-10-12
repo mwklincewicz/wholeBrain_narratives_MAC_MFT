@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import nibabel as nib
 import matplotlib.pyplot as plt
+
 from nilearn import image, masking
 from nilearn.glm.first_level import make_first_level_design_matrix
 from nilearn.plotting import plot_design_matrix
@@ -11,7 +12,7 @@ from nilearn.masking import compute_epi_mask, apply_mask, unmask
 from nilearn import plotting
 
 #
-# USE MAC FOUNDATION FAMILY IMAGERY WORD PEAKS AS TRIALS IN SOCIAL VERSION OF THE NARRATIVE
+# USE MAC FOUNDATION FAMILY VIRTUE PEAKS AS TRIALS IN SOCIAL VERSION OF THE NARRATIVE
 #
 
 #
@@ -29,7 +30,7 @@ eventNames = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15",
 wordPeaks = ["3","4","13","22"]
 
 epidataTest_dir = "_testData/fmri"
-confoundsTest_dir = "_testData/confounds/"
+confoundsTest_dir = "../_testData/confounds/"
 processed_Testdir = "./_testData/processed_first_level_MAC_family/"
 
 epidata_dir = "G:/fMRI_project/narrative_mri/data/"
@@ -38,8 +39,8 @@ processed_dir = "G:/fMRI_project/processed_first_level_MAC_family/"
 
 segmentFileDF_social = pd.read_excel("./foundationScores/shapessocial_transcript_segment_MFT_MAC.xlsx")
 
-#filter to keep all values in the MAC Family Virtue column for segments that have more than 12 'imagery' words
-segmentFileDF_social['wordPeaks'] = segmentFileDF_social['segment'].apply(lambda x: x if x in wordPeaks else "0")
+#filter to keep all values above .2 in the MAC Family Virtue column and change the rest to .000001
+segmentFileDF_social['familyMAC_filterAbovePointTwo']  = segmentFileDF_social['seg_MAC_a_family_virtue'].apply(lambda x: x if x >= .2 else 0.000001)
 
 segmentValues_social = segmentFileDF_social[['segment',
                                'seg_MFT_a_care_virtue',
@@ -65,9 +66,12 @@ segmentValues_social = segmentFileDF_social[['segment',
                                'seg_MAC_a_heroism_vice',
                                'seg_MAC_a_reciprocity_vice',
                                'seg_MAC_a_family_vice',
-                               'seg_MAC_a_property_vice']]
+                               'seg_MAC_a_property_vice',
+                               'familyMAC_filterAbovePointTwo']]
 
 eventFoundations_social = segmentValues_social.drop_duplicates(subset=['segment'], keep='first', ignore_index=True)
+
+
 
 #
 #   Helper functions
@@ -79,7 +83,6 @@ def load_epi_data_social(sub):
     epi_data_social = nib.load(epi_in)
     print("Loading data from %s" % (epi_in))
     return epi_data_social
-
 
 #
 #   Data transform
@@ -96,18 +99,18 @@ for participant in testSubject:
     df = pd.read_csv(confoundsAll, sep='\t')
     confound_file1 = df[['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
 
-    # use segment column for determining modulation values
-    modulationValues = eventFoundations_social['segment']
+    # use only events from above .2 MAC family values
+    modulationValues = eventFoundations_social['familyMAC_filterAbovePointTwo']
 
-    ## Keep the trials with sufficient 'imagination' words as trials [listed in wordPeaks]
+    ## only keep the rows with modulationValues above .2
     for Trial in range(len(modulationValues)):
-       #print('Processing Trial %s' % (Trial))
 
-        if Trial in wordPeaks:
-            events = events.drop(Trial)
+        #print('trial:', Trial)
 
+        if modulationValues[Trial] < .2:
+           events = events.drop(Trial)
 
-    events['trial_type'] = 'wordPeak'
+    events['trial_type'] = 'macFamily'
 
     # Make an average
     mean_img = image.mean_img(epi_data_socialNIFTI, copy_header=True)
@@ -150,7 +153,7 @@ for participant in testSubject:
     #plt.show()
 
     ## create contrast image
-    contrast_name = "wordPeak"
+    contrast_name = "macFamily"
 
     z_map = FM1.compute_contrast(
         contrast_name,
@@ -162,7 +165,6 @@ for participant in testSubject:
     z_map_masked = unmask(masked_data, mask)
 
     # save contrast image for the testsubject (to be used at second level)
-    z_map_masked.to_filename((processed_Testdir + "%03d_social_macFamily_wordPeak.nii.gz") % (participant))
-
+    z_map_masked.to_filename((processed_Testdir + "%03d_contrast_macFamily.nii.gz") % (participant))
 
     plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
