@@ -20,7 +20,7 @@ The pipeline for analysis is the following:
 Some notable ways to break things:
 
 1) MAC and MFT scoring in (5) above uses libraries that have dependencies on outdated versions of spacy, typing extensions, etc., so downgrade to Python 3.8 and follow instructions from comments in getMAC_MFT_for_segments.py to complete step (5) ONLY
-2) (5) depends on ffmpeg.  Follow online instructions to install it or you will get a mysterious File missing error
+2) (4) depends on ffmpeg.  Follow online instructions to install it or you will get a mysterious File missing error
 3) Other types of analysis, Jupyter Notebooks, etc., all have their own directories, so pay attention when executing anything that you are in the right directory
 4) .\results, .\testData, are not used, but can be for debugging and not breaking things, so use them!
 5) .\data\audio, .\data\allDataAliases have datafiles from Princeton (Ken Norman Lab), which are both large, and not yours. They are in .gitignore, so they don't get pushed with commits
