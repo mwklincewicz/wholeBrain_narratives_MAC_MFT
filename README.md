@@ -27,3 +27,4 @@ Some notable ways to break things:
 6) my_temp_file and emfdTemp.csv are recreated every time you do (5) and they are there to easily and slowly handle charaxcter encoding issues; this is a pain right now and slows things down, so it needs a better method.
 7) Narratives participants holds information about the order in which participants heard social and physical shapes stories
 8) emacscore-master.zip needs to be used to install MAC dictionary scoring for (5), keep it in the directory and use pip
+9) drive G: on WHITE_LADY, which syncs with Google Drive, sometimes does not have a check for directories; manually make them.  
