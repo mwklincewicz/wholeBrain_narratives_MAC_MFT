@@ -1,4 +1,4 @@
-# MORALITY IN THE BRAIN USING NATURALISTIC STIMULLI
+# MORALITY IN THE BRAIN USING NATURALISTIC STIMULI
 
 ### I.      Find neural correlates of foundation scores through whole-brain analysis MAC family foundation peaks
 
