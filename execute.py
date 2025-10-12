@@ -4,7 +4,8 @@ import firstLevelModel
 #import secondLevelModel
 #import transcribeAudio_x
 
-stories = ['shapessocial','shapesphysical']#,'21styear','bronx','pieman','piemanpni','tunnel']
+stories = ['shapessocial','shapesphysical','21styear','bronx','pieman','piemanpni','tunnel']
+
 task = "bronx"
 
 #transcribeAudio_x.run(task)
