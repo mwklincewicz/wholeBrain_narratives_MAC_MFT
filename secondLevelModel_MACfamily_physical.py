@@ -7,7 +7,7 @@ from nilearn.glm import threshold_stats_img
 
 # # Second Level Model PHYSICAL STORY
 contrastImg_physical_dir = "results/processed_first_level_MAC_family/physical/"
-contrastImg_physical_Testdir = "./testData/processed_first_level_MAC_family/physical/"
+contrastImg_physical_Testdir = "./testData/processed_first_level_MAC_family/shapesphysical/"
 processed_dir = "results/processed_second_level_MAC_family/"
 
 all_imgs_physical = [

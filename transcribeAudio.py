@@ -27,7 +27,7 @@ for task in stories:
         for word in segment['words']:
             df_words.loc[len(df_words)] = [phraseNumber, word['text'], word['start'], word['end']]
             transcript_text = transcript_text + " " + word['text']
-    df_words.to_csv("./word_timestamps/"+task+"_transcription_per_word.csv", index=False)
-    df_phrases.to_csv("./word_timestamps/"+task+"_transcription_per_phrase.csv", index=False)
-    with open("./word_timestamps/"+task+"_transcription.txt", "w+") as fh:
+    df_words.to_csv("./timestamps/"+task+"_transcription_per_word.csv", index=False)
+    df_phrases.to_csv("./timestamps/"+task+"_transcription_per_phrase.csv", index=False)
+    with open("./timestamps/"+task+"_transcription.txt", "w+") as fh:
         fh.write(transcript_text)

@@ -19,8 +19,8 @@ from emacscore.scoring import score_docs as emac_score_docs
 #   emfdscore from git
 #   emacscore best to download zip and install with pip
 
-#stories = ['physical','social']
-stories = ['tunnel','bronx','21styear','pieman','piemanpni'] #names of narrative files in 'text_to_be_segmented' subdir
+#stories = ['shapesphysical','shapessocial']
+stories = ['bronx']#,'21styear','tunnel','pieman','piemanpni'] #names of narrative files in 'text_to_be_segmented' subdir
 
 class bcolors:
     HEADER = '\033[95m'
@@ -47,7 +47,10 @@ spacy.load('en_core_web_sm') #may work better with a bigger model
 index = 0
 for story in stories:
     directory_input=story
-    directory_text="text_to_be_segmented/"+story
+    if story == 'shapesphysical' or story == 'shapessocial':
+        directory_text = "timestamps/" + story
+    else:
+        directory_text = "text_to_be_segmented/" + story
     directory=story
     print(f"{bcolors.OKCYAN}==========================================================================={bcolors.END}")
     print(f"{bcolors.OKBLUE} Processing "+story+ f" narrarative for foundations, segments, and timestamps{bcolors.END}")
@@ -311,11 +314,11 @@ for story in stories:
     sentenceStart = 0.0
     sentenceEnd = 0.0
     # load file with word timestamps for the text being analyzed, if it exists
-    if os.path.exists('./word_timestamps/' + directory_input + '_transcription_per_word_x.csv'):
-        print(f"{bcolors.OKCYAN}Reading in audio transcription with time stamps csv file (./word_timestamps/" + directory_input + f"_transcription_per_word_x.csv)...{bcolors.END}")
-        wordTimestamps_df = pd.read_csv('./word_timestamps/' + directory_input + '_transcription_per_word_x.csv', header=None)
+    if os.path.exists('./timestamps/' +directory_input +"/"+ directory_input + '_transcription_per_word_x.csv'):
+        print(f"{bcolors.OKCYAN}Reading in audio transcription with time stamps csv file (./timestamps/" +directory_input +"/" + directory_input + f"_transcription_per_word_x.csv)...{bcolors.END}")
+        wordTimestamps_df = pd.read_csv('./timestamps/' +directory_input +"/"+ directory_input + '_transcription_per_word_x.csv', header=None)
     else:
-        print(f"{bcolors.FAIL}Per word timestamps in{bcolors.END} ./word_timestamps/" + directory_input + f"_transcription_per_word_x.csv {bcolors.FAIL}FAILED TO LOAD!{bcolors.END}")
+        print(f"{bcolors.FAIL}Per word timestamps in{bcolors.END} ./timestamps/"+directory_input +"/" + directory_input + f"_transcription_per_word_x.csv {bcolors.FAIL}FAILED TO LOAD!{bcolors.END}")
 
     t_index = 1
     t_sentence = ""

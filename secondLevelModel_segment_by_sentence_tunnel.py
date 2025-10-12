@@ -7,7 +7,7 @@ from nilearn.glm import threshold_stats_img
 # ## second level model directories for PER SENTENCE
 task="tunnel"
 contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
-contrastImg_Testdir = "./testData/processed_first_level_MAC_family/social/"
+contrastImg_Testdir = "./testData/processed_first_level_MAC_family/shapessocial/"
 processed_dir = "results/processed_second_level_per_sentence/"
 
 #main loop over foundations

@@ -9,8 +9,7 @@ import pandas as pd
 #   This transcribes audio files in using WHISPERX, which builds on OpenAI whisper model for speech-to-text
 #
 
-stories = ['tunnel']#,'21styear','bronx','pieman','piemanpni']
-#stories = ['bronx']
+stories = ['shapessocial','shapesphysical']#,'21styear','bronx','pieman','piemanpni','tunnel']
 device = "cpu"
 batch_size = 4 # reduce if low on GPU mem
 compute_type = "int8" # change to "int8" if low on GPU mem (may reduce accuracy)
@@ -42,9 +41,9 @@ for task in stories:
         for word in segment['words']:
             df_words.loc[len(df_words)] = [phraseNumber, word['word'], word['start'], word['end']]
             transcript_text = transcript_text + " " + word['word']
-    df_words.to_csv("./word_timestamps/"+task+"_transcription_per_word_x.csv", index=False)
-    df_phrases.to_csv("./word_timestamps/"+task+"_transcription_per_phrase_x.csv", index=False)
-    with open("./word_timestamps/"+task+"_transcription_x.txt", "w+") as fh:
+    df_words.to_csv("./timestamps/"+task+"_transcription_per_word_x.csv", index=False)
+    df_phrases.to_csv("./timestamps/"+task+"_transcription_per_phrase_x.csv", index=False)
+    with open("./timestamps/"+task+"_transcription_x.txt", "w+") as fh:
         fh.write(transcript_text)
 
 

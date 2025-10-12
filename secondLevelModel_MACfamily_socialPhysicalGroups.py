@@ -7,9 +7,9 @@ from nilearn.glm import threshold_stats_img
 # ## SECOND LEVEL MODEL COMPARING ACROSS GROUPS
 # # Second Level Model PHYSICAL STORY
 contrastImg_physical_dir = "results/processed_first_level_MAC_family/physical/"
-contrastImg_physical_Testdir = "./testData/processed_first_level_MAC_family/physical/"
+contrastImg_physical_Testdir = "./testData/processed_first_level_MAC_family/shapesphysical/"
 contrastImg_dir = "results/processed_first_level_MAC_family/social/"
-contrastImg_Testdir = "./testData/processed_first_level_MAC_family/social/"
+contrastImg_Testdir = "./testData/processed_first_level_MAC_family/shapessocial/"
 
 processed_dir = "results/processed_second_level_MAC_family/"
 
@@ -75,7 +75,7 @@ print(f"The p<.05 FDR-corrected threshold is z score of {threshold_Physical_grou
 thresholded_map_Physical_groupDiff.to_filename(processed_dir + "threshold_"+f"{threshold_Physical_groupDiff:.3g}"+"_"+
                                                 "SecondLevel_Physical_groupDiff_fdrcorrect_macFamily.nii.gz")
 
-# F test shows general group differences for physical story, now compute group3 over group1 and 2
+# F test shows general group differences for shapesphysical story, now compute group3 over group1 and 2
 
 contrast_vec = np.array([-0.5, -0.5, 1, 0], dtype=float).ravel()
 
