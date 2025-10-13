@@ -3,8 +3,12 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/_testData/processed_first_level_MAC_family/physical" />
+      <excludeFolder url="file://$MODULE_DIR$/_testData/processed_first_level_MAC_family/social" />
+      <excludeFolder url="file://$MODULE_DIR$/_testData/processed_first_level_MAC_family/wordpeak_social" />
+      <excludeFolder url="file://$MODULE_DIR$/data" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.8 (narrative_mri)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.12 (narratives_project)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

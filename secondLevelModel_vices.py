@@ -6,9 +6,9 @@ from nilearn.glm import threshold_stats_img
 
 def run(task):
     # ## second level model directories for PER SENTENCE
-    contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC/Conjunction/"  # Or /F_contrast/
+    contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/" + task + "/7_MAC_V/Conjunction/"  # Or /F_contrast/
     contrastImg_Testdir = ""
-    processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC/SecondLevel_contrast/"
+    processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC_V/SecondLevel_contrast/"
 
     #main loop over foundations
     all_imgs = [
@@ -40,7 +40,7 @@ def run(task):
     )
     os.makedirs(processed_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
     (z_map.to_filename
-     (processed_dir + "/" + "SecondLevel_CONJUNCTION_"+task+"_per_sentence_MACVirtues_zscore.nii.gz"))
+     (processed_dir + "/" + "SecondLevel_CONJUNCTION_"+task+"_per_sentence_MACVices_zscore.nii.gz"))
 
     #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
     # #### fdr correction
@@ -56,7 +56,7 @@ def run(task):
 
     # save as brain image
     thresholded_map.to_filename(processed_dir + "/threshold_"+f"{threshold:.3g}"+"_"+
-                                "SecondLevel_CONJUNCTION_"+task+"_fdrcorrect_per_sentence_MACVirtues.nii.gz")
+                                "SecondLevel_CONJUNCTION_"+task+"_fdrcorrect_per_sentence_MACVices.nii.gz")
     # quick visualization
     plotting.plot_stat_map(
         thresholded_map,
@@ -86,7 +86,7 @@ def run(task):
 
     # save as brain image
     thresholded_map2.to_filename(processed_dir + "/threshold_"+f"{threshold2:.3g}"+"_"+
-                                 "SecondLevel_CONJUNCTION_"+task+"_bonfcorrect_per_Sentence_MACVirtues.nii.gz")
+                                 "SecondLevel_CONJUNCTION_"+task+"_bonfcorrect_per_Sentence_MACVices.nii.gz")
 
     # quick visualization
     plotting.plot_stat_map(

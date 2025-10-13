@@ -4,21 +4,23 @@ from nilearn import plotting
 from nilearn.glm.second_level import SecondLevelModel
 from nilearn.glm import threshold_stats_img
 
-def run(task):
+
+
+def run(task, foundation):
     # ## second level model directories for PER SENTENCE
-    contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC/Conjunction/"  # Or /F_contrast/
+    contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/" + task + "/7_MAC_V/VsBaseline/"  # Or /F_contrast/
     contrastImg_Testdir = ""
-    processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC/SecondLevel_contrast/"
+    processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC_V/SecondLevel_contrast/"
 
     #main loop over foundations
     all_imgs = [
         os.path.join(contrastImg_dir, name)
         for name in os.listdir(contrastImg_dir)
-            if name.endswith(".nii.gz")
+            if name.endswith(f"foundation{foundation}_vsBaseline.nii.gz")
     ]
 
     second_level_input = all_imgs
-
+    print(second_level_input)
 
     # create a design matrix for one sample t test, to be used as input for the second level model
     design_matrix = pd.DataFrame(
@@ -40,7 +42,7 @@ def run(task):
     )
     os.makedirs(processed_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
     (z_map.to_filename
-     (processed_dir + "/" + "SecondLevel_CONJUNCTION_"+task+"_per_sentence_MACVirtues_zscore.nii.gz"))
+     (processed_dir + "/" + "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsBaseline_per_sentence_MACVices_zscore.nii.gz"))
 
     #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
     # #### fdr correction
@@ -56,49 +58,4 @@ def run(task):
 
     # save as brain image
     thresholded_map.to_filename(processed_dir + "/threshold_"+f"{threshold:.3g}"+"_"+
-                                "SecondLevel_CONJUNCTION_"+task+"_fdrcorrect_per_sentence_MACVirtues.nii.gz")
-    # quick visualization
-    plotting.plot_stat_map(
-        thresholded_map,
-        title="Thresholded z map, fdr < .05",
-        threshold=threshold,
-    )
-
-    plotting.plot_stat_map(
-        thresholded_map,
-        threshold=threshold,
-        display_mode="z",
-        title="fdr < .05",
-    )
-
-    plotting.plot_stat_map(
-        thresholded_map,
-        threshold=threshold,
-        display_mode="x",
-        title="fdr < .05",
-    )
-
-    # #### bonferroni correction
-    thresholded_map2, threshold2 = threshold_stats_img(
-        z_map, alpha=0.05, height_control="bonferroni"
-    )
-    print(f"The p<.05 Bonferroni-corrected threshold is z score of {threshold2:.3g}")
-
-    # save as brain image
-    thresholded_map2.to_filename(processed_dir + "/threshold_"+f"{threshold2:.3g}"+"_"+
-                                 "SecondLevel_CONJUNCTION_"+task+"_bonfcorrect_per_Sentence_MACVirtues.nii.gz")
-
-    # quick visualization
-    plotting.plot_stat_map(
-        thresholded_map2,
-        title="Thresholded z map, bonferroni < .05",
-        threshold=threshold2,
-    )
-
-    # quick visualization
-    plotting.plot_stat_map(
-        thresholded_map2,
-        title="bonferroni < .05",
-        threshold=threshold2,
-        display_mode = 'z'
-    )
+                                "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsBaseline_fdrcorrect_per_sentence_MACVices.nii.gz")
