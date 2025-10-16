@@ -9,13 +9,13 @@ import pandas as pd
 #   This transcribes audio files in using WHISPERX, which builds on OpenAI whisper model for speech-to-text
 #
 
-device = "cpu"
-batch_size = 4 # reduce if low on GPU mem
-compute_type = "int8" # change to "int8" if low on GPU mem (may reduce accuracy)
-model = whisperx.load_model("large-v3", device, compute_type=compute_type)
-transcript_text = ""
-
 def run(task):
+    device = "cpu"
+    batch_size = 4  # reduce if low on GPU mem
+    compute_type = "int8"  # change to "int8" if low on GPU mem (may reduce accuracy)
+    model = whisperx.load_model("large-v3", device, compute_type=compute_type)
+    transcript_text = ""
+
     audio_file = ".\\data\\audio\\" + task + "_audio.wav"
     if os.path.exists(audio_file):
         print("The audio file " + audio_file + " exists.")
@@ -40,9 +40,9 @@ def run(task):
         for word in segment['words']:
             df_words.loc[len(df_words)] = [phraseNumber, word['word'], word['start'], word['end']]
             transcript_text = transcript_text + " " + word['word']
-    df_words.to_csv("./timestamps/"+task+"_transcription_per_word_x.csv", index=False)
-    df_phrases.to_csv("./timestamps/"+task+"_transcription_per_phrase_x.csv", index=False)
-    with open("./timestamps/"+task+"_transcription_x.txt", "w+") as fh:
+    df_words.to_csv("./text/timestamps/"+task+"_transcription_per_word_x.csv", index=False)
+    df_phrases.to_csv("./text/timestamps/"+task+"_transcription_per_phrase_x.csv", index=False)
+    with open("./text/timestamps/"+task+"_transcription_x.txt", "w+") as fh:
         fh.write(transcript_text)
 
     import gc; import torch; gc.collect(); torch.cuda.empty_cache(); del model_a

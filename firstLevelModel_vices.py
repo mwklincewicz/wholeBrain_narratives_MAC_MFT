@@ -22,6 +22,7 @@ foundationScores_dir = "text/foundationScores/"
 def load_participants(story):
     #return a list of all participant numbers for a story
     participants = []
+    story = story + "_"
     for root, dirs, files in os.walk(alias_data_dir):
         for file in files:
             if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
@@ -32,26 +33,43 @@ def load_participants(story):
 
 def load_epi_data(sub,story):
     # Load MRI file (in Nifti format)
+    story = story + "_"
     for root, dirs, files in os.walk(alias_data_dir):
         for file in files:
             if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz") and "sub-"+str(sub) in file:
-                epi_in = os.path.join(alias_data_dir,"sub-%03s/func/sub-%03s_task-%s_space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz" % (sub, sub, story))
+                if "run-1" in file:
+                    epi_in = os.path.join(alias_data_dir,"sub-%03s/func/sub-%03s_task-%srun-1_space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz" % (sub, sub, story))
+                elif "run-2" in file:
+                    print( "Ignoring data for run 2")
+                else:
+                    epi_in = os.path.join(alias_data_dir,"sub-%03s/func/sub-%03s_task-%sspace-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz" % (sub, sub, story))
+
                 epi_data = nib.load(epi_in)
                 print("Loading data from %s" % (epi_in))
-    return epi_data
+    return epi_data, epi_in
 
 def load_regressor(sub,story):
     # Load tsv file with regressors
+    story = story + "_"
+
     for root, dirs, files in os.walk(alias_data_dir):
         for file in files:
             if story in file and file.endswith("desc-confounds_regressors.tsv") and "sub-"+sub in file:
-                regressor_location = os.path.join(alias_data_dir,"sub-%03s/func/sub-%03s_task-%04s_desc-confounds_regressors.tsv" % (sub, sub, story))
-                #print("Loading regressors from %s" % (regressor_location))
+                if "run-1" in file:
+                    regressor_location = os.path.join(alias_data_dir,"sub-%03s/func/sub-%03s_task-%04srun-1_desc-confounds_regressors.tsv" % (sub, sub, story))
+                elif "run-2" in file:
+                    print( "Ignoring regressors for run 2")
+                else:
+                    regressor_location = os.path.join(alias_data_dir,"sub-%03s/func/sub-%03s_task-%04sdesc-confounds_regressors.tsv" % (sub, sub, story))
+
+                print("Loading regressors from %s" % (regressor_location))
                 regressor = pd.read_csv(regressor_location, sep='\t')
-    return regressor
+    return regressor, regressor_location
 
 def get_top_foundation_per_sentence(story, foundations):
     #return a list of tuples (index, foundation name, foundation score, onset, duration)
+    story = story + "_"
+
     sentence_tuples = []
     for root, dirs, files in os.walk(foundationScores_dir):
         for file in files:
@@ -68,6 +86,8 @@ def get_top_foundation_per_sentence(story, foundations):
 
 def load_onsets(story):
     #return a list of timestamps for onset
+    story = story + "_"
+
     onsets = []
     for root, dirs, files in os.walk(foundationScores_dir):
         for file in files:
@@ -77,6 +97,8 @@ def load_onsets(story):
     return onsets
 
 def load_durations(story):
+    story = story + "_"
+
     #return a list of timestamps for onset
     durations = []
     for root, dirs, files in os.walk(foundationScores_dir):
@@ -192,9 +214,16 @@ def run(story):
 
     for participant in load_participants(story):
         print ("Building first-level models for participant %s" % (participant))
-        epi_data_NIFTI = load_epi_data(participant, story)
-        df = load_regressor(participant, story)
+        epi_data_NIFTI, epi_path = load_epi_data(participant, story)
+        df, regressor_path = load_regressor(participant, story)
         confound_file1 = df[['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
+
+        # this weird thing handles cases in which there were multiple runs for a single participant
+        if "run-1" in epi_path:
+            participant = participant + "_run-1_"
+
+        if "run-2" in epi_path:
+            participant = participant + "_run-2_"
 
         # Make an average
         mean_img = image.mean_img(epi_data_NIFTI, copy_header=True)
@@ -205,10 +234,10 @@ def run(story):
         epi_data_NIFTI = image.smooth_img(epi_data_NIFTI, 6.0)
 
         # get fdata
-        epi_data_social = epi_data_NIFTI.get_fdata()
+        epi_data = epi_data_NIFTI.get_fdata()
 
         frame_times = (
-                np.arange(epi_data_social.shape[3]) * 1.5
+                np.arange(epi_data.shape[3]) * 1.5
         )
 
         # baseline first level model
