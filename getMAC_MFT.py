@@ -20,7 +20,7 @@ from emacscore.scoring import score_docs as emac_score_docs
 #   emacscore best to download zip and install with pip
 
 #stories = ['shapesphysical','shapessocial']
-stories = ['bronx']#,'21styear','tunnel','pieman','piemanpni'] #names of narrative files in 'text_to_be_segmented' subdir
+stories = ['black']#,'21styear','tunnel','pieman','piemanpni'] #names of narrative files in 'text_to_be_segmented' subdir
 
 class bcolors:
     HEADER = '\033[95m'
@@ -359,6 +359,6 @@ def run(story):
 
     file.close()
     os.remove('my_temp_file')
-    os.remove('emfdTemp.csv')
+    #os.remove('emfdTemp.csv')
 story = input("Enter the story you wish to analyze: ")
 run(story)

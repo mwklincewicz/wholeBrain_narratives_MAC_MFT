@@ -40,9 +40,10 @@ def run(task):
         for word in segment['words']:
             df_words.loc[len(df_words)] = [phraseNumber, word['word'], word['start'], word['end']]
             transcript_text = transcript_text + " " + word['word']
-    df_words.to_csv("./text/timestamps/"+task+"_transcription_per_word_x.csv", index=False)
-    df_phrases.to_csv("./text/timestamps/"+task+"_transcription_per_phrase_x.csv", index=False)
-    with open("./text/timestamps/"+task+"_transcription_x.txt", "w+") as fh:
+    os.makedirs("./text/timestamps/"+task+"/", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
+    df_words.to_csv("./text/timestamps/"+task+"/"+task+"_transcription_per_word_x.csv", index=False)
+    df_phrases.to_csv("./text/timestamps/"+task+"/"+task+"_transcription_per_phrase_x.csv", index=False)
+    with open("./text/timestamps/"+task+"/"+task+"_transcription_x.txt", "w+") as fh:
         fh.write(transcript_text)
 
     import gc; import torch; gc.collect(); torch.cuda.empty_cache(); del model_a

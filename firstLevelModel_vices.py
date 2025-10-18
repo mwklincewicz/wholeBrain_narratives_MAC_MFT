@@ -115,12 +115,12 @@ def load_durations(story):
 #the name of the task (story) should be changed at some point for a loop through all of them
 #story = "tunnel"
 #each task (story) should have a different test subject number
+
 def run(story):
     os.makedirs(processed_dir + story + "\\7_MAC_V\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
     # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
     segmentFileDF = pd.read_excel("./text/foundationScores/" + story + "_MFT_MAC.xlsx")
-    sentenceValues = segmentFileDF[['segment',
-                                    'MFT_a_care_virtue',
+    sentenceValues = segmentFileDF[['MFT_a_care_virtue',
                                     'MFT_a_fairness_virtue',
                                     'MFT_a_loyalty_virtue',
                                     'MFT_a_authority_virtue',
@@ -145,33 +145,33 @@ def run(story):
                                     'MAC_a_family_vice',
                                     'MAC_a_property_vice']]
 
-    segmentValues = segmentFileDF[['segment',
-                                   'seg_MFT_a_care_virtue',
-                                   'seg_MFT_a_fairness_virtue',
-                                   'seg_MFT_a_loyalty_virtue',
-                                   'seg_MFT_a_authority_virtue',
-                                   'seg_MFT_a_sanctity_virtue',
-                                   'seg_MFT_a_care_vice',
-                                   'seg_MFT_a_fairness_vice',
-                                   'seg_MFT_a_loyalty_vice',
-                                   'seg_MFT_a_authority_vice',
-                                   'seg_MFT_a_sanctity_vice',
-                                   'seg_MAC_a_fairness_virtue',
-                                   'seg_MAC_a_group_virtue',
-                                   'seg_MAC_a_deference_virtue',
-                                   'seg_MAC_a_heroism_virtue',
-                                   'seg_MAC_a_reciprocity_virtue',
-                                   'seg_MAC_a_family_virtue',
-                                   'seg_MAC_a_property_virtue',
-                                   'seg_MAC_a_fairness_vice',
-                                   'seg_MAC_a_group_vice',
-                                   'seg_MAC_a_deference_vice',
-                                   'seg_MAC_a_heroism_vice',
-                                   'seg_MAC_a_reciprocity_vice',
-                                   'seg_MAC_a_family_vice',
-                                   'seg_MAC_a_property_vice']]
+    # segmentValues = segmentFileDF[[
+    #                                'seg_MFT_a_care_virtue',
+    #                                'seg_MFT_a_fairness_virtue',
+    #                                'seg_MFT_a_loyalty_virtue',
+    #                                'seg_MFT_a_authority_virtue',
+    #                                'seg_MFT_a_sanctity_virtue',
+    #                                'seg_MFT_a_care_vice',
+    #                                'seg_MFT_a_fairness_vice',
+    #                                'seg_MFT_a_loyalty_vice',
+    #                                'seg_MFT_a_authority_vice',
+    #                                'seg_MFT_a_sanctity_vice',
+    #                                'seg_MAC_a_fairness_virtue',
+    #                                'seg_MAC_a_group_virtue',
+    #                                'seg_MAC_a_deference_virtue',
+    #                                'seg_MAC_a_heroism_virtue',
+    #                                'seg_MAC_a_reciprocity_virtue',
+    #                                'seg_MAC_a_family_virtue',
+    #                                'seg_MAC_a_property_virtue',
+    #                                'seg_MAC_a_fairness_vice',
+    #                                'seg_MAC_a_group_vice',
+    #                                'seg_MAC_a_deference_vice',
+    #                                'seg_MAC_a_heroism_vice',
+    #                                'seg_MAC_a_reciprocity_vice',
+    #                                'seg_MAC_a_family_vice',
+    #                                'seg_MAC_a_property_vice']]
 
-    eventFoundations = segmentValues.drop_duplicates(subset=['segment'], keep='first', ignore_index=True)
+    # eventFoundations = segmentValues.drop_duplicates(subset=['segment'], keep='first', ignore_index=True)
     # sentenceFoundations = sentenceValues.drop_duplicates(subset=['segment'], keep='first', ignore_index=True)
 
     #
