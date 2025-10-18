@@ -8,16 +8,10 @@ import secondLevelModel_1vB_MAC_vices
 import secondLevelModel_1v6_MAC_vices
 import secondLevelModel_virtues
 import secondLevelModel_vices
-import transcribeAudio_x
+#import transcribeAudio_x
 
 #stories = ['forgot','shapessocial','shapesphysical','21styear','bronx','pieman','piemanpni','tunnel', 'black']
 stories = ['lucy','merlin','slumlordreach']
-
-for task in stories:
-    transcribeAudio_x.run(task)
-
-#now run getMAC_MFT.py
-exit()
 
 for task in stories:
 
