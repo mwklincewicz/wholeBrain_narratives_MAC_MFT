@@ -22,19 +22,19 @@ import transcribeAudio_x
 #   After running the transcription script for the audio file, change to python 3.8 and follow instructions from
 #   getMAC_MFT.py.  Execute it for each story you generated files for in ./text/timestamps
 #   Switch back to Python 3.12 with all latest libraries needed to run this code and build a loop or execute single
-#   scripts one-by-one. Each program has a run() function that can be called from here and into which the sting from
+#   scripts one-by-one. Each program has a run() function that can be called from here and into which the string from
 #   [stories] or some other means should be passed as a parameter.  For second level models 1vB and 1v6 another
 #   parameter integer is passed. That integer specifies iteration through foundations; for those programs it is MAC
 #   virtues and vices respectively.  These are not generic execution programs; consult comments in them for purpose
 #   and use.  Rebuild this program/loop on an as-needed basis for execution.
 #
-#   Note:   it is option but advised to use downloadWithDatalad.run( NAME ) and deleteWithDatalad.ren(NAME) to maintain
-#           space on Disk, so put those into the main loop over narratives/stories AFTER all transctption/scoring done
+#   Note:   it is optional but advised to use downloadWithDatalad.run(NAME) and deleteWithDatalad.ren(NAME) to maintain
+#           space on Disk, so put those into the main loop over narratives/stories AFTER all transctption/scoring done.
 #
 ########################################################################################################################
 
-#stories = ['forgot','shapessocial','shapesphysical','21styear','bronx','pieman','piemanpni','tunnel', 'black']
-stories = ['lucy','merlin','slumlordreach']
+#stories = ['forgot','shapessocial','shapesphysical','21styear','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','slumlordreach']
+stories = []
 
 for task in stories:
     transcribeAudio_x.run(task)
