@@ -13,7 +13,7 @@ import transcribeAudio_x
 ########################################################################################################################
 #                  THIS IS THE MAIN EXECUTION SCRIPT FOR THE ANALYSIS PIPELINE OUTLINED IN README.MD
 #
-#   strings in [stories] should correspond to names audio files of narratives so they can be used in the following
+#   strings in [stories] should correspond to names of audio files of narratives so they can be used in the following
 #   convention NAME_audio.wav; ideally, you also have NAME_transcript.txt in ./text/text_to_be_segmented/NAME/
 #   For now, we are not using segments, but if these are needed, then uncomment blocks in the first level analysis
 #   programs for segments and drop segment .txt files into ./text/segments/NAME/
