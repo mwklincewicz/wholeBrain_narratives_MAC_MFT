@@ -27,7 +27,10 @@ import transcribeAudio_x
 #   parameter integer is passed. That integer specifies iteration through foundations; for those programs it is MAC
 #   virtues and vices respectively.  These are not generic execution programs; consult comments in them for purpose
 #   and use.  Rebuild this program/loop on an as-needed basis for execution.
-
+#
+#   Note:   it is option but advised to use downloadWithDatalad.run( NAME ) and deleteWithDatalad.ren(NAME) to maintain
+#           space on Disk, so put those into the main loop over narratives/stories AFTER all transctption/scoring done
+#
 ########################################################################################################################
 
 #stories = ['forgot','shapessocial','shapesphysical','21styear','bronx','pieman','piemanpni','tunnel', 'black']
@@ -46,7 +49,6 @@ for task in stories:
     firstLevelModel_vices.run(task)
     secondLevelModel_virtues.run(task)
     secondLevelModel_vices.run(task)
-
 
     for foundation in range(1,8):
         secondLevelModel_1v6_MAC_virtues.run(task, foundation)
