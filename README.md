@@ -9,6 +9,7 @@
 ............................................................................................
 #### **The pipeline for analysis is the following:**
 
+00) first of all, install datalad, git-annex, and run: datalad clone https://datasets.datalad.org/labs/hasson/narratives/derivatives/fmriprep
 0) run execute.py for this except (5), because of (a).  Too big of a pain to load and re-load environment.  Just switch to Python 3.8 and follow comments to execute it.
 
 1) Get audio files from repo on Drive or Ken Norman lab files (put in .\data\audio\, if not there already)
@@ -33,7 +34,7 @@ c) Other types of analysis, Jupyter Notebooks, etc., all have their own director
 
 d) .\results, .\testData, are not used, but can be for debugging and not breaking things, so use them!
 
-e) .\data\audio, .\data\allDataAliases have datafiles from Princeton (Ken Norman Lab), which are both large, and not yours. They are in .gitignore, so they don't get pushed with commits
+e) .\audio, .\fmriprep have datafiles from Princeton (Ken Norman Lab), which are both large, and not yours. They are in .gitignore, so they don't get pushed with commits
 
 f) my_temp_file and emfdTemp.csv are recreated every time you do (5) and they are there to easily and slowly handle character encoding issues; they sometimes stick around and this is a pain right now and slows things down, so it needs a better method.
 

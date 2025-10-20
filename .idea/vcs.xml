@@ -3,5 +3,6 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/data/allDataAliases/fmriprep" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fmriprep" vcs="Git" />
   </component>
 </project>

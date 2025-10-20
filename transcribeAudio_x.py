@@ -1,5 +1,4 @@
 import whisperx
-import gc
 import os
 import pandas as pd
 
@@ -13,10 +12,10 @@ def run(task):
     device = "cpu"
     batch_size = 4  # reduce if low on GPU mem
     compute_type = "int8"  # change to "int8" if low on GPU mem (may reduce accuracy)
-    model = whisperx.load_model("large-v3", device, compute_type=compute_type)
+    model = whisperx.load_model("large-v3", device, compute_type=compute_type, language="en")
     transcript_text = ""
 
-    audio_file = ".\\data\\audio\\" + task + "_audio.wav"
+    audio_file = ".\\audio\\" + task + "_audio.wav"
     if os.path.exists(audio_file):
         print("The audio file " + audio_file + " exists.")
     else:

@@ -9,7 +9,10 @@ def run(task):
     contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC/Conjunction/"  # Or /F_contrast/
     contrastImg_Testdir = ""
     processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC/SecondLevel_contrast/"
-
+    os.makedirs(processed_dir + "/", mode=0o777,
+                exist_ok=True)  # this checks if the directory exists and creates it, if not
+    os.makedirs(contrastImg_dir + "/", mode=0o777,
+                exist_ok=True)  # this checks if the directory exists and creates it, if not
     #main loop over foundations
     all_imgs = [
         os.path.join(contrastImg_dir, name)

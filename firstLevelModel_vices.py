@@ -10,7 +10,7 @@ from nilearn import plotting
 from nilearn.glm.first_level import make_first_level_design_matrix
 from nilearn.plotting import plot_design_matrix, plot_contrast_matrix
 
-alias_data_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\data\\allDataAliases\\fmriprep"
+alias_data_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\fmriprep"
 alias_confounds_dir = ""
 processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
 foundationScores_dir = "text/foundationScores/"
