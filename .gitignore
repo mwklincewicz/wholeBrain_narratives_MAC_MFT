@@ -1,4 +1,5 @@
 /_testData/
-/data/
 /results/
-
+/olderAnalysis/
+/fmriprep/
+/audio/
