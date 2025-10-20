@@ -9,10 +9,9 @@
 ............................................................................................
 #### **The pipeline for analysis is the following:**
 
-00) first of all, install datalad, git-annex, and run: datalad clone https://datasets.datalad.org/labs/hasson/narratives/derivatives/fmriprep
 0) run execute.py for this except (5), because of (a).  Too big of a pain to load and re-load environment.  Just switch to Python 3.8 and follow comments to execute it.
 
-1) Get audio files from repo on Drive or Ken Norman lab files (put in .\data\audio\, if not there already)
+1) get audio files into ./audio, then install datalad, git-annex, and run: datalad clone https://datasets.datalad.org/labs/hasson/narratives/derivatives/fmriprep
 2) Obtain a transcript (put it in .\text\text_to_be_segmented) or use the one generated via transcribeAudio_x.py (in .\text\timestamps)
 3) Manually, with ChatGPT, or some other means, generate segment .txt files and put them into .\text\segments
 4) Run transcribeAudio_x.py to obtain timestamp .csv files (per word/phrase) in .\text\timestamps
