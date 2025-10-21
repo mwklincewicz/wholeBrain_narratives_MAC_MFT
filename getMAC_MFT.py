@@ -9,6 +9,7 @@ import pandas as pd
 print("pandas version:", pd.__version__)
 from emfdscore.scoring import score_docs as emfd_score_docs
 from emacscore.scoring import score_docs as emac_score_docs
+from pathlib import Path
 
 #   Use Python 3.8, with a batch file that installs
 #   spacy 3.4
@@ -180,9 +181,17 @@ def run(story):
     #dataFrameForSaving.to_excel('sentence_segment_MFT_MAC.xlsx')
     dataFrameForSaving.to_excel("./text/foundationScores/" + directory_input + '_MFT_MAC.xlsx')
 
+    #Cleaning up temp files
     file.close()
     os.remove('my_temp_file')
-    #os.remove('emfdTemp.csv')
+
+    file2 = Path('emfdTemp.csv')
+    try:
+        my_abs_path = file2.resolve(strict=True)
+    except FileNotFoundError:
+        print( "Don't have to clean up empfdTemp.csv")
+    else:
+        os.remove('emfdTemp.csv')
 
 # UNCOMMENT THIS TO RUN RUN MANUALLY AND ADD NAME OF STORY THROUGH PROMPT
 #
