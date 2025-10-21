@@ -8,8 +8,8 @@
 # import secondLevelModel_1v6_MAC_vices
 # import secondLevelModel_virtues
 # import secondLevelModel_vices
-import transcribeAudio_x
-#import getMAC_MFT
+# import transcribeAudio_x
+import getMAC_MFT
 
 ########################################################################################################################
 #                  THIS IS THE MAIN EXECUTION SCRIPT FOR THE ANALYSIS PIPELINE OUTLINED IN README.MD
@@ -38,8 +38,8 @@ import transcribeAudio_x
 stories = ['milkywayoriginal', 'milkywaysynonyms','milkywayvodka','notthefallintact']
 
 for task in stories:
-    transcribeAudio_x.run(task)
-    # getMAC_MFT.run(task)
+    # transcribeAudio_x.run(task)
+    getMAC_MFT.run(task)
 
 # run getMAC_MFT_segments.py with Python 3.8 now
 

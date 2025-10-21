@@ -183,5 +183,9 @@ def run(story):
     file.close()
     os.remove('my_temp_file')
     #os.remove('emfdTemp.csv')
-story = input("Enter the story you wish to analyze: ")
-run(story)
+
+# UNCOMMENT THIS TO RUN RUN MANUALLY AND ADD NAME OF STORY THROUGH PROMPT
+#
+
+# story = input("Enter the story you wish to analyze: ")
+# run(story)
