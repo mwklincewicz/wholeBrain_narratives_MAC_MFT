@@ -34,24 +34,24 @@ import secondLevelModel_vices
 #
 ########################################################################################################################
 
-stories = ['slumlordreach']
-#stories = ['forgot','21styear','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka']
+stories = ['21styear']
+#stories = ['forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka']
 
 for task in stories:
     # transcribeAudio_x.run(task)
     # getMAC_MFT.run(task)
 
     downloadWithDatalad.run(task)
-    firstLevelModel_virtues.run(task)
-    firstLevelModel_vices.run(task)
-    secondLevelModel_virtues.run(task)
-    secondLevelModel_vices.run(task)
+    # firstLevelModel_virtues.run(task)
+    # firstLevelModel_vices.run(task)
+    # secondLevelModel_virtues.run(task)
+    # secondLevelModel_vices.run(task)
 
-    for foundation in range(1,8):
-        secondLevelModel_1v6_MAC_virtues.run(task, foundation)
-        secondLevelModel_1vB_MAC_virtues.run(task, foundation)
-        secondLevelModel_1v6_MAC_vices.run(task, foundation)
-        secondLevelModel_1vB_MAC_vices.run(task, foundation)
-
-    deleteWithDatalad.run(task)
+    # for foundation in range(1,8):
+    #     secondLevelModel_1v6_MAC_virtues.run(task, foundation)
+    #     secondLevelModel_1vB_MAC_virtues.run(task, foundation)
+    #     secondLevelModel_1v6_MAC_vices.run(task, foundation)
+    #     secondLevelModel_1vB_MAC_vices.run(task, foundation)
+    #
+    # deleteWithDatalad.run(task)
 
