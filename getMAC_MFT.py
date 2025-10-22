@@ -49,7 +49,7 @@ index = 0
 
 def run(story):
     directory_input=story
-    if story == 'shapesphysical' or story == 'shapessocial':
+    if story == 'shapesphysical' or story == 'shapessocial' or story == 'slumlordreach':
         directory_text = "timestamps/" + story
     else:
         directory_text = "text_to_be_segmented/" + story
@@ -72,7 +72,7 @@ def run(story):
             index = 0
             for sentence in sentences:
                 sentiment_dict = sentimentAnalysisVader.polarity_scores(sentence)
-                print(f"{bcolors.OKCYAN}Sentiment for {bcolors.END}" + sentence)
+                print(f"{bcolors.OKCYAN}VADER for   {bcolors.END}" + sentence)
                 neg = sentiment_dict['neg'] * 100
                 pos = sentiment_dict['pos'] * 100
                 neu = sentiment_dict['neu'] * 100
@@ -83,7 +83,7 @@ def run(story):
                 #tempDf.to_csv('emfdTemp.csv', index=False, header=False)
                 #tempDf = pd.read_csv('emfdTemp.csv', header=None)
                 length = len(tempDf)
-                print(f"{bcolors.OKCYAN}MAC and MFT scores for {bcolors.END}" + sentence)
+                print(f"{bcolors.OKCYAN}MAC/MFT for {bcolors.END}" + sentence)
                 eMFD_df_all = emfd_score_docs(tempDf, 'emfd', 'all', 'bow', 'vice-virtue', length)
                 eMAC_df_all = emac_score_docs(tempDf, 'emac', 'all', 'bow', 'vice-virtue', length)
 
@@ -127,11 +127,19 @@ def run(story):
                     dataFrameForSaving = pd.DataFrame.from_dict(merged, orient='index').transpose()
                     dataFrameForSaving.insert(0, "full_text", filename)
                     dataFrameForSaving.insert(0, "sentence", sentence)
+                    dataFrameForSaving.insert(0, "V_com", com)
+                    dataFrameForSaving.insert(0,"V_pos", pos)
+                    dataFrameForSaving.insert(0, "V_neg", neg)
+                    dataFrameForSaving.insert(0, "V_neu", neu)
                 elif index > 0 and index < len(sentences):
                     newIndex = len(dataFrameForSaving)
                     dataFrameForSaving.loc[newIndex] = merged
                     dataFrameForSaving.loc[newIndex, "full_text"] = filename
                     dataFrameForSaving.loc[newIndex, 'sentence'] = sentence
+                    dataFrameForSaving.loc[newIndex, "V_com"] = com
+                    dataFrameForSaving.loc[newIndex,"V_pos"] = pos
+                    dataFrameForSaving.loc[newIndex, "V_neg"] = neg
+                    dataFrameForSaving.loc[newIndex, "V_neu"] = neu
                 index += 1
 #
 #   This will add timestamps (per sentence)
@@ -193,7 +201,7 @@ def run(story):
     else:
         os.remove('emfdTemp.csv')
 
-# UNCOMMENT THIS TO RUN RUN MANUALLY AND ADD NAME OF STORY THROUGH PROMPT
+# UNCOMMENT THIS TO RUN MANUALLY AND ADD NAME OF STORY THROUGH PROMPT
 #
 
 # story = input("Enter the story you wish to analyze: ")

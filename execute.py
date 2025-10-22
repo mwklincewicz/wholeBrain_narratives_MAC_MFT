@@ -34,8 +34,8 @@ import secondLevelModel_vices
 #
 ########################################################################################################################
 
-#stories = ['shapesphysical', 'shapessocial','forgot','21styear','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','slumlordreach','milkywayorigina','milkywaysynonyms','milkywayvodka']
-stories = ['notthefallintact']
+stories = ['slumlordreach']
+#stories = ['forgot','21styear','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka']
 
 for task in stories:
     # transcribeAudio_x.run(task)
