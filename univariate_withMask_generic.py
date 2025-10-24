@@ -13,13 +13,14 @@ mask_dir = "./masks/"
 def load_participants(story):
     #return a list of all participant numbers for a story
     participants = []
+    story = story + "_"
     for root, dirs, files in os.walk(alias_data_dir):
         for file in files:
             if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
                 participant_number = file[4:7]
                 #print("Getting participant number %03s for %04s" % (participant_number, story))
-                if (story == 'tunnel' and participant_number == '004') or (story == 'tunnel' and participant_number == '013'):
-                    print( "excluding participant " + participant_number + " for " + story)
+                if story == 'tunnel' and (participant_number == '004' or participant_number != '013'):
+                    print( "excluding participant " + participant_number)
                 else:
                     participants.append(participant_number)
     return participants

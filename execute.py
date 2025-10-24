@@ -1,15 +1,16 @@
 import downloadWithDatalad
-import deleteWithDatalad
-import firstLevelModel_virtues
-import firstLevelModel_vices
-import secondLevelModel_1vB_MAC_virtues
-import secondLevelModel_1v6_MAC_virtues
-import secondLevelModel_1vB_MAC_vices
-import secondLevelModel_1v6_MAC_vices
-import secondLevelModel_virtues
-import secondLevelModel_vices
+# import deleteWithDatalad
+# import firstLevelModel_virtues
+# import firstLevelModel_vices
+# import secondLevelModel_1vB_MAC_virtues
+# import secondLevelModel_1v6_MAC_virtues
+# import secondLevelModel_1vB_MAC_vices
+# import secondLevelModel_1v6_MAC_vices
+# import secondLevelModel_virtues
+# import secondLevelModel_vices
 # import transcribeAudio_x
 # import getMAC_MFT
+import univariate_withMask
 
 ########################################################################################################################
 #                  THIS IS THE MAIN EXECUTION SCRIPT FOR THE ANALYSIS PIPELINE OUTLINED IN README.MD
@@ -34,14 +35,20 @@ import secondLevelModel_vices
 #
 ########################################################################################################################
 
-stories = ['21styear']
-#stories = ['forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka']
+#stories = ['21styear','tunnel','slumlordreach','pieman','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka']
+L_TPJ_mask = "TPJ_refined_mask_L.nii.gz"
+R_TPJ_mask = "TPJ_refined_mask_R.nii.gz"
+stories = ['forgot','bronx','piemanpni', 'black']
 
 for task in stories:
     # transcribeAudio_x.run(task)
     # getMAC_MFT.run(task)
 
     downloadWithDatalad.run(task)
+    univariate_withMask.run( task, L_TPJ_mask)
+    univariate_withMask.run( task, R_TPJ_mask)
+
+
     # firstLevelModel_virtues.run(task)
     # firstLevelModel_vices.run(task)
     # secondLevelModel_virtues.run(task)
