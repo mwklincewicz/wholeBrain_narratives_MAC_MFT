@@ -4,7 +4,7 @@ import nibabel as nib
 import matplotlib.pyplot as plt
 from nilearn import image, masking
 from nilearn.glm.first_level import FirstLevelModel
-from nilearn.masking import compute_epi_mask, apply_mask, unmask
+from nilearn.masking import apply_mask, unmask
 from nilearn.glm.first_level import make_first_level_design_matrix
 from nilearn.plotting import plot_design_matrix, plot_contrast_matrix
 import whisperx
@@ -15,12 +15,56 @@ from nilearn.glm.second_level import SecondLevelModel
 from nilearn.glm import threshold_stats_img
 
 alias_dir = ".\\fmriprep"
-alias_confounds_dir = ""
 processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
 foundationScores_dir = "./text/foundationScores/"
 mask_dir = "./masks/"
 
-# SCRIPT FOR DELETING STORY fMRI IMAGES THROUGH DATALAD
+#
+#   Use PYTHON 12, ffmpeg needs to be installed, latest everything else
+#
+#   This transcribes audio files in using WHISPERX, which builds on OpenAI whisper model for speech-to-text
+#
+
+def transcribe(task):
+    device = "cpu"
+    batch_size = 4  # reduce if low on GPU mem
+    compute_type = "int8"  # change to "int8" if low on GPU mem (may reduce accuracy)
+    model = whisperx.load_model("large-v3", device, compute_type=compute_type, language="en")
+    transcript_text = ""
+
+    audio_file = ".\\audio\\" + task + "_audio.wav"
+    if os.path.exists(audio_file):
+        print("The audio file " + audio_file + " exists.")
+    else:
+        print("The audio file " + audio_file + " DOES NOT EXIST.")
+    print( "Speech to text from: ./audio/" + task + "_audio.wav")
+    audio = whisperx.load_audio(audio_file)
+    result = model.transcribe(audio, language="en", batch_size=batch_size)
+    # print(result["segments"]) # before alignment
+
+    # 2. Align whisper output
+    model_a, metadata = whisperx.load_align_model(language_code=result["language"], device=device)
+    result = whisperx.align(result["segments"], model_a, metadata, audio, device, return_char_alignments=False)
+
+    df_words = pd.DataFrame(columns=["phrase","word","start", "end"])
+    df_phrases = pd.DataFrame(columns=["text","start", "end"])
+    phraseNumber = 0
+    for segment in result['segments']:
+        print( segment )
+        phraseNumber = phraseNumber + 1
+        df_phrases.loc[phraseNumber] = segment
+        for word in segment['words']:
+            df_words.loc[len(df_words)] = [phraseNumber, word['word'], word['start'], word['end']]
+            transcript_text = transcript_text + " " + word['word']
+    os.makedirs("./text/timestamps/"+task+"/", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
+    df_words.to_csv("./text/timestamps/"+task+"/"+task+"_transcription_per_word_x.csv", index=False)
+    df_phrases.to_csv("./text/timestamps/"+task+"/"+task+"_transcription_per_phrase_x.csv", index=False)
+    with open("./text/timestamps/"+task+"/"+task+"_transcription_x.txt", "w+") as fh:
+        fh.write(transcript_text)
+
+    import gc; import torch; gc.collect(); torch.cuda.empty_cache(); del model_a
+
+# FUNCTION FOR DELETING STORY fMRI IMAGES THROUGH DATALAD
 
 def dropStory(task):
     for root, dirs, files in os.walk(alias_dir):
@@ -35,7 +79,7 @@ def dropStory(task):
                 print("Removing data file for %s" % (epi))
                 subprocess.call(["datalad", "drop", epi], shell=True)
 
-# SCRIPT FOR DOWNLOADING STORY fMRI IMAGES THROUGH DATALAD
+# FUNCTION FOR LOADING ALL IMAGE FILE NAMES FOR A STORY
 
 def load_image_files(story):
     # return a list of files
@@ -53,6 +97,8 @@ def load_image_files(story):
                     files.append( file )
     return files
 
+# FUNCTION FOR LOADING SINGLE .NII IMAGE FOR A PARTICIPANT IN A STORY
+
 def load_image_data(sub,story):
     # Load image
     story = story + "_"
@@ -69,6 +115,8 @@ def load_image_data(sub,story):
                 img = image.load_img(img_path)
     return img, img_path
 
+# FUNCTION FOR DOWNLOADING STORY fMRI IMAGES THROUGH DATALAD
+
 def downloadStory( task ):
     print( "starting download of " + task )
     for root, dirs, files in os.walk(alias_dir):
@@ -82,6 +130,8 @@ def downloadStory( task ):
                 print("Downloading data for %s" % (epi))
                 subprocess.call(["datalad", "get", epi], shell=True)
 
+# HELPER FUNCTION FOR EXCLUDING PARTICIPANTS USING excluded.xlsx in root directory
+
 def exclude_participants(story, participants):
     df = pd.read_excel('excluded.xlsx')
     if not df.loc[df['story'] == story, 'ids'].isnull().all():
@@ -92,6 +142,7 @@ def exclude_participants(story, participants):
             participants.remove(bye)
     return participants
 
+# LOAD ALL PARTICIPANT NUMBERS, EXCLUDING THE ONES FROM excluded.xlsx
 def load_participants(story):
     #return a list of all participant numbers for a story
     participants = []
@@ -105,8 +156,8 @@ def load_participants(story):
                     participants.append(participant_number)
     return exclude_participants(story[:-1], participants)
 
+# Load MRI file (in Nifti format)
 def load_epi_data(sub,story):
-    # Load MRI file (in Nifti format)
     story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
@@ -121,8 +172,8 @@ def load_epi_data(sub,story):
                 print("Loading data from %s" % (epi_in))
     return epi_data, epi_in
 
+# Load tsv file with regressors
 def load_regressor(sub,story):
-    # Load tsv file with regressors
     story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
@@ -138,8 +189,8 @@ def load_regressor(sub,story):
                 regressor = pd.read_csv(regressor_location, sep='\t')
     return regressor, regressor_location
 
+#return a list of tuples (index, foundation name, foundation score, onset, duration)
 def get_top_foundation_per_sentence(story, foundations):
-    #return a list of tuples (index, foundation name, foundation score, onset, duration)
     story = story + "_"
     sentence_tuples = []
     for root, dirs, files in os.walk(foundationScores_dir):
@@ -155,8 +206,8 @@ def get_top_foundation_per_sentence(story, foundations):
                     sentence_tuples.append(tuple)
     return sentence_tuples
 
+#return a list of timestamps for onset
 def load_onsets(story):
-    #return a list of timestamps for onset
     story = story + "_"
     onsets = []
     for root, dirs, files in os.walk(foundationScores_dir):
@@ -166,9 +217,9 @@ def load_onsets(story):
                 onsets = pd.read_excel(os.path.join(root, file), usecols=['start'] )
     return onsets
 
+#return a list of durations for a story, given timestamps
 def load_durations(story):
     story = story + "_"
-    #return a list of timestamps for onset
     durations = []
     for root, dirs, files in os.walk(foundationScores_dir):
         for file in files:
@@ -178,10 +229,9 @@ def load_durations(story):
                 durations.append( df['end'] - df['start'] )
     return durations
 
-
-#the name of the task (story) should be changed at some point for a loop through all of them
-#story = "tunnel"
-#each task (story) should have a different test subject number
+#
+# MODELLING FUNCTIONS FOLLOW
+#
 
 def firstLevelMacVices(story):
     os.makedirs(processed_dir + story + "\\7_MAC_V\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
@@ -584,51 +634,6 @@ def firstLevelMacVirtues(story):
 
 
         plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
-
-#
-#   Use PYTHON 12, ffmpeg needs to be installed, latest everything else
-#
-#   This transcribes audio files in using WHISPERX, which builds on OpenAI whisper model for speech-to-text
-#
-
-def transcribe(task):
-    device = "cpu"
-    batch_size = 4  # reduce if low on GPU mem
-    compute_type = "int8"  # change to "int8" if low on GPU mem (may reduce accuracy)
-    model = whisperx.load_model("large-v3", device, compute_type=compute_type, language="en")
-    transcript_text = ""
-
-    audio_file = ".\\audio\\" + task + "_audio.wav"
-    if os.path.exists(audio_file):
-        print("The audio file " + audio_file + " exists.")
-    else:
-        print("The audio file " + audio_file + " DOES NOT EXIST.")
-    print( "Speech to text from: ./audio/" + task + "_audio.wav")
-    audio = whisperx.load_audio(audio_file)
-    result = model.transcribe(audio, language="en", batch_size=batch_size)
-    # print(result["segments"]) # before alignment
-
-    # 2. Align whisper output
-    model_a, metadata = whisperx.load_align_model(language_code=result["language"], device=device)
-    result = whisperx.align(result["segments"], model_a, metadata, audio, device, return_char_alignments=False)
-
-    df_words = pd.DataFrame(columns=["phrase","word","start", "end"])
-    df_phrases = pd.DataFrame(columns=["text","start", "end"])
-    phraseNumber = 0
-    for segment in result['segments']:
-        print( segment )
-        phraseNumber = phraseNumber + 1
-        df_phrases.loc[phraseNumber] = segment
-        for word in segment['words']:
-            df_words.loc[len(df_words)] = [phraseNumber, word['word'], word['start'], word['end']]
-            transcript_text = transcript_text + " " + word['word']
-    os.makedirs("./text/timestamps/"+task+"/", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-    df_words.to_csv("./text/timestamps/"+task+"/"+task+"_transcription_per_word_x.csv", index=False)
-    df_phrases.to_csv("./text/timestamps/"+task+"/"+task+"_transcription_per_phrase_x.csv", index=False)
-    with open("./text/timestamps/"+task+"/"+task+"_transcription_x.txt", "w+") as fh:
-        fh.write(transcript_text)
-
-    import gc; import torch; gc.collect(); torch.cuda.empty_cache(); del model_a
 
 def univariateWithMask(story, mask):
     # ----------------------------
