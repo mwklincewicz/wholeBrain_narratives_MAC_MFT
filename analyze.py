@@ -13,14 +13,14 @@ from mn import analysis as a
 #       getMAC_MFT.py.  Execute it for each story you generated files for in ./text/timestamps
 #   e)  Switch back to Python 3.12 with all latest libraries needed to run this code and build a loop or execute single
 #       scripts one-by-one.
-#   f)  mn.analysis.univariateWithMask(story, mask) task a string for mask, which should be a .nii.gz in ./masks/
+#   f)  mn.analysis.univariateWithMask(story, mask) a string for 'mask,' which should be a .nii.gz in ./masks/
 #   g)  It is optional but advised to use downloadStory(NAME) and dropStory(NAME) to maintain space on Disk,
-#       so put those into the main loop over narratives/stories AFTER all transcription/scoring done.
+#       so put those into the main loop over narratives/stories AFTER all modelling/transcription/scoring done.
 #
 ########################################################################################################################
 
 #stories = ['forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka']
-stories = ['21styear','bronx','piemanpni','tunnel', 'black', 'forgot']
+stories = ['piemanpni','tunnel', 'black', 'forgot']
 
 for story in stories:
     a.downloadStory(story)
