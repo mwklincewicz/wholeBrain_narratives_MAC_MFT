@@ -1,0 +1,43 @@
+keywords:
+  material: data
+  category: words
+  language: english
+resource_description:
+  name: "Cortese & Fugett (2004)"
+  description: "Imageability ratings for 3,000 monosyllabic words"
+  reference_to_cite: 'Cortese, M. J., & Fugett, A. (2004). Imageability ratings for 3,000 monosyllabic words. Behavior Research Methods, Instruments, & Computers (2004), Vol. 36, Issue 3, 384-387 [<a href="http://psychonomic.org/archive/uploads/CorteseEtAl(2004).pdf">on-line</a>]'
+  url_information: "http://psychonomic.org/archive/"
+  url_download: "http://psychonomic.org/archive"
+lexicall_management:
+  file_format: tsv
+  variables_defined: yes
+  nb_variables: 7
+variables:
+  - item:
+      id: 1
+      desc: "the item that was rated"
+      q: RE
+  - rt:
+      id: 2
+      desc: "mean reaction time"
+      q: MM
+  - sd_rt:
+      id: 3
+      desc: "the standard deviation for the reaction times"
+      q: None
+  - num:
+      id: 4
+      desc: "the number of participants ratings used to compute the statistics for the item"
+      q: MM
+  - rating:
+      id: 5
+      desc: "mean imageability rating"
+      q: MM
+  - sd_rating:
+      id: 6
+      desc: "the standard deviation for the imageability ratings"
+      q: None
+  - toglia:
+      id: 7
+      desc: "Toglia & Battig (1978) ratings"
+      q: MM
