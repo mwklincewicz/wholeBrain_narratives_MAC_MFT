@@ -19,10 +19,12 @@ from mn import analysis as a
 #
 ########################################################################################################################
 
-L_TPJ_mask = "TPJ_refined_mask_L.nii.gz"
-R_TPJ_mask = "TPJ_refined_mask_R.nii.gz"
-stories = ['forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka']
+#stories = ['forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka']
+stories = ['21styear','bronx','piemanpni','tunnel', 'black', 'forgot']
 
-# for story in stories:
-#     a.dropStory(story)
+for story in stories:
+    a.downloadStory(story)
+    a.univariateWithMask(story, 'STG_MTG_refined_mask_L.nii.gz')
+    a.univariateWithMask(story, 'STG_MTG_refined_mask_R.nii.gz')
+    a.dropStory(story)
 
