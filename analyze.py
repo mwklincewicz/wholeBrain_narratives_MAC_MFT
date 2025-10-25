@@ -19,11 +19,13 @@ from mn import analysis as a
 #
 ########################################################################################################################
 
-stories = ['forgot','bronx','piemanpni', 'black']
 L_TPJ_mask = "TPJ_refined_mask_L.nii.gz"
 R_TPJ_mask = "TPJ_refined_mask_R.nii.gz"
 #stories = ['forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka']
 
-for task in stories:
-    a.dropStory(task)
+a.univariateWithMask('tunnel',L_TPJ_mask)
+a.secondLevelMacVirtues_1vB('pieman')
+a.secondLevelMacVices_1vB('pieman')
+a.firstLevelMacVirtues('pieman')
+a.firstLevelMacVices('pieman')
 

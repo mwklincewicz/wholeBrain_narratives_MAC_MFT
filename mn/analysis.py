@@ -14,10 +14,10 @@ from nilearn import plotting
 from nilearn.glm.second_level import SecondLevelModel
 from nilearn.glm import threshold_stats_img
 
-alias_dir = "C:\\Users\\micha\\PycharmProjects\\wholeBrain_narrative_MAC_MFT\\fmriprep"
+alias_dir = ".\\fmriprep"
 alias_confounds_dir = ""
 processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
-foundationScores_dir = "text/foundationScores/"
+foundationScores_dir = "./text/foundationScores/"
 mask_dir = "./masks/"
 
 # SCRIPT FOR DELETING STORY fMRI IMAGES THROUGH DATALAD
@@ -176,28 +176,11 @@ def load_durations(story):
 #story = "tunnel"
 #each task (story) should have a different test subject number
 
-def firstLevelVices(story):
+def firstLevelMacVices(story):
     os.makedirs(processed_dir + story + "\\7_MAC_V\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
     # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
     segmentFileDF = pd.read_excel("./text/foundationScores/" + story + "_MFT_MAC.xlsx")
-    sentenceValues = segmentFileDF[['MFT_a_care_virtue',
-                                    'MFT_a_fairness_virtue',
-                                    'MFT_a_loyalty_virtue',
-                                    'MFT_a_authority_virtue',
-                                    'MFT_a_sanctity_virtue',
-                                    'MFT_a_care_vice',
-                                    'MFT_a_fairness_vice',
-                                    'MFT_a_loyalty_vice',
-                                    'MFT_a_authority_vice',
-                                    'MFT_a_sanctity_vice',
-                                    'MAC_a_fairness_virtue',
-                                    'MAC_a_group_virtue',
-                                    'MAC_a_deference_virtue',
-                                    'MAC_a_heroism_virtue',
-                                    'MAC_a_reciprocity_virtue',
-                                    'MAC_a_family_virtue',
-                                    'MAC_a_property_virtue',
-                                    'MAC_a_fairness_vice',
+    sentenceValues = segmentFileDF[['MAC_a_fairness_vice',
                                     'MAC_a_group_vice',
                                     'MAC_a_deference_vice',
                                     'MAC_a_heroism_vice',
@@ -393,35 +376,18 @@ def firstLevelVices(story):
 
         plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
 
-def firstLevelVirtues(story):
+def firstLevelMacVirtues(story):
     os.makedirs(processed_dir + story + "\\7_MAC\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
     # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
-    segmentFileDF = pd.read_excel("./text/foundationScores/" + story + "_MFT_MAC.xlsx")
+    segmentFileDF = pd.read_excel(foundationScores_dir + story + "_MFT_MAC.xlsx")
     sentenceValues = segmentFileDF[[
-                                    'MFT_a_care_virtue',
-                                    'MFT_a_fairness_virtue',
-                                    'MFT_a_loyalty_virtue',
-                                    'MFT_a_authority_virtue',
-                                    'MFT_a_sanctity_virtue',
-                                    'MFT_a_care_vice',
-                                    'MFT_a_fairness_vice',
-                                    'MFT_a_loyalty_vice',
-                                    'MFT_a_authority_vice',
-                                    'MFT_a_sanctity_vice',
                                     'MAC_a_fairness_virtue',
                                     'MAC_a_group_virtue',
                                     'MAC_a_deference_virtue',
                                     'MAC_a_heroism_virtue',
                                     'MAC_a_reciprocity_virtue',
                                     'MAC_a_family_virtue',
-                                    'MAC_a_property_virtue',
-                                    'MAC_a_fairness_vice',
-                                    'MAC_a_group_vice',
-                                    'MAC_a_deference_vice',
-                                    'MAC_a_heroism_vice',
-                                    'MAC_a_reciprocity_vice',
-                                    'MAC_a_family_vice',
-                                    'MAC_a_property_vice']]
+                                    'MAC_a_property_virtue']]
 
     # This creates the events and durations FOR DESIGN MATRIX
     eventNames = []
@@ -630,7 +596,7 @@ def transcribe(task):
         print("The audio file " + audio_file + " exists.")
     else:
         print("The audio file " + audio_file + " DOES NOT EXIST.")
-    print( "Speech to text from: ./data/audio/" + task + "_audio.wav")
+    print( "Speech to text from: ./audio/" + task + "_audio.wav")
     audio = whisperx.load_audio(audio_file)
     result = model.transcribe(audio, language="en", batch_size=batch_size)
     # print(result["segments"]) # before alignment
@@ -731,11 +697,11 @@ def univariateWithMask(story, mask):
 
     print("Mask array shape:", array_3d.shape, "(voxels × time × subjects)")
 
-def secondLevelVices(task):
+def secondLevelMacVices(task):
     # ## second level model directories for PER SENTENCE
-    contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/" + task + "/7_MAC_V/Conjunction/"  # Or /F_contrast/
+    contrastImg_dir = processed_dir + task + "/7_MAC_V/Conjunction/"  # Or /F_contrast/
     contrastImg_Testdir = ""
-    processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC_V/SecondLevel_contrast/"
+    processed_dir_local = processed_dir+task+"/7_MAC_V/SecondLevel_contrast/"
 
     #main loop over foundations
     all_imgs = [
@@ -765,9 +731,9 @@ def secondLevelVices(task):
         second_level_contrast="intercept",
         output_type="z_score",
     )
-    os.makedirs(processed_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
+    os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
     (z_map.to_filename
-     (processed_dir + "/" + "SecondLevel_CONJUNCTION_"+task+"_per_sentence_MACVices_zscore.nii.gz"))
+     (processed_dir_local + "/" + "SecondLevel_CONJUNCTION_"+task+"_per_sentence_MACVices_zscore.nii.gz"))
 
     #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
     # #### fdr correction
@@ -782,7 +748,7 @@ def secondLevelVices(task):
     print(f"The p<.05 FDR-corrected threshold is z score of {threshold:.3g}")
 
     # save as brain image
-    thresholded_map.to_filename(processed_dir + "/threshold_"+f"{threshold:.3g}"+"_"+
+    thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
                                 "SecondLevel_CONJUNCTION_"+task+"_fdrcorrect_per_sentence_MACVices.nii.gz")
     # quick visualization
     plotting.plot_stat_map(
@@ -812,7 +778,7 @@ def secondLevelVices(task):
     print(f"The p<.05 Bonferroni-corrected threshold is z score of {threshold2:.3g}")
 
     # save as brain image
-    thresholded_map2.to_filename(processed_dir + "/threshold_"+f"{threshold2:.3g}"+"_"+
+    thresholded_map2.to_filename(processed_dir_local + "/threshold_"+f"{threshold2:.3g}"+"_"+
                                  "SecondLevel_CONJUNCTION_"+task+"_bonfcorrect_per_Sentence_MACVices.nii.gz")
 
     # quick visualization
@@ -830,11 +796,11 @@ def secondLevelVices(task):
         display_mode = 'z'
     )
 
-def secondLevelVirtues(task):
+def secondLevelMacVirtues(task):
     # ## second level model directories for PER SENTENCE
-    contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC/Conjunction/"  # Or /F_contrast/
+    contrastImg_dir = processed_dir +task+"/7_MAC/Conjunction/"  # Or /F_contrast/
     contrastImg_Testdir = ""
-    processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC/SecondLevel_contrast/"
+    processed_dir_local = processed_dir+task+"/7_MAC/SecondLevel_contrast/"
     os.makedirs(processed_dir + "/", mode=0o777,
                 exist_ok=True)  # this checks if the directory exists and creates it, if not
     os.makedirs(contrastImg_dir + "/", mode=0o777,
@@ -867,9 +833,9 @@ def secondLevelVirtues(task):
         second_level_contrast="intercept",
         output_type="z_score",
     )
-    os.makedirs(processed_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
+    os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
     (z_map.to_filename
-     (processed_dir + "/" + "SecondLevel_CONJUNCTION_"+task+"_per_sentence_MACVirtues_zscore.nii.gz"))
+     (processed_dir_local + "/" + "SecondLevel_CONJUNCTION_"+task+"_per_sentence_MACVirtues_zscore.nii.gz"))
 
     #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
     # #### fdr correction
@@ -884,7 +850,7 @@ def secondLevelVirtues(task):
     print(f"The p<.05 FDR-corrected threshold is z score of {threshold:.3g}")
 
     # save as brain image
-    thresholded_map.to_filename(processed_dir + "/threshold_"+f"{threshold:.3g}"+"_"+
+    thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
                                 "SecondLevel_CONJUNCTION_"+task+"_fdrcorrect_per_sentence_MACVirtues.nii.gz")
     # quick visualization
     plotting.plot_stat_map(
@@ -914,7 +880,7 @@ def secondLevelVirtues(task):
     print(f"The p<.05 Bonferroni-corrected threshold is z score of {threshold2:.3g}")
 
     # save as brain image
-    thresholded_map2.to_filename(processed_dir + "/threshold_"+f"{threshold2:.3g}"+"_"+
+    thresholded_map2.to_filename(processed_dir_local + "/threshold_"+f"{threshold2:.3g}"+"_"+
                                  "SecondLevel_CONJUNCTION_"+task+"_bonfcorrect_per_Sentence_MACVirtues.nii.gz")
 
     # quick visualization
@@ -932,12 +898,12 @@ def secondLevelVirtues(task):
         display_mode = 'z'
     )
 
-def secondLevel1v6_MAC_vices(task):
+def secondLevelMacVices_1v6(task):
     for foundation in range(1,8):
         # ## second level model directories for PER SENTENCE
-        contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/" + task + "/7_MAC_V/VsOther6/"  # Or /F_contrast/
+        contrastImg_dir = processed_dir + task + "/7_MAC_V/VsOther6/"  # Or /F_contrast/
         contrastImg_Testdir = ""
-        processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC_V/SecondLevel_contrast/"
+        processed_dir_local = processed_dir+task+"/7_MAC_V/SecondLevel_contrast/"
         #main loop over foundations
         all_imgs = [
             os.path.join(contrastImg_dir, name)
@@ -966,9 +932,9 @@ def secondLevel1v6_MAC_vices(task):
             second_level_contrast="intercept",
             output_type="z_score",
         )
-        os.makedirs(processed_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
+        os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
         (z_map.to_filename
-         (processed_dir + "/" + "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsOther6_per_sentence_MACVirtues_zscore.nii.gz"))
+         (processed_dir_local + "/" + "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsOther6_per_sentence_MACVirtues_zscore.nii.gz"))
 
         #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
         # #### fdr correction
@@ -983,15 +949,15 @@ def secondLevel1v6_MAC_vices(task):
         print(f"The p<.05 FDR-corrected threshold is z score of {threshold:.3g}")
 
         # save as brain image
-        thresholded_map.to_filename(processed_dir + "/threshold_"+f"{threshold:.3g}"+"_"+
+        thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
                                     "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsOther6_fdrcorrect_per_sentence_MACVirtues.nii.gz")
 
-def secondLevel1v6MACvirtues(task):
+def secondLevelMacVirtues_1v6(task):
     for foundation in range(1, 8):
         # ## second level model directories for PER SENTENCE
-        contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/" + task + "/7_MAC/VsOther6/"  # Or /F_contrast/
+        contrastImg_dir = processed_dir + task + "/7_MAC/VsOther6/"  # Or /F_contrast/
         contrastImg_Testdir = ""
-        processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC/SecondLevel_contrast/"
+        processed_dir_local = processed_dir+task+"/7_MAC/SecondLevel_contrast/"
 
         #main loop over foundations
         all_imgs = [
@@ -1021,9 +987,9 @@ def secondLevel1v6MACvirtues(task):
             second_level_contrast="intercept",
             output_type="z_score",
         )
-        os.makedirs(processed_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
+        os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
         (z_map.to_filename
-         (processed_dir + "/" + "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsOther6_per_sentence_MACVirtues_zscore.nii.gz"))
+         (processed_dir_local + "/" + "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsOther6_per_sentence_MACVirtues_zscore.nii.gz"))
 
         #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
         # #### fdr correction
@@ -1038,15 +1004,15 @@ def secondLevel1v6MACvirtues(task):
         print(f"The p<.05 FDR-corrected threshold is z score of {threshold:.3g}")
 
         # save as brain image
-        thresholded_map.to_filename(processed_dir + "/threshold_"+f"{threshold:.3g}"+"_"+
+        thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
                                     "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsOther6_fdrcorrect_per_sentence_MACVirtues.nii.gz")
 
-def secondLevelModel1vB_MACvices(task):
+def secondLevelMacVices_1vB(task):
     for foundation in range(1, 8):
         # ## second level model directories for PER SENTENCE
-        contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/" + task + "/7_MAC_V/VsBaseline/"  # Or /F_contrast/
+        contrastImg_dir = processed_dir + task + "/7_MAC_V/VsBaseline/"  # Or /F_contrast/
         contrastImg_Testdir = ""
-        processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC_V/SecondLevel_contrast/"
+        processed_dir_local = processed_dir +task+"/7_MAC_V/SecondLevel_contrast/"
 
         #main loop over foundations
         all_imgs = [
@@ -1076,9 +1042,9 @@ def secondLevelModel1vB_MACvices(task):
             second_level_contrast="intercept",
             output_type="z_score",
         )
-        os.makedirs(processed_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
+        os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
         (z_map.to_filename
-         (processed_dir + "/" + "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsBaseline_per_sentence_MACVices_zscore.nii.gz"))
+         (processed_dir_local + "/" + "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsBaseline_per_sentence_MACVices_zscore.nii.gz"))
 
         #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
         # #### fdr correction
@@ -1093,15 +1059,15 @@ def secondLevelModel1vB_MACvices(task):
         print(f"The p<.05 FDR-corrected threshold is z score of {threshold:.3g}")
 
         # save as brain image
-        thresholded_map.to_filename(processed_dir + "/threshold_"+f"{threshold:.3g}"+"_"+
+        thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
                                     "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsBaseline_fdrcorrect_per_sentence_MACVices.nii.gz")
 
-def secondLevelModel1vB_MACvirtues(task):
+def secondLevelMacVirtues_1vB(task):
+    # ## second level model directories for PER SENTENCE
     for foundation in range(1, 8):
-        # ## second level model directories for PER SENTENCE
-        contrastImg_dir = "G:/fMRI_project/processed_first_level_per_sentence/" + task + "/7_MAC/VsBaseline/"  # Or /F_contrast/
+        contrastImg_dir = processed_dir + task + "/7_MAC/VsBaseline/"  # Or /F_contrast/
         contrastImg_Testdir = ""
-        processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"+task+"/7_MAC/SecondLevel_contrast/"
+        processed_dir_local = processed_dir+task+"/7_MAC/SecondLevel_contrast/"
         #main loop over foundations
         all_imgs = [
             os.path.join(contrastImg_dir, name)
@@ -1130,9 +1096,9 @@ def secondLevelModel1vB_MACvirtues(task):
             second_level_contrast="intercept",
             output_type="z_score",
         )
-        os.makedirs(processed_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
+        os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
         (z_map.to_filename
-         (processed_dir + "/" + "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsBaseline_per_sentence_MACVirtues_zscore.nii.gz"))
+         (processed_dir_local + "/" + "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsBaseline_per_sentence_MACVirtues_zscore.nii.gz"))
 
         #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
         # #### fdr correction
@@ -1147,5 +1113,5 @@ def secondLevelModel1vB_MACvirtues(task):
         print(f"The p<.05 FDR-corrected threshold is z score of {threshold:.3g}")
 
         # save as brain image
-        thresholded_map.to_filename(processed_dir + "/threshold_"+f"{threshold:.3g}"+"_"+
+        thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
                                     "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsBaseline_fdrcorrect_per_sentence_MACVirtues.nii.gz")
