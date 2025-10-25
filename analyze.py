@@ -13,15 +13,15 @@ from mn import analysis as a
 #   getMAC_MFT.py.  Execute it for each story you generated files for in ./text/timestamps
 #   Switch back to Python 3.12 with all latest libraries needed to run this code and build a loop or execute single
 #   scripts one-by-one.
-#
-#   Note:   it is optional but advised to use download(NAME) and drop(NAME) to maintain
+#   Note:   it is optional but advised to use downloadStory(NAME) and dropStory(NAME) to maintain
 #           space on Disk, so put those into the main loop over narratives/stories AFTER all transcription/scoring done.
 #
 ########################################################################################################################
 
 L_TPJ_mask = "TPJ_refined_mask_L.nii.gz"
 R_TPJ_mask = "TPJ_refined_mask_R.nii.gz"
-#stories = ['forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka']
+stories = ['forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka']
 
-a.firstLevelMacVirtues('shapessocial')
+for story in stories:
+    a.dropStory(story)
 

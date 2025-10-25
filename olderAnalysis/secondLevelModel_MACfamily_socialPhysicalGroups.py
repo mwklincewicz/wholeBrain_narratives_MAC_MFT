@@ -6,12 +6,12 @@ from nilearn.glm import threshold_stats_img
 
 # ## SECOND LEVEL MODEL COMPARING ACROSS GROUPS
 # # Second Level Model PHYSICAL STORY
-contrastImg_physical_dir = "../_results/processed_first_level_MAC_family/physical/"
+contrastImg_physical_dir = "_results/processed_first_level_MAC_family/physical/"
 contrastImg_physical_Testdir = "./_testData/processed_first_level_MAC_family/shapesphysical/"
-contrastImg_dir = "../_results/processed_first_level_MAC_family/social/"
+contrastImg_dir = "_results/processed_first_level_MAC_family/social/"
 contrastImg_Testdir = "./_testData/processed_first_level_MAC_family/shapessocial/"
 
-processed_dir = "../_results/processed_second_level_MAC_family/"
+processed_dir = "_results/processed_second_level_MAC_family/"
 
 all_imgs = [
     os.path.join(contrastImg_dir, name)

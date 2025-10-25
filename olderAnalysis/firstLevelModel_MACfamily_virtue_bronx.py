@@ -31,7 +31,7 @@ durations = [22,12,22,20,12,14,28,35,19,27,35,14,22,21,15,23,32,28,14,45,42,35]
 eventNames = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22"]
 
 epidataTest_dir = "_testData/fmri"
-confoundsTest_dir = "../_testData/confounds/"
+confoundsTest_dir = "_testData/confounds/"
 processed_Testdir = "./_testData/processed_first_level_MAC_family/"
 
 epidata_dir = "G:/fMRI_project/narrative_mri/data/"

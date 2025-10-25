@@ -117,7 +117,6 @@ def load_epi_data(sub,story):
                     print( "Ignoring data for run 2")
                 else:
                     epi_in = os.path.join(alias_dir,"sub-%03s/func/sub-%03s_task-%sspace-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz" % (sub, sub, story))
-
                 epi_data = nib.load(epi_in)
                 print("Loading data from %s" % (epi_in))
     return epi_data, epi_in
@@ -125,7 +124,6 @@ def load_epi_data(sub,story):
 def load_regressor(sub,story):
     # Load tsv file with regressors
     story = story + "_"
-
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
             if story in file and file.endswith("desc-confounds_regressors.tsv") and "sub-"+sub in file:
@@ -143,7 +141,6 @@ def load_regressor(sub,story):
 def get_top_foundation_per_sentence(story, foundations):
     #return a list of tuples (index, foundation name, foundation score, onset, duration)
     story = story + "_"
-
     sentence_tuples = []
     for root, dirs, files in os.walk(foundationScores_dir):
         for file in files:
@@ -161,7 +158,6 @@ def get_top_foundation_per_sentence(story, foundations):
 def load_onsets(story):
     #return a list of timestamps for onset
     story = story + "_"
-
     onsets = []
     for root, dirs, files in os.walk(foundationScores_dir):
         for file in files:
