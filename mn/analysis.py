@@ -82,6 +82,16 @@ def downloadStory( task ):
                 print("Downloading data for %s" % (epi))
                 subprocess.call(["datalad", "get", epi], shell=True)
 
+def exclude_participants(story, participants):
+    df = pd.read_excel('excluded.xlsx')
+    if not df.loc[df['story'] == story, 'ids'].isnull().all():
+        cell = df.loc[df['story'] == story, 'ids'].values[0]
+        excluded = cell.split(',')
+        for bye in excluded:
+            print( "Excluding participant " + bye )
+            participants.remove(bye)
+    return participants
+
 def load_participants(story):
     #return a list of all participant numbers for a story
     participants = []
@@ -90,9 +100,10 @@ def load_participants(story):
         for file in files:
             if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
                 participant_number = file[4:7]
-                #print("Getting participant number %03s for %04s" % (participant_number, story))
-                participants.append(participant_number)
-    return participants
+                #print("Getting participant number %03s for %04s" % (participant_number, story[:-1]))
+                if participant_number not in participants:
+                    participants.append(participant_number)
+    return exclude_participants(story[:-1], participants)
 
 def load_epi_data(sub,story):
     # Load MRI file (in Nifti format)
@@ -137,7 +148,7 @@ def get_top_foundation_per_sentence(story, foundations):
     for root, dirs, files in os.walk(foundationScores_dir):
         for file in files:
             if story in file:
-                print("Getting top foundations per sentence in %03s " % (story))
+                print("Getting top foundations per sentence in %03s " % (story[:-1]))
                 df = pd.read_excel(os.path.join(root, file))
                 for index, row in df.iterrows():
                     if ( row[foundations].max() > 0 ):
@@ -155,7 +166,7 @@ def load_onsets(story):
     for root, dirs, files in os.walk(foundationScores_dir):
         for file in files:
             if story in file:
-                print("Getting sentence onsets for %03s " % (story))
+                print("Getting sentence onsets for %03s " % (story[:-1]))
                 onsets = pd.read_excel(os.path.join(root, file), usecols=['start'] )
     return onsets
 
@@ -166,7 +177,7 @@ def load_durations(story):
     for root, dirs, files in os.walk(foundationScores_dir):
         for file in files:
             if story in file:
-                print("Getting sentence durations for %03s " % (story))
+                print("Getting sentence durations for %03s " % (story[:-1]))
                 df = pd.read_excel(os.path.join(root, file), usecols=['start', 'end'] )
                 durations.append( df['end'] - df['start'] )
     return durations
