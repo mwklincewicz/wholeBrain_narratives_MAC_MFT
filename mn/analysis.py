@@ -244,7 +244,6 @@ def firstLevelMacVices(story):
                                     'MAC_a_reciprocity_vice',
                                     'MAC_a_family_vice',
                                     'MAC_a_property_vice']]
-    eventNames = []
     foundations_per_sentence = get_top_foundation_per_sentence(story,
                                                                ['MAC_a_fairness_vice',
                                                                 'MAC_a_group_vice',
@@ -261,7 +260,7 @@ def firstLevelMacVices(story):
     #
 
     for participant in load_participants(story):
-        print ("Building first-level models for participant %s" % (participant))
+        #print ("Building first-level models for participant %s" % (participant))
         epi_data_NIFTI, epi_path = load_epi_data(participant, story)
         df, regressor_path = load_regressor(participant, story)
         confound_file1 = df[['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
@@ -463,7 +462,7 @@ def firstLevelMacVirtues(story):
     #
 
     for participant in load_participants(story):
-        print ("Building first-level models for participant %s" % (participant))
+        #print ("Building first-level models for participant %s" % (participant))
         epi_data_NIFTI, epi_path = load_epi_data(participant, story)
         df, regressor_path = load_regressor(participant, story)
         confound_file1 = df[
@@ -655,7 +654,7 @@ def univariateWithMask(story, mask):
 
     n_voxels = np.sum(mask_data)
     n_timepoints = ref_img.shape[-1]
-    print(f"Each participant has {n_timepoints} timepoints")
+    #print(f"Each participant has {n_timepoints} timepoints")
 
     # ----------------------------
     # Preallocate arrays (voxels × time × participants)
@@ -705,14 +704,12 @@ def univariateWithMask(story, mask):
     # ----------------------------
     os.makedirs(processed_dir + '/' + story + '/', mode=0o777,
                 exist_ok=True)  # this checks if the directory exists and creates it, if not
-    np.save(processed_dir + '/' + story + "/" + mask.split('.')[0] + "_3D_clean.npy", array_3d)
-
-    print("Mask array shape:", array_3d.shape, "(voxels × time × subjects)")
+    np.save(processed_dir + '/' + story + "/" + story + "_" + mask.split('.')[0] + "_3D_clean.npy", array_3d)
+    #print("Mask array shape:", array_3d.shape, "(voxels × time × subjects)")
 
 def secondLevelMacVices(task):
     # ## second level model directories for PER SENTENCE
     contrastImg_dir = processed_dir + task + "/7_MAC_V/Conjunction/"  # Or /F_contrast/
-    contrastImg_Testdir = ""
     processed_dir_local = processed_dir+task+"/7_MAC_V/SecondLevel_contrast/"
 
     #main loop over foundations
