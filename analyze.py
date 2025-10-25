@@ -23,6 +23,6 @@ L_TPJ_mask = "TPJ_refined_mask_L.nii.gz"
 R_TPJ_mask = "TPJ_refined_mask_R.nii.gz"
 stories = ['forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka']
 
-for story in stories:
-    a.dropStory(story)
+# for story in stories:
+#     a.dropStory(story)
 
