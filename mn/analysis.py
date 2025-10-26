@@ -688,7 +688,7 @@ def univariateWithMask(story, mask):
         clean_img_data = clean_data.get_fdata()
 
         # Resample masks to participant space (if needed)
-        mask_res = image.resample_to_img(mask_orig, clean_data.slicer[..., 0], interpolation='nearest')
+        mask_res = image.resample_to_img(mask_orig, clean_data.slicer[..., 0], interpolation='nearest', force_resample=True)
 
         mask_data = mask_res.get_fdata().astype(bool)
 
