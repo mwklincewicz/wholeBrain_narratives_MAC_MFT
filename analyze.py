@@ -20,13 +20,24 @@ from mn import analysis as a
 ########################################################################################################################
 
 #stories = ['forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka']
-stories = ['piemanpni','tunnel', 'black', 'forgot']
+stories = ['forgot','21styear','bronx','piemanpni','tunnel', 'black']
+
+masks = ['gyrus_stg_association-test_z_FDR_0.01.nii',
+         'HO_TPJ_anat_mask.nii.gz',
+         'Medial_Temporal_HO_mask.nii.gz',
+         'mtg_association-test_z_FDR_0.01.nii',
+         'STG_MTG_ns_mask_z3.nii.gz',
+         'STG_MTG_refined_mask.nii.gz',
+         'STG_MTG_refined_mask_L.nii.gz',
+         'STG_MTG_refined_mask_R.nii.gz',
+         'tpj_association-test_z_FDR_0.01.nii',
+         'TPJ_HO_mask.nii.gz',
+         'TPJ_ns_mask_z3.nii.gz',
+         'TPJ_refined_mask.nii.gz']
 
 for story in stories:
     a.downloadStory(story)
-    a.univariateWithMask(story, 'STG_MTG_refined_mask_L.nii.gz')
-    a.univariateWithMask(story, 'STG_MTG_refined_mask_R.nii.gz')
+    for mask in masks:
+        a.univariateWithMask(story, mask)
+    a.dropStory(story)
 
-
-a.downloadStory('21styear')
-a.downloadStory('bronx')
