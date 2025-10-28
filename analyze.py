@@ -25,29 +25,23 @@ from mn import analysis as a
 stories = ['prettymouthparanoia']
 
 masks = [
-         'gyrus_stg_association-test_z_FDR_0.01.nii',
-         'antSTG_MTG_HOonly_L.nii.gz',
-         'antSTG_MTG_HOonly_R.nii.gz',
-         'antSTG_MTG_refined_mask_L.nii.gz',
-         'antSTG_MTG_refined_mask_R.nii.gz',
-         'posSTG_MTG_HOonly_L.nii.gz',
-         'posSTG_MTG_HOonly_R.nii.gz',
-         'posSTG_MTG_refined_mask_L.nii.gz',
-         'posSTG_MTG_refined_mask_R.nii.gz',
-         'STG_MTG_refined_mask_L.nii.gz',
-         'STG_MTG_refined_mask_R.nii.gz',
-         'tempPole_HOonly_L.nii.gz',
-         'tempPole_HOonly_R.nii.gz'
+            'gyrus_stg_association-test_z_FDR_0.01.nii',
+            'antSTG_MTG_HOonly_L.nii.gz',
+            'antSTG_MTG_HOonly_R.nii.gz',
+            'antSTG_MTG_refined_mask_L.nii.gz',
+            'antSTG_MTG_refined_mask_R.nii.gz',
+            'posSTG_MTG_HOonly_L.nii.gz',
+            'posSTG_MTG_HOonly_R.nii.gz',
+            'posSTG_MTG_refined_mask_L.nii.gz',
+            'posSTG_MTG_refined_mask_R.nii.gz',
+            'STG_MTG_refined_mask_L.nii.gz',
+            'STG_MTG_refined_mask_R.nii.gz',
+            'tempPole_HOonly_L.nii.gz',
+            'tempPole_HOonly_R.nii.gz',
+            'TPJ_refined_mask_L.nii.gz',
+            'TPJ_refined_mask_R.nii.gz'
          ]
 
 for story in stories:
-    a.firstLevelMacVices(story)
-    a.firstLevelMacVirtues(story)
-    a.secondLevelMacVices(story)
-    a.secondLevelMacVirtues(story)
-    a.secondLevelMacVices_1v6(story)
-    a.secondLevelMacVirtues_1v6(story)
-    a.secondLevelMacVices_1vB(story)
-    a.secondLevelMacVirtues_1vB(story)
     for mask in masks:
         a.univariateWithMask(story, mask)
