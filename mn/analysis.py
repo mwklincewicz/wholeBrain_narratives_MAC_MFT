@@ -249,7 +249,7 @@ def load_durations(story):
 def firstLevelMacVices(story):
     os.makedirs(processed_dir + story + "\\7_MAC_V\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
     # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
-    segmentFileDF = pd.read_excel("./text/foundationScores/" + story + "_MFT_MAC.xlsx")
+    segmentFileDF = pd.read_excel("./text/foundationScores/" + story + "_MFT_MAC.xlsx", engine='openpyxl')
     sentenceValues = segmentFileDF[['MAC_a_fairness_vice',
                                     'MAC_a_group_vice',
                                     'MAC_a_deference_vice',
