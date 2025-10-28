@@ -14,13 +14,13 @@
 1) get audio files into ./audio, then install datalad, git-annex, and run: datalad clone https://datasets.datalad.org/labs/hasson/narratives/derivatives/fmriprep
 2) Obtain a transcript (put it in .\text\text_to_be_segmented) or use the one generated via transcribeAudio_x.py (in .\text\timestamps)
 3) Manually, with ChatGPT, or some other means, generate segment .txt files and put them into .\text\segments
-4) Run mn.transcribe(NAME) to obtain timestamp .csv files (per word/phrase) in .\text\timestamps
+4) Run transcribe(NAME) to obtain timestamp .csv files (per word/phrase) in .\text\timestamps
 5) Run getMAC_MFT.py to obtain MAC/MFT, all/per-word, vice/virtue, scores per sentence, per segment (from 3), and durations per sentence (from (4))
-6) Download .nii and .tsv files for a story using downloadWithDatalad.py into .\data\allDataAliases\fmriprep (look 0)
-7) Run mn.firstLevelXXXXX(NAME), as for task, etc. (look 0)
-8) Run mn.secondLevelModel_XXXXXXXXX(NAME), as for task, etc. TODO: make these generic (look 0)
+6) Download .nii and .tsv files for a story using downloadStory(NAME) into .\data\allDataAliases\fmriprep (look 0)
+7) Run firstLevelXXXXX(NAME), as for task, etc. (look 0)
+8) Run secondLevelModel_XXXXXXXXX(NAME), as for task, etc. TODO: make these generic (look 0)
 9) All processed data and plots will be stored in drive G: on WHITE_LADY, which syncs with Google Drive.  
-10) Delete .nii and .tsv files for a story using mn.dropStory(NAME) (look 0)
+10) Drop .nii and .tsv files for a story using dropStory(NAME); this does not delete the alias file!  (look 0)
 
 ............................................................................................
 #### **Some notable ways to break things:**

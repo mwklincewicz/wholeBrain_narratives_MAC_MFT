@@ -42,12 +42,12 @@ masks = [
 
 for story in stories:
 
-    a.firstLevelMacVices(story)
-    a.firstLevelMacVirtues(story)
-    a.secondLevelMacVices(story)
-    a.secondLevelMacVirtues(story)
-    a.secondLevelMacVices_1v6(story)
-    a.secondLevelMacVirtues_1v6(story)
+    # a.firstLevelMacVices(story)
+    # a.firstLevelMacVirtues(story)
+    # a.secondLevelMacVices(story)
+    # a.secondLevelMacVirtues(story)
+    # a.secondLevelMacVices_1v6(story)
+    # a.secondLevelMacVirtues_1v6(story)
     a.secondLevelMacVices_1vB(story)
     a.secondLevelMacVirtues_1vB(story)
     for mask in masks:

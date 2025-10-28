@@ -99,8 +99,11 @@ def load_image_files(story):
 
 # FUNCTION FOR LOADING SINGLE .NII IMAGE FOR A PARTICIPANT IN A STORY
 
-def load_image_data(sub,story):
+def load_image_data(sub,task):
     # Load image
+    story = ""
+    if task=="prettymouthaffair": story="prettymouth"
+    if task=="prettymouthparanoia": story ="prettymouth"
     story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
