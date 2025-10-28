@@ -143,9 +143,12 @@ def exclude_participants(story, participants):
     return participants
 
 # LOAD ALL PARTICIPANT NUMBERS, EXCLUDING THE ONES FROM excluded.xlsx
-def load_participants(story):
+def load_participants(task):
     #return a list of all participant numbers for a story
     participants = []
+    story = ""
+    if task=="prettymouthaffair": story="prettymouth"
+    if task=="prettymouthparanoia": story ="prettymouth"
     story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
@@ -154,14 +157,19 @@ def load_participants(story):
                 #print("Getting participant number %03s for %04s" % (participant_number, story[:-1]))
                 if participant_number not in participants:
                     participants.append(participant_number)
-    return exclude_participants(story[:-1], participants)
+    return exclude_participants(task, participants)
 
 # Load MRI file (in Nifti format)
 def load_epi_data(sub,story):
+    #print( "getting epi data for %s" % (sub))
+    if story =='prettymouthaffair': story='prettymouth'
+    if story == 'prettymouthparanoia': story= 'prettymouth'
     story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
             if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz") and "sub-"+str(sub) in file:
+                #print( "Downloading data for %s" % (sub))
+                epi_in = os.path.join(root,file)
                 if "run-1" in file:
                     epi_in = os.path.join(alias_dir,"sub-%03s/func/sub-%03s_task-%srun-1_space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz" % (sub, sub, story))
                 elif "run-2" in file:
@@ -174,6 +182,8 @@ def load_epi_data(sub,story):
 
 # Load tsv file with regressors
 def load_regressor(sub,story):
+    if story =='prettymouthaffair': story='prettymouth'
+    if story == 'prettymouthparanoia': story='prettymouth'
     story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
@@ -580,27 +590,27 @@ def firstLevelMacVirtues(story):
         c1 = np.array([1, 0, 0, 0, 0, 0, 0, -1])  # exact -1/6
         z_map_foundation1vsbase = FM1.compute_contrast(c1, stat_type='t', output_type='z_score')
 
-        # foundation 1
+        # foundation 2
         c2 = np.array([0, 1, 0, 0, 0, 0, 0, -1])  # exact -1/6
         z_map_foundation2vsbase = FM1.compute_contrast(c2, stat_type='t', output_type='z_score')
 
-        # foundation 1
+        # foundation 3
         c3 = np.array([0, 0, 1, 0, 0, 0, 0, -1])  # exact -1/6
         z_map_foundation3vsbase = FM1.compute_contrast(c3, stat_type='t', output_type='z_score')
 
-        # foundation 1
+        # foundation 4
         c4 = np.array([0, 0, 0, 1, 0, 0, 0, -1])  # exact -1/6
         z_map_foundation4vsbase = FM1.compute_contrast(c4, stat_type='t', output_type='z_score')
 
-        # foundation 1
+        # foundation 5
         c5 = np.array([0, 0, 0, 0, 1, 0, 0, -1])  # exact -1/6
         z_map_foundation5vsbase = FM1.compute_contrast(c5, stat_type='t', output_type='z_score')
 
-        # foundation 1
+        # foundation 6
         c6 = np.array([0, 0, 0, 0, 0, 1, 0, -1])  # exact -1/6
         z_map_foundation6vsbase = FM1.compute_contrast(c6, stat_type='t', output_type='z_score')
 
-        # foundation 1
+        # foundation 7
         c7 = np.array([0, 0, 0, 0, 0, 0, 1, -1])  # exact -1/6
         z_map_foundation7vsbase = FM1.compute_contrast(c7, stat_type='t', output_type='z_score')
 

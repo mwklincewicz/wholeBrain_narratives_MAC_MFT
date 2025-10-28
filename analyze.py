@@ -16,17 +16,20 @@ from mn import analysis as a
 #   f)  mn.analysis.univariateWithMask(story, mask) takes a string for 'mask,' which should be a .nii.gz in ./masks/
 #   g)  It is optional but advised to use mn.analysis.downloadStory(NAME)/dropStory(NAME) to maintain space on Disk,
 #       so put those into the main loop over narratives/stories AFTER all modelling/transcription/scoring done.
+#   f)  prettymouth should be downloaded and dropped as prettymouth but modelled using prettymouthaffair and
+#       prettymouthparanoia for the two groups in the experiment. excluded.xlsx has the group definitions
 #
 ########################################################################################################################
 
 #stories = ['forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka']
-stories = ['forgot','21styear','bronx','piemanpni','tunnel', 'black']
+stories = ['prettymouthaffair', 'prettymouthparanoia']
 
-masks = ['gyrus_stg_association-test_z_FDR_0.01.nii',
-        'antSTG_MTG_HOonly_L.nii.gz',
-        'antSTG_MTG_HOonly_R.nii.gz',
-        'antSTG_MTG_refined_mask_L.nii.gz',
-        'antSTG_MTG_refined_mask_R.nii.gz',
+masks = [
+         'gyrus_stg_association-test_z_FDR_0.01.nii',
+         'antSTG_MTG_HOonly_L.nii.gz',
+         'antSTG_MTG_HOonly_R.nii.gz',
+         'antSTG_MTG_refined_mask_L.nii.gz',
+         'antSTG_MTG_refined_mask_R.nii.gz',
          'posSTG_MTG_HOonly_L.nii.gz',
          'posSTG_MTG_HOonly_R.nii.gz',
          'posSTG_MTG_refined_mask_L.nii.gz',
@@ -38,8 +41,15 @@ masks = ['gyrus_stg_association-test_z_FDR_0.01.nii',
          ]
 
 for story in stories:
-    a.downloadStory(story)
+
+    a.firstLevelMacVices(story)
+    a.firstLevelMacVirtues(story)
+    a.secondLevelMacVices(story)
+    a.secondLevelMacVirtues(story)
+    a.secondLevelMacVices_1v6(story)
+    a.secondLevelMacVirtues_1v6(story)
+    a.secondLevelMacVices_1vB(story)
+    a.secondLevelMacVirtues_1vB(story)
     for mask in masks:
         a.univariateWithMask(story, mask)
-    a.dropStory(story)
-
+#

@@ -204,5 +204,5 @@ def run(story):
 # UNCOMMENT THIS TO RUN MANUALLY AND ADD NAME OF STORY THROUGH PROMPT
 #
 
-# story = input("Enter the story you wish to analyze: ")
-# run(story)
+story = input("Enter the story you wish to analyze: ")
+run(story)
