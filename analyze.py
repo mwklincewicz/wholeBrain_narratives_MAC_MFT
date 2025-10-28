@@ -41,7 +41,6 @@ masks = [
          ]
 
 for story in stories:
-
     a.firstLevelMacVices(story)
     a.firstLevelMacVirtues(story)
     a.secondLevelMacVices(story)
@@ -52,4 +51,3 @@ for story in stories:
     a.secondLevelMacVirtues_1vB(story)
     for mask in masks:
         a.univariateWithMask(story, mask)
-#
