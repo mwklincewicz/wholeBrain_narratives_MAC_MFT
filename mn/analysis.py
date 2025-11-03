@@ -29,7 +29,9 @@ def transcribe(task):
     device = "cpu"
     batch_size = 4  # reduce if low on GPU mem
     compute_type = "int8"  # change to "int8" if low on GPU mem (may reduce accuracy)
-    model = whisperx.load_model("large-v3", device, compute_type=compute_type, language="en")
+    # try different models if the transcription is failing; large-v3 or large-v2 works well for complex text, tiny or small for regular dialogue speech patterns
+    # if that fails again, then use transcribe_x from text/timestamps instead of the provided transcript for foundation scoring
+    model = whisperx.load_model("large-v2", device, compute_type=compute_type, language="en")
     transcript_text = ""
 
     audio_file = ".\\audio\\" + task + "_audio.wav"
@@ -102,8 +104,10 @@ def load_image_files(story):
 def load_image_data(sub,task):
     # Load image
     story = ""
-    if task=="prettymouthaffair": story="prettymouth"
-    if task=="prettymouthparanoia": story ="prettymouth"
+    if task=="prettymouthaffair" or task=="prettymouthparanoia":
+        story="prettymouth"
+    else:
+        story=task
     story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
@@ -150,8 +154,8 @@ def load_participants(task):
     #return a list of all participant numbers for a story
     participants = []
     story = ""
-    if task=="prettymouthaffair": story="prettymouth"
-    if task=="prettymouthparanoia": story ="prettymouth"
+    if task=="prettymouthaffair" or task=="prettymouthparanoia": story="prettymouth"
+    else: story=task
     story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
@@ -165,9 +169,8 @@ def load_participants(task):
 # Load MRI file (in Nifti format)
 def load_epi_data(sub,story):
     #print( "getting epi data for %s" % (sub))
-    if story =='prettymouthaffair': story='prettymouth'
-    if story == 'prettymouthparanoia': story= 'prettymouth'
-    story = story + "_"
+    if story =='prettymouthaffair' or story == 'prettymouthparanoia': story='prettymouth'
+    else : story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
             if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz") and "sub-"+str(sub) in file:
@@ -185,9 +188,8 @@ def load_epi_data(sub,story):
 
 # Load tsv file with regressors
 def load_regressor(sub,story):
-    if story =='prettymouthaffair': story='prettymouth'
-    if story == 'prettymouthparanoia': story='prettymouth'
-    story = story + "_"
+    if story =='prettymouthaffair' or story == 'prettymouthparanoia': story='prettymouth'
+    else: story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
             if story in file and file.endswith("desc-confounds_regressors.tsv") and "sub-"+sub in file:
@@ -701,7 +703,7 @@ def univariateWithMask(story, mask):
         clean_img_data = clean_data.get_fdata()
 
         # Resample masks to participant space (if needed)
-        mask_res = image.resample_to_img(mask_orig, clean_data.slicer[..., 0], interpolation='nearest', force_resample=True)
+        mask_res = image.resample_to_img(mask_orig, clean_data.slicer[..., 0], interpolation='nearest', force_resample=True,copy_header=True)
 
         mask_data = mask_res.get_fdata().astype(bool)
 

@@ -1,10 +1,8 @@
 # MORALITY IN THE BRAIN - NARRATIVES
 
-### I.      Find neural correlates of foundation scores through whole-brain analysis
+### I.      Find neural correlates of moral/non-moral detector through whole-brain analysis
 
-### II.     Peaks for other foundations from narratives < .1 in any; highest segments; etc.
-
-### III.    Do per segment and per sentence analysis for all foundations for each story, showing whole brain activations
+### II.    Do per segment or per sentence analysis for all foundations for each story, showing whole brain activations
 
 ............................................................................................
 #### **The pipeline for analysis is the following:**

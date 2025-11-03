@@ -49,7 +49,7 @@ index = 0
 
 def run(story):
     directory_input=story
-    if story == 'shapesphysical' or story == 'shapessocial' or story == 'slumlordreach':
+    if story == 'shapesphysical' or story == 'shapessocial' or story == 'slumlordreach' or story == 'sherlock':
         directory_text = "timestamps/" + story
     else:
         directory_text = "text_to_be_segmented/" + story
@@ -168,8 +168,8 @@ def run(story):
                 t_sentence = ""
                 t += 1
                 break
-            if levenshtein.ratio(t_sentence, s) >= levenshtein.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1, 1], s) \
-                and levenshtein.ratio(t_sentence, s) >= levenshtein.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2, 1], s):
+            if levenshtein.ratio(t_sentence, s) > levenshtein.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1, 1], s) \
+                and levenshtein.ratio(t_sentence, s) > levenshtein.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2, 1], s):
                 print("Lookahead fuzz 1: " + str(levenshtein.ratio(s, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1, 1])))
                 print("Lookahead fuzz 2: " + str(levenshtein.ratio(s, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2, 1])))
                 print(f"Match between {bcolors.WARNING}<" + s + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
