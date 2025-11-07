@@ -21,8 +21,8 @@ from mn import analysis as a
 #
 ########################################################################################################################
 
-#stories = ['forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka','prettymouthaffair','prettymouthparanoia']
-stories = ['prettymouth','sherlock']
+#stories = ['prettymouth','sherlock','forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka','prettymouthaffair','prettymouthparanoia']
+stories = ['milkyway']
 
 masks = [
             'gyrus_stg_association-test_z_FDR_0.01.nii',
@@ -43,15 +43,15 @@ masks = [
             'hippocampus_L.nii.gz',
             'hippocampus_R.nii.gz'
          ]
-a.transcribe('sherlock')
-# for story in stories:
-#     a.downloadStory(story)
-#     a.firstLevelMacVirtues(story)
-#     a.firstLevelMacVices(story)
-#     a.secondLevelMacVices(story)
-#     a.secondLevelMacVirtues(story)
-#     a.secondLevelMacVices_1vB(story)
-#     a.secondLevelMacVirtues_1vB(story)
-#     a.secondLevelMacVirtues_1v6(story)
-#     a.secondLevelMacVices_1v6(story)
-#     a.dropStory(story)
+
+for story in stories:
+    # a.downloadStory(story)
+    a.firstLevelMacVirtues(story)
+    a.firstLevelMacVices(story)
+    a.secondLevelMacVices(story)
+    a.secondLevelMacVirtues(story)
+    a.secondLevelMacVices_1vB(story)
+    a.secondLevelMacVirtues_1vB(story)
+    a.secondLevelMacVirtues_1v6(story)
+    a.secondLevelMacVices_1v6(story)
+    a.dropStory(story)
