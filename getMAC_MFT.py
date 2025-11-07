@@ -49,11 +49,7 @@ index = 0
 
 def run(story):
     directory_input=story
-    if story == 'shapesphysical' or story == 'shapessocial' or story == 'slumlordreach' or story == 'sherlock':
-        directory_text = "timestamps/" + story
-    else:
-        directory_text = "text_to_be_segmented/" + story
-    directory=story
+    directory_text = "timestamps/" + story
     print(f"{bcolors.OKCYAN}==========================================================================={bcolors.END}")
     print(f"{bcolors.OKBLUE} Processing "+story+ f" narrarative for sentence foundations and timestamps{bcolors.END}")
     print(f"{bcolors.OKCYAN}==========================================================================={bcolors.END}")
@@ -67,7 +63,7 @@ def run(story):
             file = open(os.path.join('my_temp_file'), 'r', encoding='utf-8', errors='ignore')
 
             exp2_text = file.read()
-            sentences = exp2_text.split('. ') # do this so you can keep track of the original length of text for later
+            sentences = exp2_text.replace("?",".").replace("!",".").split('. ') # do this so you can keep track of the original length of text for later
 
             index = 0
             for sentence in sentences:
@@ -204,5 +200,5 @@ def run(story):
 # UNCOMMENT THIS TO RUN MANUALLY AND ADD NAME OF STORY THROUGH PROMPT
 #
 
-story = input("Enter the story you wish to analyze: ")
-run(story)
+# story = input("Enter the story you wish to analyze: ")
+# run(story)

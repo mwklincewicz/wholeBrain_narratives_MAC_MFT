@@ -1,5 +1,5 @@
 from mn import analysis as a
-
+# import getMAC_MFT
 ########################################################################################################################
 #                  THIS IS THE MAIN EXECUTION SCRIPT FOR THE ANALYSIS PIPELINE OUTLINED IN README.MD
 #
@@ -22,7 +22,7 @@ from mn import analysis as a
 ########################################################################################################################
 
 #stories = ['prettymouth','sherlock','forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka','prettymouthaffair','prettymouthparanoia']
-stories = ['milkyway']
+stories = ['milkywayoriginal','milkywaysynonyms','milkywayvodka','prettymouth','tunnel','21styear','shapesphysical','shapessocial']
 
 masks = [
             'gyrus_stg_association-test_z_FDR_0.01.nii',
@@ -45,7 +45,9 @@ masks = [
          ]
 
 for story in stories:
-    # a.downloadStory(story)
+    #getMAC_MFT.run(story)
+    #a.transcribe(story)
+    a.downloadStory(story)
     a.firstLevelMacVirtues(story)
     a.firstLevelMacVices(story)
     a.secondLevelMacVices(story)

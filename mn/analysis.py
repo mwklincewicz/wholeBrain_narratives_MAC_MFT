@@ -31,7 +31,7 @@ def transcribe(task):
     compute_type = "int8"  # change to "int8" if low on GPU mem (may reduce accuracy)
     # try different models if the transcription is failing; large-v3 or large-v2 works well for complex text, tiny or small for regular dialogue speech patterns
     # if that fails again, then use transcribe_x from text/timestamps instead of the provided transcript for foundation scoring
-    model = whisperx.load_model("large-v2", device, compute_type=compute_type, language="en")
+    model = whisperx.load_model("large-v3", device, compute_type=compute_type, language="en")
     transcript_text = ""
 
     audio_file = ".\\audio\\" + task + "_audio.wav"
@@ -69,6 +69,12 @@ def transcribe(task):
 # FUNCTION FOR DELETING STORY fMRI IMAGES THROUGH DATALAD
 
 def dropStory(task):
+    if task=="prettymouthaffair" or task=="prettymouthparanoia":
+        task="prettymouth"
+    elif task=="milkywayoriginal" or task=="milkywaysynonyms" or task=="milkywayvodka":
+        task="milkyway"
+    else:
+        task=task
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
             if task in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
@@ -106,6 +112,8 @@ def load_image_data(sub,task):
     story = ""
     if task=="prettymouthaffair" or task=="prettymouthparanoia":
         story="prettymouth"
+    elif task=="milkywayoriginal" or task=="milkywaysynonyms" or task=="milkywayvodka":
+        story="milkyway"
     else:
         story=task
     story = story + "_"
@@ -126,6 +134,12 @@ def load_image_data(sub,task):
 
 def downloadStory( task ):
     print( "starting download of " + task )
+    if task=="prettymouthaffair" or task=="prettymouthparanoia":
+        task="prettymouth"
+    elif task=="milkywayoriginal" or task=="milkywaysynonyms" or task=="milkywayvodka":
+        task="milkyway"
+    else:
+        task=task
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
             if str(task) in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
@@ -155,13 +169,15 @@ def load_participants(task):
     participants = []
     story = ""
     if task=="prettymouthaffair" or task=="prettymouthparanoia": story="prettymouth"
+    elif task=="milkywayoriginal" or task=="milkywaysynonyms" or task=="milkywayvodka":
+        story="milkyway"
     else: story=task
     story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
             if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
                 participant_number = file[4:7]
-                #print("Getting participant number %03s for %04s" % (participant_number, story[:-1]))
+                print("Getting participant number %03s for %04s" % (participant_number, story[:-1]))
                 if participant_number not in participants:
                     participants.append(participant_number)
     return exclude_participants(task, participants)
@@ -170,6 +186,8 @@ def load_participants(task):
 def load_epi_data(sub,story):
     #print( "getting epi data for %s" % (sub))
     if story =='prettymouthaffair' or story == 'prettymouthparanoia': story='prettymouth'
+    elif story=="milkywayoriginal" or story=="milkywaysynonyms" or story=="milkywayvodka":
+        story="milkyway"
     else : story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
@@ -189,6 +207,8 @@ def load_epi_data(sub,story):
 # Load tsv file with regressors
 def load_regressor(sub,story):
     if story =='prettymouthaffair' or story == 'prettymouthparanoia': story='prettymouth'
+    elif story=="milkywayoriginal" or story=="milkywaysynonyms" or story=="milkywayvodka":
+        story="milkyway"
     else: story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
