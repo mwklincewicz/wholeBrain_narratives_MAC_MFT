@@ -23,7 +23,7 @@
 
 a) MAC and MFT scoring in (5) above uses libraries that have dependencies on outdated versions of spacy, typing extensions, etc., so downgrade to Python 3.8 and follow instructions from comments in getMAC_MFT.py to complete step (5) ONLY
 
-b) (4) depends on ffmpeg.  Follow online instructions to install it or you will get a mysterious File missing error
+b) (2) depends on ffmpeg.  Follow online instructions to install it or you will get a mysterious File missing error
 
 c) Other types of analysis, Jupyter Notebooks, etc., all have their own directories, so pay attention when executing anything that you are in the right directory
 
