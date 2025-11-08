@@ -63,8 +63,7 @@ def run(story):
             file = open(os.path.join('my_temp_file'), 'r', encoding='utf-8', errors='ignore')
 
             exp2_text = file.read()
-            sentences = exp2_text.replace("?",".").replace("!",".").split('. ') # do this so you can keep track of the original length of text for later
-
+            sentences = exp2_text.split('\n')
             index = 0
             for sentence in sentences:
                 sentiment_dict = sentimentAnalysisVader.polarity_scores(sentence)
@@ -156,26 +155,31 @@ def run(story):
     for s in sentences:
         while levenshtein.ratio(t_sentence, s) < 100:
             print("Initial fuzz: " + str(levenshtein.ratio(t_sentence, s)))
-            t_sentence = t_sentence + " " + wordTimestamps_df.loc[t_index + t, 1]
-            if len(wordTimestamps_df) == t_index + t or len(wordTimestamps_df) == t_index + t + 1:
-                print(f"!Match between {bcolors.WARNING}<" + s + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
-                dataFrameForSaving.loc[counter, 'start'] = wordTimestamps_df.loc[t_index][2]
-                dataFrameForSaving.loc[counter, 'end'] = wordTimestamps_df.loc[t_index + t][3]
-                t_sentence = ""
-                t += 1
+            try:
+                t_sentence = t_sentence + " " + wordTimestamps_df.loc[t_index + t, 1]
+                if len(wordTimestamps_df) == t_index + t or len(wordTimestamps_df) == t_index + t + 1:
+                    print(f"!Match between {bcolors.WARNING}<" + s + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
+                    dataFrameForSaving.loc[counter, 'start'] = wordTimestamps_df.loc[t_index][2]
+                    dataFrameForSaving.loc[counter, 'end'] = wordTimestamps_df.loc[t_index + t][3]
+                    t_sentence = ""
+                    t += 1
+                    break
+                if levenshtein.ratio(t_sentence, s) > levenshtein.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1, 1], s) \
+                    and levenshtein.ratio(t_sentence, s) > levenshtein.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2, 1], s):
+                    print("Lookahead fuzz 1: " + str(levenshtein.ratio(s, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1, 1])))
+                    print("Lookahead fuzz 2: " + str(levenshtein.ratio(s, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2, 1])))
+                    print(f"Match between {bcolors.WARNING}<" + s + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
+                    dataFrameForSaving.loc[counter, 'start'] = wordTimestamps_df.loc[t_index][2]
+                    dataFrameForSaving.loc[counter, 'end'] = wordTimestamps_df.loc[t_index + t][3]
+                    t_sentence = ""
+                    t += 1
+                    break
+                else:
+                    t += 1
+            except KeyError as e:
+                print( f'{bcolors.WARNING}Looks like the end of the transcript, so removing last row{bcolors.END}, index %s' % str(e))
+                dataFrameForSaving.drop(dataFrameForSaving.tail(1).index, inplace=True)
                 break
-            if levenshtein.ratio(t_sentence, s) > levenshtein.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1, 1], s) \
-                and levenshtein.ratio(t_sentence, s) > levenshtein.ratio(t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2, 1], s):
-                print("Lookahead fuzz 1: " + str(levenshtein.ratio(s, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 1, 1])))
-                print("Lookahead fuzz 2: " + str(levenshtein.ratio(s, t_sentence + " " + wordTimestamps_df.loc[t_index + t + 2, 1])))
-                print(f"Match between {bcolors.WARNING}<" + s + f">{bcolors.END} and speech-to-text transcription: {bcolors.OKGREEN}" + t_sentence + f"{bcolors.END} using " + str(t) + " transcription words.")
-                dataFrameForSaving.loc[counter, 'start'] = wordTimestamps_df.loc[t_index][2]
-                dataFrameForSaving.loc[counter, 'end'] = wordTimestamps_df.loc[t_index + t][3]
-                t_sentence = ""
-                t += 1
-                break
-            else:
-                t += 1
         t_index = t_index + t
         counter += 1
         t = 0
