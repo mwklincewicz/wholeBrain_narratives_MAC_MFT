@@ -10,6 +10,7 @@ from nilearn.plotting import plot_design_matrix, plot_contrast_matrix
 import whisperx
 import pandas as pd
 import os
+import stanza
 from nilearn import plotting
 from nilearn.glm.second_level import SecondLevelModel
 from nilearn.glm import threshold_stats_img
@@ -62,7 +63,10 @@ def transcribe(task):
     df_words.to_csv("./text/timestamps/"+task+"/"+task+"_transcription_per_word_x.csv", index=False)
     df_phrases.to_csv("./text/timestamps/"+task+"/"+task+"_transcription_per_phrase_x.csv", index=False)
     with open("./text/timestamps/"+task+"/"+task+"_transcription_x.txt", "w+") as fh:
-        fh.write(transcript_text)
+        nlp = stanza.Pipeline(language="en", processors="tokenize")
+        parsedDoc = nlp(transcript_text)
+        for sentence in parsedDoc.sentences:
+            fh.write(f"{sentence.text}\n")
 
     import gc; import torch; gc.collect(); torch.cuda.empty_cache(); del model_a
 
@@ -160,7 +164,8 @@ def exclude_participants(story, participants):
         excluded = cell.split(',')
         for bye in excluded:
             print( "Excluding participant " + bye )
-            participants.remove(bye)
+            if bye in participants:
+                participants.remove(bye)
     return participants
 
 # LOAD ALL PARTICIPANT NUMBERS, EXCLUDING THE ONES FROM excluded.xlsx
@@ -188,7 +193,8 @@ def load_epi_data(sub,story):
     if story =='prettymouthaffair' or story == 'prettymouthparanoia': story='prettymouth'
     elif story=="milkywayoriginal" or story=="milkywaysynonyms" or story=="milkywayvodka":
         story="milkyway"
-    else : story = story + "_"
+    else : story=story
+    story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
             if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz") and "sub-"+str(sub) in file:
@@ -209,7 +215,8 @@ def load_regressor(sub,story):
     if story =='prettymouthaffair' or story == 'prettymouthparanoia': story='prettymouth'
     elif story=="milkywayoriginal" or story=="milkywaysynonyms" or story=="milkywayvodka":
         story="milkyway"
-    else: story = story + "_"
+    else: story = story
+    story = story + "_"
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
             if story in file and file.endswith("desc-confounds_regressors.tsv") and "sub-"+sub in file:

@@ -1,5 +1,5 @@
 from mn import analysis as a
-# import getMAC_MFT
+#import getMAC_MFT
 ########################################################################################################################
 #                  THIS IS THE MAIN EXECUTION SCRIPT FOR THE ANALYSIS PIPELINE OUTLINED IN README.MD
 #
@@ -16,13 +16,16 @@ from mn import analysis as a
 #   f)  mn.analysis.univariateWithMask(story, mask) takes a string for 'mask,' which should be a .nii.gz in ./masks/
 #   g)  It is optional but advised to use mn.analysis.downloadStory(NAME)/dropStory(NAME) to maintain space on Disk,
 #       so put those into the main loop over narratives/stories AFTER all modelling/transcription/scoring done.
-#   f)  prettymouth should be downloaded and dropped as prettymouth but modelled using prettymouthaffair and
+#   h)  prettymouth should be downloaded and dropped as prettymouth but modelled using prettymouthaffair and
 #       prettymouthparanoia for the two groups in the experiment. excluded.xlsx has the group definitions
+#   i)  milkyway has 3 audio files and should be modelled at the first level as distinct stories; at the second level,
+#       it should be modelled as a single story.  Exceptions are built into the code for this story and excluded.xlsx
 #
 ########################################################################################################################
 
 #stories = ['prettymouth','sherlock','forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka','prettymouthaffair','prettymouthparanoia']
-stories = ['milkywayoriginal','milkywaysynonyms','milkywayvodka','prettymouth','tunnel','21styear','shapesphysical','shapessocial']
+#stories = ['milkywayoriginal','milkywaysynonyms','milkywayvodka'] // still have to run second level on this
+stories = ['prettymouth','tunnel','21styear','shapesphysical','shapessocial','milkywayoriginal','milkywaysynonyms','milkywayvodka']
 
 masks = [
             'gyrus_stg_association-test_z_FDR_0.01.nii',
@@ -46,14 +49,14 @@ masks = [
 
 for story in stories:
     #getMAC_MFT.run(story)
-    #a.transcribe(story)
-    a.downloadStory(story)
-    a.firstLevelMacVirtues(story)
-    a.firstLevelMacVices(story)
-    a.secondLevelMacVices(story)
-    a.secondLevelMacVirtues(story)
-    a.secondLevelMacVices_1vB(story)
-    a.secondLevelMacVirtues_1vB(story)
-    a.secondLevelMacVirtues_1v6(story)
-    a.secondLevelMacVices_1v6(story)
-    a.dropStory(story)
+    a.transcribe(story)
+    # a.downloadStory(story)
+    # a.firstLevelMacVirtues(story)
+    # a.firstLevelMacVices(story)
+    # a.secondLevelMacVices(story)
+    # a.secondLevelMacVirtues(story)
+    # a.secondLevelMacVices_1vB(story)
+    # a.secondLevelMacVirtues_1vB(story)
+    # a.secondLevelMacVirtues_1v6(story)
+    # a.secondLevelMacVices_1v6(story)
+    # a.dropStory(story)
