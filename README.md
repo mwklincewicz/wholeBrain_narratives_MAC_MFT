@@ -10,15 +10,13 @@
 0) run analyze.py for this except (5), because of (a).  Too big of a pain to load and re-load environment.  Just switch to Python 3.8 and follow comments to execute it.
 
 1) get audio files into ./audio, then install datalad, git-annex, and run: datalad clone https://datasets.datalad.org/labs/hasson/narratives/derivatives/fmriprep
-2) Obtain a transcript (put it in .\text\text_to_be_segmented) or use the one generated via transcribeAudio_x.py (in .\text\timestamps)
-3) Manually, with ChatGPT, or some other means, generate segment .txt files and put them into .\text\segments
-4) Run transcribe(NAME) to obtain timestamp .csv files (per word/phrase) in .\text\timestamps
-5) Run getMAC_MFT.py to obtain MAC/MFT, all/per-word, vice/virtue, scores per sentence, per segment (from 3), and durations per sentence (from (4))
-6) Download .nii and .tsv files for a story using downloadStory(NAME) into .\data\allDataAliases\fmriprep (look 0)
-7) Run firstLevelXXXXX(NAME), as for task, etc. (look 0)
-8) Run secondLevelModel_XXXXXXXXX(NAME), as for task, etc. TODO: make these generic (look 0)
+2) Run transcribe(NAME) to obtain timestamp .csv files (per word/phrase) in .\text\timestamps
+5) Run getMAC_MFT.py to obtain MAC/MFT, all, vice/virtue, scores per sentence and durations per sentence (from (2))
+6) Download .nii and .tsv files for a story using downloadStory(NAME) into .\fmriprep
+7) Run firstLevelXXXXX(NAME), as for task, etc.
+8) Run secondLevelModel_XXXXXXXXX(NAME), as for task, etc.
 9) All processed data and plots will be stored in drive G: on WHITE_LADY, which syncs with Google Drive.  
-10) Drop .nii and .tsv files for a story using dropStory(NAME); this does not delete the alias file!  (look 0)
+10) Drop .nii and .tsv files for a story using dropStory(NAME); this does not delete the alias file!
 
 ............................................................................................
 #### **Some notable ways to break things:**
@@ -29,7 +27,7 @@ b) (4) depends on ffmpeg.  Follow online instructions to install it or you will 
 
 c) Other types of analysis, Jupyter Notebooks, etc., all have their own directories, so pay attention when executing anything that you are in the right directory
 
-d) .\_results, .\_testData, are not used, but can be for debugging and not breaking things, so use them!
+d) There are directories with backups and other analyses that are not used, but can be for debugging and not breaking things, so use them!
 
 e) .\audio, .\fmriprep have datafiles from Princeton (Ken Norman Lab), which are both large, and not yours. They are in .gitignore, so they don't get pushed with commits
 
@@ -41,4 +39,4 @@ h) .\text\emacscore-master.zip needs to be used to install MAC dictionary scorin
 
 i) drive G: on WHITE_LADY, which syncs with Google Drive, sometimes does not have a check for directories; manually make them. 
 
-j) excluded.xlsx contains per story ids for participants that should not be used in analysis; update as needed
+j) excluded.xlsx contains per story ids for participants that should not be used in analysis for a story and this is how we define groups for a story, if there are any (excluded from a story are NOT in a group); update as needed
