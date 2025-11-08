@@ -168,11 +168,21 @@ def exclude_participants(story, participants):
                 participants.remove(bye)
     return participants
 
+# HELPER FUNCTION FOR MERGING FIRST LEVEL MODELS FOR MILKYWAY VARIANTS
+import shutil
+
+def mergeMilkyway():
+    print( "Merging milkyways...")
+    shutil.copytree(processed_dir + "/milkywayoriginal/", processed_dir + "/milkyway/", dirs_exist_ok=True)
+    shutil.copytree(processed_dir + "/milkywayvodka/", processed_dir + "/milkyway/", dirs_exist_ok=True)
+    shutil.copytree(processed_dir + "/milkywaysynonyms/", processed_dir + "/milkyway/", dirs_exist_ok=True)
+
 # LOAD ALL PARTICIPANT NUMBERS, EXCLUDING THE ONES FROM excluded.xlsx
 def load_participants(task):
     #return a list of all participant numbers for a story
     participants = []
     story = ""
+    if task == "milkyway": mergeMilkyway() #in case this is a milkyway second-level model this will me called
     if task=="prettymouthaffair" or task=="prettymouthparanoia": story="prettymouth"
     elif task=="milkywayoriginal" or task=="milkywaysynonyms" or task=="milkywayvodka":
         story="milkyway"

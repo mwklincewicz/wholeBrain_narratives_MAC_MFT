@@ -19,7 +19,9 @@ from mn import analysis as a
 #   h)  prettymouth should be downloaded and dropped as prettymouth but modelled using prettymouthaffair and
 #       prettymouthparanoia for the two groups in the experiment. excluded.xlsx has the group definitions
 #   i)  milkyway has 3 audio files and should be modelled at the first level as distinct stories; at the second level,
-#       it should be modelled as a single story.  Exceptions are built into the code for this story and excluded.xlsx
+#       it should be modelled as a single story. So, call first level modelling functions with version names and
+#       second level modelling functions with 'milkyway' as parameter. Exceptions are built into the code for this
+#       and excluded.xlsx there is also a mergeMilkway() helper to copy first level models into a 'milkyway' directory.
 #
 ########################################################################################################################
 
