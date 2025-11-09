@@ -27,8 +27,8 @@ from mn import analysis as a
 
 #stories = ['prettymouth','sherlock','forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka','prettymouthaffair','prettymouthparanoia']
 #stories = ['milkywayoriginal','milkywaysynonyms','milkywayvodka'] // still have to run second level on this
-stories = ['prettymouth','tunnel','21styear','shapesphysical','shapessocial','milkywayoriginal','milkywaysynonyms','milkywayvodka']
-
+#stories = ['prettymouth','tunnel','21styear','shapesphysical','shapessocial','milkywayoriginal','milkywaysynonyms','milkywayvodka']
+stories = ['milkyway']
 masks = [
             'gyrus_stg_association-test_z_FDR_0.01.nii',
             'antSTG_MTG_HOonly_L.nii.gz',
@@ -52,9 +52,8 @@ masks = [
 for story in stories:
     #getMAC_MFT.run(story)
     #a.transcribe(story)
-    a.downloadStory(story)
-    a.firstLevelMacVirtues(story)
-    a.firstLevelMacVices(story)
+    #a.downloadStory(story)
+    a.mergeMilkyway()
     a.secondLevelMacVices(story)
     a.secondLevelMacVirtues(story)
     a.secondLevelMacVices_1vB(story)

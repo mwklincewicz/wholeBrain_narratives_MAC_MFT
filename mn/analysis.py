@@ -763,6 +763,10 @@ def secondLevelMacVices(task):
     # ## second level model directories for PER SENTENCE
     contrastImg_dir = processed_dir + task + "/7_MAC_V/Conjunction/"  # Or /F_contrast/
     processed_dir_local = processed_dir+task+"/7_MAC_V/SecondLevel_contrast/"
+    os.makedirs(processed_dir + "/", mode=0o777,
+                exist_ok=True)  # this checks if the directory exists and creates it, if not
+    os.makedirs(contrastImg_dir + "/", mode=0o777,
+                exist_ok=True)  # this checks if the directory exists and creates it, if not
 
     #main loop over foundations
     all_imgs = [
@@ -965,6 +969,11 @@ def secondLevelMacVices_1v6(task):
         contrastImg_dir = processed_dir + task + "/7_MAC_V/VsOther6/"  # Or /F_contrast/
         contrastImg_Testdir = ""
         processed_dir_local = processed_dir+task+"/7_MAC_V/SecondLevel_contrast/"
+        os.makedirs(processed_dir + "/", mode=0o777,
+                    exist_ok=True)  # this checks if the directory exists and creates it, if not
+        os.makedirs(contrastImg_dir + "/", mode=0o777,
+                    exist_ok=True)  # this checks if the directory exists and creates it, if not
+
         #main loop over foundations
         all_imgs = [
             os.path.join(contrastImg_dir, name)
@@ -1019,6 +1028,10 @@ def secondLevelMacVirtues_1v6(task):
         contrastImg_dir = processed_dir + task + "/7_MAC/VsOther6/"  # Or /F_contrast/
         contrastImg_Testdir = ""
         processed_dir_local = processed_dir+task+"/7_MAC/SecondLevel_contrast/"
+        os.makedirs(processed_dir + "/", mode=0o777,
+                    exist_ok=True)  # this checks if the directory exists and creates it, if not
+        os.makedirs(contrastImg_dir + "/", mode=0o777,
+                    exist_ok=True)  # this checks if the directory exists and creates it, if not
 
         #main loop over foundations
         all_imgs = [
@@ -1074,6 +1087,10 @@ def secondLevelMacVices_1vB(task):
         contrastImg_dir = processed_dir + task + "/7_MAC_V/VsBaseline/"  # Or /F_contrast/
         contrastImg_Testdir = ""
         processed_dir_local = processed_dir +task+"/7_MAC_V/SecondLevel_contrast/"
+        os.makedirs(processed_dir + "/", mode=0o777,
+                    exist_ok=True)  # this checks if the directory exists and creates it, if not
+        os.makedirs(contrastImg_dir + "/", mode=0o777,
+                    exist_ok=True)  # this checks if the directory exists and creates it, if not
 
         #main loop over foundations
         all_imgs = [
@@ -1129,6 +1146,11 @@ def secondLevelMacVirtues_1vB(task):
         contrastImg_dir = processed_dir + task + "/7_MAC/VsBaseline/"  # Or /F_contrast/
         contrastImg_Testdir = ""
         processed_dir_local = processed_dir+task+"/7_MAC/SecondLevel_contrast/"
+        os.makedirs(processed_dir + "/", mode=0o777,
+                    exist_ok=True)  # this checks if the directory exists and creates it, if not
+        os.makedirs(contrastImg_dir + "/", mode=0o777,
+                    exist_ok=True)  # this checks if the directory exists and creates it, if not
+
         #main loop over foundations
         all_imgs = [
             os.path.join(contrastImg_dir, name)
