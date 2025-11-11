@@ -55,7 +55,7 @@ masks = [
 for story in stories:
     #a.downloadStory(story)
     for mask in masks:
-        a.univariateWithMasks(story, mask)
+        a.univariateWithMask(story, mask)
     #a.dropStory(story)
 
     # a.firstLevelMacVirtues(story)
