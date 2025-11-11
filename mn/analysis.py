@@ -130,7 +130,7 @@ def load_image_data(sub,task):
                     print( "Ignoring data for run 2")
                 else:
                     img_path = os.path.join(alias_dir,"sub-%03s/func/sub-%03s_task-%sspace-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz" % (sub, sub, story))
-                print("Loading data from %s" % (img_path))
+                #print("Loading data from %s" % (img_path))
                 img = image.load_img(img_path)
     return img, img_path
 
@@ -148,24 +148,27 @@ def downloadStory( task ):
         for file in files:
             if str(task) in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
                 epi = os.path.join(root,file)
-                print("Downloading data for %s" % (epi))
+                #print("Downloading data for %s" % (epi))
                 subprocess.call(["datalad","get", epi], shell=True)
             if str(task) in file and file.endswith("desc-confounds_regressors.tsv"):
                 epi = os.path.join(root, file)
-                print("Downloading data for %s" % (epi))
+                #print("Downloading data for %s" % (epi))
                 subprocess.call(["datalad", "get", epi], shell=True)
 
 # HELPER FUNCTION FOR EXCLUDING PARTICIPANTS USING excluded.xlsx in root directory
 
 def exclude_participants(story, participants):
     df = pd.read_excel('excluded.xlsx')
+    removed = []
     if not df.loc[df['story'] == story, 'ids'].isnull().all():
         cell = df.loc[df['story'] == story, 'ids'].values[0]
         excluded = cell.split(',')
         for bye in excluded:
-            print( "Excluding participant " + bye )
             if bye in participants:
                 participants.remove(bye)
+                removed.append(bye)
+    if len(removed)>0:
+        print("Excluding participants " + ",".join(removed) + " from " + story)
     return participants
 
 # HELPER FUNCTION FOR MERGING FIRST LEVEL MODELS FOR MILKYWAY VARIANTS
@@ -192,7 +195,7 @@ def load_participants(task):
         for file in files:
             if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
                 participant_number = file[4:7]
-                print("Getting participant number %03s for %04s" % (participant_number, story[:-1]))
+                #print("Getting participant number %03s for %04s" % (participant_number, story[:-1]))
                 if participant_number not in participants:
                     participants.append(participant_number)
     return exclude_participants(task, participants)
@@ -217,7 +220,7 @@ def load_epi_data(sub,story):
                 else:
                     epi_in = os.path.join(alias_dir,"sub-%03s/func/sub-%03s_task-%sspace-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz" % (sub, sub, story))
                 epi_data = nib.load(epi_in)
-                print("Loading data from %s" % (epi_in))
+                #print("Loading data from %s" % (epi_in))
     return epi_data, epi_in
 
 # Load tsv file with regressors
@@ -237,7 +240,7 @@ def load_regressor(sub,story):
                 else:
                     regressor_location = os.path.join(alias_dir,"sub-%03s/func/sub-%03s_task-%04sdesc-confounds_regressors.tsv" % (sub, sub, story))
 
-                print("Loading regressors from %s" % (regressor_location))
+                #print("Loading regressors from %s" % (regressor_location))
                 regressor = pd.read_csv(regressor_location, sep='\t')
     return regressor, regressor_location
 
@@ -288,7 +291,10 @@ def load_durations(story):
 def firstLevelMacVices(story):
     os.makedirs(processed_dir + story + "\\7_MAC_V\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
     # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
-    segmentFileDF = pd.read_excel("./text/foundationScores/" + story + "_MFT_MAC.xlsx", engine='openpyxl')
+    if (story=='prettymouthaffair') or (story=='prettymouthparanoia'):
+        segmentFileDF = pd.read_excel(foundationScores_dir + "prettymouth_MFT_MAC.xlsx")
+    else:
+        segmentFileDF = pd.read_excel(foundationScores_dir + story + "_MFT_MAC.xlsx")
     sentenceValues = segmentFileDF[['MAC_a_fairness_vice',
                                     'MAC_a_group_vice',
                                     'MAC_a_deference_vice',
@@ -487,7 +493,10 @@ def firstLevelMacVices(story):
 def firstLevelMacVirtues(story):
     os.makedirs(processed_dir + story + "\\7_MAC\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
     # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
-    segmentFileDF = pd.read_excel(foundationScores_dir + story + "_MFT_MAC.xlsx")
+    if (story=='prettymouthaffair') or (story=='prettymouthparanoia'):
+        segmentFileDF = pd.read_excel(foundationScores_dir + "prettymouth_MFT_MAC.xlsx")
+    else:
+        segmentFileDF = pd.read_excel(foundationScores_dir + story + "_MFT_MAC.xlsx")
     sentenceValues = segmentFileDF[[
                                     'MAC_a_fairness_virtue',
                                     'MAC_a_group_virtue',
@@ -687,20 +696,21 @@ def firstLevelMacVirtues(story):
         plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
 
 def univariateWithMask(story, mask):
+
     # ----------------------------
     # Load prep data structures
     # ----------------------------
     participants = load_participants(story)
     n_participants = len(participants)
+    print( "Using " + mask + " for " + story )
     mask_orig = image.load_img(mask_dir + mask)
 
     # ----------------------------
     # Reference image (for resampling)
     # ----------------------------
     ref_img = load_image_data(participants[0], story)[0]
-
     # Resample masks to match the first image’s space
-    mask_res = image.resample_to_img(mask_orig, ref_img.slicer[..., 0], interpolation='nearest')
+    mask_res = image.resample_to_img(mask_orig, ref_img.slicer[..., 0], interpolation='nearest', force_resample=True,copy_header=True,clip=True, fill_value=0)
 
     mask_data = mask_res.get_fdata().astype(bool)
 
@@ -740,13 +750,14 @@ def univariateWithMask(story, mask):
         clean_img_data = clean_data.get_fdata()
 
         # Resample masks to participant space (if needed)
-        mask_res = image.resample_to_img(mask_orig, clean_data.slicer[..., 0], interpolation='nearest', force_resample=True,copy_header=True)
+        mask_res = image.resample_to_img(mask_orig, clean_data.slicer[..., 0], interpolation='nearest', force_resample=True,copy_header=True, fill_value=0)
 
         mask_data = mask_res.get_fdata().astype(bool)
 
         # Extract voxel time series (voxels × time)
         ts = clean_img_data[mask_data, :]
-
+        #print (ts.shape[1], n_timepoints)
+        ts = ts[:, :n_timepoints]
         # Store in 3D array
         array_3d[:, :, i] = ts
         i += 1
