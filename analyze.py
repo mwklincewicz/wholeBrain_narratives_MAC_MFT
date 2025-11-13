@@ -30,7 +30,7 @@ from mn import analysis as a
 #stories = ['prettymouthparanoia']
 
 #stories = ['prettymouthparanoia','prettymouthaffair','tunnel','21styear','shapesphysical','shapessocial','milkyway']
-stories = ['shapesphysical','milkywayoriginal','milkywaysynonyms','milkywayvodka']
+stories = ['shapesphysical']
 
 masks = [
             'gyrus_stg_association-test_z_FDR_0.01.nii',
@@ -54,6 +54,12 @@ masks = [
 
 for story in stories:
     #a.downloadStory(story)
+    # a.secondLevelMacVices(story)
+    # a.secondLevelMacVirtues(story)
+    # a.secondLevelMacVices_1vB(story)
+    # a.secondLevelMacVirtues_1vB(story)
+    # a.secondLevelMacVirtues_1v6(story)
+    # a.secondLevelMacVices_1v6(story)
     for mask in masks:
         a.univariateWithMask(story, mask)
     # a.dropStory(story)
