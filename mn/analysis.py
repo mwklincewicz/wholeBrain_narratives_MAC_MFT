@@ -168,7 +168,7 @@ def exclude_participants(story, participants):
                 participants.remove(bye)
                 removed.append(bye)
     if len(removed)>0:
-        print("Excluding participants " + ",".join(removed) + " from " + story)
+        print("Excluding " + ",".join(removed) + " from " + story)
     return participants
 
 # HELPER FUNCTION FOR MERGING FIRST LEVEL MODELS FOR MILKYWAY VARIANTS
@@ -756,8 +756,13 @@ def univariateWithMask(story, mask):
 
         # Extract voxel time series (voxels × time)
         ts = clean_img_data[mask_data, :]
-        #print (ts.shape[1], n_timepoints)
-        ts = ts[:, :n_timepoints]
+        # reshape in case the reference recording is shorter or longer than what you do here
+        if ts.shape[1] > n_timepoints:
+            ts = ts[:, :n_timepoints]
+        if ts.shape[1] < n_timepoints:
+            padding = n_timepoints - clean_img_data.shape[-1]
+            ts.resize(ts.shape[0], ts[1].shape[0]+padding)
+
         # Store in 3D array
         array_3d[:, :, i] = ts
         i += 1
