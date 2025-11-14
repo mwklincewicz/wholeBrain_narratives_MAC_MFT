@@ -53,7 +53,7 @@ masks = [
          ]
 
 for story in stories:
-    getMAC_MFT_by_seconds.run( story, 6 )
+    getMAC_MFT_by_seconds.run( story, 3 )
     #a.downloadStory(story)
     # a.secondLevelMacVices(story)
     # a.secondLevelMacVirtues(story)
