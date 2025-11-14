@@ -45,7 +45,6 @@ spacy.load('en_core_web_sm') #may work better with a bigger model
 #   Main loop over narrative files for processing
 #
 index = 0
-
 def run(story, chunkOfAnalysis):
     directory_input= story
     directory_text = "timestamps/" + story
@@ -125,7 +124,7 @@ def run(story, chunkOfAnalysis):
                     else: chunk = chunk + " " + t_sentence
                     # print(f"And got a long enough chunk: " + str(float(sentenceEnd) - float(sentenceStart)) + " ==> " +  chunk)
                     # print( "Starting at " + sentenceStart + " and ending at " + sentenceEnd)
-                    chunks.append((chunk,chunkStart,chunkEnd))
+                    chunks.append((chunk,sentenceStart,sentenceEnd))
                     chunk = ""
                 t_index = t_index + t
                 counter += 1
@@ -144,9 +143,10 @@ def run(story, chunkOfAnalysis):
                 f2.close()
             file = open(os.path.join('my_temp_file'), 'r', encoding='utf-8', errors='ignore')
             for row in chunks:
-                chunk = row[0]
-                chunkStart = row[1]
-                chunkEnd = row[2]
+                chunk = row[:][0]
+                chunkStart = row[:][1]
+                chunkEnd = row[:][2]
+                print("Timing in audio file: " + chunkStart + " - " + chunkEnd )
                 sentiment_dict = sentimentAnalysisVader.polarity_scores(chunk)
                 print(f"{bcolors.OKCYAN}VADER/MFT/MAC for   {bcolors.END}" + chunk)
                 neg = sentiment_dict['neg'] * 100
@@ -206,6 +206,8 @@ def run(story, chunkOfAnalysis):
                     dataFrameForSaving.insert(0, "V_pos", pos)
                     dataFrameForSaving.insert(0, "V_neg", neg)
                     dataFrameForSaving.insert(0, "V_neu", neu)
+                    dataFrameForSaving.insert(0, "chunkStart", chunkStart)
+                    dataFrameForSaving.insert(0, "chunkEnd", chunkEnd)
                 elif index > 0 and index < len(chunk):
                     newIndex = len(dataFrameForSaving)
                     dataFrameForSaving.loc[newIndex] = merged
@@ -215,10 +217,12 @@ def run(story, chunkOfAnalysis):
                     dataFrameForSaving.loc[newIndex, "V_pos"] = pos
                     dataFrameForSaving.loc[newIndex, "V_neg"] = neg
                     dataFrameForSaving.loc[newIndex, "V_neu"] = neu
+                    dataFrameForSaving.loc[newIndex, "chunkStart"] = chunkStart
+                    dataFrameForSaving.loc[newIndex, "chunkEnd"] = chunkEnd
                 index += 1
 
-            # # # Save dataframe with both sentence and segment scores to xlsx
-            # #dataFrameForSaving.to_excel('sentence_segment_MFT_MAC.xlsx')
+            # Save dataframe with both sentence and segment scores to xlsx
+            # dataFrameForSaving.to_excel('sentence_segment_MFT_MAC.xlsx')
             dataFrameForSaving.drop(dataFrameForSaving.tail(1).index, inplace=True) #remove last row because it is empty
             dataFrameForSaving.to_excel("./text/foundationScores/" + directory_input + '_'+str(chunkOfAnalysis)+'_seconds_MFT_MAC.xlsx')
 

@@ -16,7 +16,6 @@ from nilearn.glm.second_level import SecondLevelModel
 from nilearn.glm import threshold_stats_img
 
 alias_dir = ".\\fmriprep"
-processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
 foundationScores_dir = "./text/foundationScores/"
 mask_dir = "./masks/"
 
@@ -288,11 +287,11 @@ def load_durations(story):
 # MODELLING FUNCTIONS FOLLOW
 #
 
-def firstLevelMacVices(story):
+def firstLevelMacVices(story, processed_dir, scoring):
     os.makedirs(processed_dir + story + "\\7_MAC_V\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
     # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
     if (story=='prettymouthaffair') or (story=='prettymouthparanoia'):
-        segmentFileDF = pd.read_excel(foundationScores_dir + "prettymouth_MFT_MAC.xlsx")
+        segmentFileDF = pd.read_excel(foundationScores_dir + "prettymouth_"+scoring+"_MFT_MAC.xlsx")
     else:
         segmentFileDF = pd.read_excel(foundationScores_dir + story + "_MFT_MAC.xlsx")
     sentenceValues = segmentFileDF[['MAC_a_fairness_vice',
@@ -490,7 +489,7 @@ def firstLevelMacVices(story):
 
         plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
 
-def firstLevelMacVirtues(story):
+def firstLevelMacVirtues(story, processed_dir):
     os.makedirs(processed_dir + story + "\\7_MAC\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
     # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
     if (story=='prettymouthaffair') or (story=='prettymouthparanoia'):
@@ -695,7 +694,7 @@ def firstLevelMacVirtues(story):
 
         plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
 
-def univariateWithMask(story, mask):
+def univariateWithMask(story, mask, processed_dir):
 
     # ----------------------------
     # Load prep data structures
@@ -775,7 +774,7 @@ def univariateWithMask(story, mask):
     np.save(processed_dir + '/' + story + "/" + story + "_" + mask.split('.')[0] + "_3D_clean.npy", array_3d)
     #print("Mask array shape:", array_3d.shape, "(voxels × time × subjects)")
 
-def secondLevelMacVices(task):
+def secondLevelMacVices(task, processed_dir):
     # ## second level model directories for PER SENTENCE
     contrastImg_dir = processed_dir + task + "/7_MAC_V/Conjunction/"  # Or /F_contrast/
     processed_dir_local = processed_dir+task+"/7_MAC_V/SecondLevel_contrast/"
@@ -877,7 +876,7 @@ def secondLevelMacVices(task):
         display_mode = 'z'
     )
 
-def secondLevelMacVirtues(task):
+def secondLevelMacVirtues(task, processed_dir):
     # ## second level model directories for PER SENTENCE
     contrastImg_dir = processed_dir +task+"/7_MAC/Conjunction/"  # Or /F_contrast/
     contrastImg_Testdir = ""
@@ -979,7 +978,7 @@ def secondLevelMacVirtues(task):
         display_mode = 'z'
     )
 
-def secondLevelMacVices_1v6(task):
+def secondLevelMacVices_1v6(task, processed_dir):
     for foundation in range(1,8):
         # ## second level model directories for PER SENTENCE
         contrastImg_dir = processed_dir + task + "/7_MAC_V/VsOther6/"  # Or /F_contrast/
@@ -1038,7 +1037,7 @@ def secondLevelMacVices_1v6(task):
         thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
                                     "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsOther6_fdrcorrect_per_sentence_MACVirtues.nii.gz")
 
-def secondLevelMacVirtues_1v6(task):
+def secondLevelMacVirtues_1v6(task, processed_dir):
     for foundation in range(1, 8):
         # ## second level model directories for PER SENTENCE
         contrastImg_dir = processed_dir + task + "/7_MAC/VsOther6/"  # Or /F_contrast/
@@ -1097,7 +1096,7 @@ def secondLevelMacVirtues_1v6(task):
         thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
                                     "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsOther6_fdrcorrect_per_sentence_MACVirtues.nii.gz")
 
-def secondLevelMacVices_1vB(task):
+def secondLevelMacVices_1vB(task, processed_dir):
     for foundation in range(1, 8):
         # ## second level model directories for PER SENTENCE
         contrastImg_dir = processed_dir + task + "/7_MAC_V/VsBaseline/"  # Or /F_contrast/
@@ -1156,7 +1155,7 @@ def secondLevelMacVices_1vB(task):
         thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
                                     "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsBaseline_fdrcorrect_per_sentence_MACVices.nii.gz")
 
-def secondLevelMacVirtues_1vB(task):
+def secondLevelMacVirtues_1vB(task, processed_dir):
     # ## second level model directories for PER SENTENCE
     for foundation in range(1, 8):
         contrastImg_dir = processed_dir + task + "/7_MAC/VsBaseline/"  # Or /F_contrast/

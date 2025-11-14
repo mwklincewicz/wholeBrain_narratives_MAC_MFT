@@ -24,6 +24,7 @@ import getMAC_MFT_by_seconds
 #       and excluded.xlsx there is also a mergeMilkway() helper to copy first level models into a 'milkyway' directory.
 #
 ########################################################################################################################
+processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
 
 #stories = ['prettymouth','sherlock','forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka','prettymouthaffair','prettymouthparanoia']
 #stories = ['milkywayoriginal','milkywaysynonyms','milkywayvodka'] // still have to run second level on this
@@ -54,6 +55,7 @@ masks = [
 
 for story in stories:
     getMAC_MFT_by_seconds.run( story, 3 )
+    getMAC_MFT_by_seconds.run(story, 6)
     #a.downloadStory(story)
     # a.secondLevelMacVices(story)
     # a.secondLevelMacVirtues(story)
