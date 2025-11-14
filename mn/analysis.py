@@ -173,18 +173,18 @@ def exclude_participants(story, participants):
 # HELPER FUNCTION FOR MERGING FIRST LEVEL MODELS FOR MILKYWAY VARIANTS
 import shutil
 
-def mergeMilkyway():
+def mergeMilkyway(processed_dir):
     print( "Merging milkyways...")
     shutil.copytree(processed_dir + "/milkywayoriginal/", processed_dir + "/milkyway/", dirs_exist_ok=True)
     shutil.copytree(processed_dir + "/milkywayvodka/", processed_dir + "/milkyway/", dirs_exist_ok=True)
     shutil.copytree(processed_dir + "/milkywaysynonyms/", processed_dir + "/milkyway/", dirs_exist_ok=True)
 
 # LOAD ALL PARTICIPANT NUMBERS, EXCLUDING THE ONES FROM excluded.xlsx
-def load_participants(task):
+def load_participants(task, processed_dir):
     #return a list of all participant numbers for a story
     participants = []
     story = ""
-    if task == "milkyway": mergeMilkyway() #in case this is a milkyway second-level model this will me called
+    if task == "milkyway": mergeMilkyway(processed_dir) #in case this is a milkyway second-level model this will me called
     if task=="prettymouthaffair" or task=="prettymouthparanoia": story="prettymouth"
     elif task=="milkywayoriginal" or task=="milkywaysynonyms" or task=="milkywayvodka":
         story="milkyway"
@@ -291,9 +291,9 @@ def firstLevelMacVices(story, processed_dir, scoring):
     os.makedirs(processed_dir + story + "\\7_MAC_V\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
     # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
     if (story=='prettymouthaffair') or (story=='prettymouthparanoia'):
-        segmentFileDF = pd.read_excel(foundationScores_dir + "prettymouth_"+scoring+"_MFT_MAC.xlsx")
+        segmentFileDF = pd.read_excel(foundationScores_dir + "prettymouth_"+str(scoring)+"_MFT_MAC.xlsx")
     else:
-        segmentFileDF = pd.read_excel(foundationScores_dir + story + "_MFT_MAC.xlsx")
+        segmentFileDF = pd.read_excel(foundationScores_dir + story + "_"+str(scoring)+"_MFT_MAC.xlsx")
     sentenceValues = segmentFileDF[['MAC_a_fairness_vice',
                                     'MAC_a_group_vice',
                                     'MAC_a_deference_vice',
@@ -316,7 +316,7 @@ def firstLevelMacVices(story, processed_dir, scoring):
     #   Data transform
     #
 
-    for participant in load_participants(story):
+    for participant in load_participants(story, processed_dir):
         #print ("Building first-level models for participant %s" % (participant))
         epi_data_NIFTI, epi_path = load_epi_data(participant, story)
         df, regressor_path = load_regressor(participant, story)
@@ -390,7 +390,7 @@ def firstLevelMacVices(story, processed_dir, scoring):
 
         # save contrast image (to be used at second level)
         os.makedirs(processed_dir + story + "\\7_MAC_V\\F_contrast\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_masked.to_filename(processed_dir+story+"\\7_MAC_V\\F_contrast\\"+participant+"_"+story+"_F_contrast_7_MAC_V_perSentence.nii.gz")
+        z_map_masked.to_filename(processed_dir+story+"\\7_MAC_V\\F_contrast\\"+participant+"_"+story+"_"+str(scoring)+"_F_contrast_7_MAC_V_perSentence.nii.gz")
 
         # determine for each moral foundations, where is more activation for that foundation vs an average of the other 6
 
@@ -423,13 +423,13 @@ def firstLevelMacVices(story, processed_dir, scoring):
         z_map_foundation7 = FM1.compute_contrast(c7, stat_type='t', output_type='z_score')
 
         os.makedirs(processed_dir + story + "\\7_MAC_V\\VsOther6\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_foundation1.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_7_MAC_V_perSentence_z_map_foundation1_vsOther6.nii.gz")
-        z_map_foundation2.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_7_MAC_V_perSentence_z_map_foundation2_vsOther6.nii.gz")
-        z_map_foundation3.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_7_MAC_V_perSentence_z_map_foundation3_vsOther6.nii.gz")
-        z_map_foundation4.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_7_MAC_V_perSentence_z_map_foundation4_vsOther6.nii.gz")
-        z_map_foundation5.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_7_MAC_V_perSentence_z_map_foundation5_vsOther6.nii.gz")
-        z_map_foundation6.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_7_MAC_V_perSentence_z_map_foundation6_vsOther6.nii.gz")
-        z_map_foundation7.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_7_MAC_V_perSentence_z_map_foundation7_vsOther6.nii.gz")
+        z_map_foundation1.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation1_vsOther6.nii.gz")
+        z_map_foundation2.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation2_vsOther6.nii.gz")
+        z_map_foundation3.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation3_vsOther6.nii.gz")
+        z_map_foundation4.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation4_vsOther6.nii.gz")
+        z_map_foundation5.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation5_vsOther6.nii.gz")
+        z_map_foundation6.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation6_vsOther6.nii.gz")
+        z_map_foundation7.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation7_vsOther6.nii.gz")
 
         # foundation 1
         c1 = np.array([1, 0, 0, 0, 0, 0, 0, -1])  # exact -1/6
@@ -460,13 +460,13 @@ def firstLevelMacVices(story, processed_dir, scoring):
         z_map_foundation7vsbase = FM1.compute_contrast(c7, stat_type='t', output_type='z_score')
 
         os.makedirs(processed_dir + story + "\\7_MAC_V\\VsBaseline\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_foundation1vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_7_MAC_V_perSentence_z_map_foundation1_vsBaseline.nii.gz")
-        z_map_foundation2vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_7_MAC_V_perSentence_z_map_foundation2_vsBaseline.nii.gz")
-        z_map_foundation3vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_7_MAC_V_perSentence_z_map_foundation3_vsBaseline.nii.gz")
-        z_map_foundation4vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_7_MAC_V_perSentence_z_map_foundation4_vsBaseline.nii.gz")
-        z_map_foundation5vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_7_MAC_V_perSentence_z_map_foundation5_vsBaseline.nii.gz")
-        z_map_foundation6vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_7_MAC_V_perSentence_z_map_foundation6_vsBaseline.nii.gz")
-        z_map_foundation7vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_7_MAC_V_perSentence_z_map_foundation7_vsBaseline.nii.gz")
+        z_map_foundation1vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation1_vsBaseline.nii.gz")
+        z_map_foundation2vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation2_vsBaseline.nii.gz")
+        z_map_foundation3vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation3_vsBaseline.nii.gz")
+        z_map_foundation4vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation4_vsBaseline.nii.gz")
+        z_map_foundation5vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation5_vsBaseline.nii.gz")
+        z_map_foundation6vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation6_vsBaseline.nii.gz")
+        z_map_foundation7vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation7_vsBaseline.nii.gz")
 
         # based on t maps rather than thresholded maps, minimum statistic conjunction
         # based on:
@@ -484,18 +484,18 @@ def firstLevelMacVices(story, processed_dir, scoring):
             img7=z_map_foundation7vsbase,
         )
         os.makedirs(processed_dir + story + "\\7_MAC_V\\Conjunction\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        min_stat_map.to_filename(processed_dir+story+"\\7_MAC_V\\Conjunction\\"+ participant + "_"+story+"_7_MAC_V_perSentence_minimum_stat_conjunction.nii.gz")
+        min_stat_map.to_filename(processed_dir+story+"\\7_MAC_V\\Conjunction\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_minimum_stat_conjunction.nii.gz")
 
 
         plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
 
-def firstLevelMacVirtues(story, processed_dir):
+def firstLevelMacVirtues(story, processed_dir, scoring):
     os.makedirs(processed_dir + story + "\\7_MAC\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
     # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
     if (story=='prettymouthaffair') or (story=='prettymouthparanoia'):
-        segmentFileDF = pd.read_excel(foundationScores_dir + "prettymouth_MFT_MAC.xlsx")
+        segmentFileDF = pd.read_excel(foundationScores_dir + "prettymouth_"+str(scoring)+"_MFT_MAC.xlsx")
     else:
-        segmentFileDF = pd.read_excel(foundationScores_dir + story + "_MFT_MAC.xlsx")
+        segmentFileDF = pd.read_excel(foundationScores_dir + story + "_"+str(scoring)+"_MFT_MAC.xlsx")
     sentenceValues = segmentFileDF[[
                                     'MAC_a_fairness_virtue',
                                     'MAC_a_group_virtue',
@@ -521,7 +521,7 @@ def firstLevelMacVirtues(story, processed_dir):
     #   Data transform
     #
 
-    for participant in load_participants(story):
+    for participant in load_participants(story, processed_dir):
         #print ("Building first-level models for participant %s" % (participant))
         epi_data_NIFTI, epi_path = load_epi_data(participant, story)
         df, regressor_path = load_regressor(participant, story)
@@ -595,7 +595,7 @@ def firstLevelMacVirtues(story, processed_dir):
 
         # save contrast image (to be used at second level)
         os.makedirs(processed_dir + story + "\\7_MAC\\F_contrast\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_masked.to_filename(processed_dir+story+"\\7_MAC\\F_contrast\\"+participant+"_"+story+"_F_contrast_7_MAC_perSentence.nii.gz")
+        z_map_masked.to_filename(processed_dir+story+"\\7_MAC\\F_contrast\\"+participant+"_"+story+"_"+str(scoring)+"_F_contrast_7_MAC_perSentence.nii.gz")
 
         # determine for each moral foundations, where is more activation for that foundation vs an average of the other 6
 
@@ -628,13 +628,13 @@ def firstLevelMacVirtues(story, processed_dir):
         z_map_foundation7 = FM1.compute_contrast(c7, stat_type='t', output_type='z_score')
 
         os.makedirs(processed_dir + story + "\\7_MAC\\VsOther6\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_foundation1.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_7_MAC_perSentence_z_map_foundation1_vsOther6.nii.gz")
-        z_map_foundation2.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_7_MAC_perSentence_z_map_foundation2_vsOther6.nii.gz")
-        z_map_foundation3.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_7_MAC_perSentence_z_map_foundation3_vsOther6.nii.gz")
-        z_map_foundation4.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_7_MAC_perSentence_z_map_foundation4_vsOther6.nii.gz")
-        z_map_foundation5.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_7_MAC_perSentence_z_map_foundation5_vsOther6.nii.gz")
-        z_map_foundation6.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_7_MAC_perSentence_z_map_foundation6_vsOther6.nii.gz")
-        z_map_foundation7.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_7_MAC_perSentence_z_map_foundation7_vsOther6.nii.gz")
+        z_map_foundation1.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation1_vsOther6.nii.gz")
+        z_map_foundation2.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation2_vsOther6.nii.gz")
+        z_map_foundation3.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation3_vsOther6.nii.gz")
+        z_map_foundation4.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation4_vsOther6.nii.gz")
+        z_map_foundation5.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation5_vsOther6.nii.gz")
+        z_map_foundation6.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation6_vsOther6.nii.gz")
+        z_map_foundation7.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation7_vsOther6.nii.gz")
 
         # foundation 1
         c1 = np.array([1, 0, 0, 0, 0, 0, 0, -1])  # exact -1/6
@@ -665,13 +665,13 @@ def firstLevelMacVirtues(story, processed_dir):
         z_map_foundation7vsbase = FM1.compute_contrast(c7, stat_type='t', output_type='z_score')
 
         os.makedirs(processed_dir + story + "\\7_MAC\\VsBaseline\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_foundation1vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_7_MAC_perSentence_z_map_foundation1_vsBaseline.nii.gz")
-        z_map_foundation2vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_7_MAC_perSentence_z_map_foundation2_vsBaseline.nii.gz")
-        z_map_foundation3vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_7_MAC_perSentence_z_map_foundation3_vsBaseline.nii.gz")
-        z_map_foundation4vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_7_MAC_perSentence_z_map_foundation4_vsBaseline.nii.gz")
-        z_map_foundation5vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_7_MAC_perSentence_z_map_foundation5_vsBaseline.nii.gz")
-        z_map_foundation6vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_7_MAC_perSentence_z_map_foundation6_vsBaseline.nii.gz")
-        z_map_foundation7vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_7_MAC_perSentence_z_map_foundation7_vsBaseline.nii.gz")
+        z_map_foundation1vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation1_vsBaseline.nii.gz")
+        z_map_foundation2vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation2_vsBaseline.nii.gz")
+        z_map_foundation3vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation3_vsBaseline.nii.gz")
+        z_map_foundation4vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation4_vsBaseline.nii.gz")
+        z_map_foundation5vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation5_vsBaseline.nii.gz")
+        z_map_foundation6vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation6_vsBaseline.nii.gz")
+        z_map_foundation7vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation7_vsBaseline.nii.gz")
 
         # based on t maps rather than thresholded maps, minimum statistic conjunction
         # based on:
@@ -689,19 +689,19 @@ def firstLevelMacVirtues(story, processed_dir):
             img7=z_map_foundation7vsbase,
         )
         os.makedirs(processed_dir + story + "\\7_MAC\\Conjunction\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        min_stat_map.to_filename(processed_dir+story+"\\7_MAC\\Conjunction\\"+ participant + "_"+story+"_7_MAC_perSentence_minimum_stat_conjunction.nii.gz")
+        min_stat_map.to_filename(processed_dir+story+"\\7_MAC\\Conjunction\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_minimum_stat_conjunction.nii.gz")
 
 
         plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
 
-def univariateWithMask(story, mask, processed_dir):
+def univariateWithMask(story, mask, processed_dir, scoring):
 
     # ----------------------------
     # Load prep data structures
     # ----------------------------
-    participants = load_participants(story)
+    participants = load_participants(story, processed_dir)
     n_participants = len(participants)
-    print( "Using " + mask + " for " + story )
+    print( "Using " + mask + " for " + story + " with scoring (number in seconds, sentence if no number)" + str(scoring))
     mask_orig = image.load_img(mask_dir + mask)
 
     # ----------------------------
@@ -771,10 +771,10 @@ def univariateWithMask(story, mask, processed_dir):
     # ----------------------------
     os.makedirs(processed_dir + '/' + story + '/', mode=0o777,
                 exist_ok=True)  # this checks if the directory exists and creates it, if not
-    np.save(processed_dir + '/' + story + "/" + story + "_" + mask.split('.')[0] + "_3D_clean.npy", array_3d)
+    np.save(processed_dir + '/' + story + "/" + story + "_"+str(scoring)+"_" + mask.split('.')[0] + "_3D_clean.npy", array_3d)
     #print("Mask array shape:", array_3d.shape, "(voxels × time × subjects)")
 
-def secondLevelMacVices(task, processed_dir):
+def secondLevelMacVices(task, processed_dir, scoring):
     # ## second level model directories for PER SENTENCE
     contrastImg_dir = processed_dir + task + "/7_MAC_V/Conjunction/"  # Or /F_contrast/
     processed_dir_local = processed_dir+task+"/7_MAC_V/SecondLevel_contrast/"
@@ -812,8 +812,7 @@ def secondLevelMacVices(task, processed_dir):
         output_type="z_score",
     )
     os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
-    (z_map.to_filename
-     (processed_dir_local + "/" + "SecondLevel_CONJUNCTION_"+task+"_per_sentence_MACVices_zscore.nii.gz"))
+    (z_map.to_filename(processed_dir_local + "/" + "SecondLevel_CONJUNCTION_"+task+"_"+str(scoring)+"_per_sentence_MACVices_zscore.nii.gz"))
 
     #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
     # #### fdr correction
@@ -828,8 +827,7 @@ def secondLevelMacVices(task, processed_dir):
     print(f"The p<.05 FDR-corrected threshold is z score of {threshold:.3g}")
 
     # save as brain image
-    thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
-                                "SecondLevel_CONJUNCTION_"+task+"_fdrcorrect_per_sentence_MACVices.nii.gz")
+    thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+"SecondLevel_CONJUNCTION_"+task+"_"+str(scoring)+"_fdrcorrect_per_sentence_MACVices.nii.gz")
     # quick visualization
     plotting.plot_stat_map(
         thresholded_map,
@@ -859,7 +857,7 @@ def secondLevelMacVices(task, processed_dir):
 
     # save as brain image
     thresholded_map2.to_filename(processed_dir_local + "/threshold_"+f"{threshold2:.3g}"+"_"+
-                                 "SecondLevel_CONJUNCTION_"+task+"_bonfcorrect_per_Sentence_MACVices.nii.gz")
+                                 "SecondLevel_CONJUNCTION_"+task+"_"+str(scoring)+"_bonfcorrect_per_Sentence_MACVices.nii.gz")
 
     # quick visualization
     plotting.plot_stat_map(
@@ -876,7 +874,7 @@ def secondLevelMacVices(task, processed_dir):
         display_mode = 'z'
     )
 
-def secondLevelMacVirtues(task, processed_dir):
+def secondLevelMacVirtues(task, processed_dir, scoring):
     # ## second level model directories for PER SENTENCE
     contrastImg_dir = processed_dir +task+"/7_MAC/Conjunction/"  # Or /F_contrast/
     contrastImg_Testdir = ""
@@ -915,7 +913,7 @@ def secondLevelMacVirtues(task, processed_dir):
     )
     os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
     (z_map.to_filename
-     (processed_dir_local + "/" + "SecondLevel_CONJUNCTION_"+task+"_per_sentence_MACVirtues_zscore.nii.gz"))
+     (processed_dir_local + "/" + "SecondLevel_CONJUNCTION_"+task+"_"+str(scoring)+"_per_sentence_MACVirtues_zscore.nii.gz"))
 
     #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
     # #### fdr correction
@@ -930,8 +928,7 @@ def secondLevelMacVirtues(task, processed_dir):
     print(f"The p<.05 FDR-corrected threshold is z score of {threshold:.3g}")
 
     # save as brain image
-    thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
-                                "SecondLevel_CONJUNCTION_"+task+"_fdrcorrect_per_sentence_MACVirtues.nii.gz")
+    thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+"SecondLevel_CONJUNCTION_"+task+"_"+str(scoring)+"_fdrcorrect_per_sentence_MACVirtues.nii.gz")
     # quick visualization
     plotting.plot_stat_map(
         thresholded_map,
@@ -960,8 +957,7 @@ def secondLevelMacVirtues(task, processed_dir):
     print(f"The p<.05 Bonferroni-corrected threshold is z score of {threshold2:.3g}")
 
     # save as brain image
-    thresholded_map2.to_filename(processed_dir_local + "/threshold_"+f"{threshold2:.3g}"+"_"+
-                                 "SecondLevel_CONJUNCTION_"+task+"_bonfcorrect_per_Sentence_MACVirtues.nii.gz")
+    thresholded_map2.to_filename(processed_dir_local + "/threshold_"+f"{threshold2:.3g}"+"_"+"SecondLevel_CONJUNCTION_"+task+"_"+str(scoring)+"_bonfcorrect_per_Sentence_MACVirtues.nii.gz")
 
     # quick visualization
     plotting.plot_stat_map(
@@ -978,7 +974,7 @@ def secondLevelMacVirtues(task, processed_dir):
         display_mode = 'z'
     )
 
-def secondLevelMacVices_1v6(task, processed_dir):
+def secondLevelMacVices_1v6(task, processed_dir, scoring):
     for foundation in range(1,8):
         # ## second level model directories for PER SENTENCE
         contrastImg_dir = processed_dir + task + "/7_MAC_V/VsOther6/"  # Or /F_contrast/
@@ -993,7 +989,7 @@ def secondLevelMacVices_1v6(task, processed_dir):
         all_imgs = [
             os.path.join(contrastImg_dir, name)
             for name in os.listdir(contrastImg_dir)
-                if name.endswith(f"foundation{foundation}_vsOther6.nii.gz")
+                if name.endswith(f"foundation{foundation}_"+str(scoring)+"__vsOther6.nii.gz")
         ]
 
         second_level_input = all_imgs
@@ -1019,7 +1015,7 @@ def secondLevelMacVices_1v6(task, processed_dir):
         )
         os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
         (z_map.to_filename
-         (processed_dir_local + "/" + "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsOther6_per_sentence_MACVirtues_zscore.nii.gz"))
+         (processed_dir_local + "/" + "SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsOther6_per_sentence_MACVirtues_zscore.nii.gz"))
 
         #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
         # #### fdr correction
@@ -1035,9 +1031,9 @@ def secondLevelMacVices_1v6(task, processed_dir):
 
         # save as brain image
         thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
-                                    "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsOther6_fdrcorrect_per_sentence_MACVirtues.nii.gz")
+                                    "SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsOther6_fdrcorrect_per_sentence_MACVirtues.nii.gz")
 
-def secondLevelMacVirtues_1v6(task, processed_dir):
+def secondLevelMacVirtues_1v6(task, processed_dir, scoring):
     for foundation in range(1, 8):
         # ## second level model directories for PER SENTENCE
         contrastImg_dir = processed_dir + task + "/7_MAC/VsOther6/"  # Or /F_contrast/
@@ -1052,7 +1048,7 @@ def secondLevelMacVirtues_1v6(task, processed_dir):
         all_imgs = [
             os.path.join(contrastImg_dir, name)
             for name in os.listdir(contrastImg_dir)
-                if name.endswith(f"foundation{foundation}_vsOther6.nii.gz")
+                if name.endswith(f"foundation{foundation}_"+str(scoring)+"__vsOther6.nii.gz")
         ]
 
         second_level_input = all_imgs
@@ -1078,7 +1074,7 @@ def secondLevelMacVirtues_1v6(task, processed_dir):
         )
         os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
         (z_map.to_filename
-         (processed_dir_local + "/" + "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsOther6_per_sentence_MACVirtues_zscore.nii.gz"))
+         (processed_dir_local + "/" + "SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsOther6_per_sentence_MACVirtues_zscore.nii.gz"))
 
         #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
         # #### fdr correction
@@ -1093,14 +1089,12 @@ def secondLevelMacVirtues_1v6(task, processed_dir):
         print(f"The p<.05 FDR-corrected threshold is z score of {threshold:.3g}")
 
         # save as brain image
-        thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
-                                    "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsOther6_fdrcorrect_per_sentence_MACVirtues.nii.gz")
+        thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+"SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsOther6_fdrcorrect_per_sentence_MACVirtues.nii.gz")
 
-def secondLevelMacVices_1vB(task, processed_dir):
+def secondLevelMacVices_1vB(task, processed_dir, scoring):
     for foundation in range(1, 8):
         # ## second level model directories for PER SENTENCE
         contrastImg_dir = processed_dir + task + "/7_MAC_V/VsBaseline/"  # Or /F_contrast/
-        contrastImg_Testdir = ""
         processed_dir_local = processed_dir +task+"/7_MAC_V/SecondLevel_contrast/"
         os.makedirs(processed_dir + "/", mode=0o777,
                     exist_ok=True)  # this checks if the directory exists and creates it, if not
@@ -1111,7 +1105,7 @@ def secondLevelMacVices_1vB(task, processed_dir):
         all_imgs = [
             os.path.join(contrastImg_dir, name)
             for name in os.listdir(contrastImg_dir)
-                if name.endswith(f"foundation{foundation}_vsBaseline.nii.gz")
+                if name.endswith(f"foundation{foundation}_"+str(scoring)+"_vsBaseline.nii.gz")
         ]
 
         second_level_input = all_imgs
@@ -1137,7 +1131,7 @@ def secondLevelMacVices_1vB(task, processed_dir):
         )
         os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
         (z_map.to_filename
-         (processed_dir_local + "/" + "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsBaseline_per_sentence_MACVices_zscore.nii.gz"))
+         (processed_dir_local + "/" + "SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsBaseline_per_sentence_MACVices_zscore.nii.gz"))
 
         #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
         # #### fdr correction
@@ -1152,10 +1146,9 @@ def secondLevelMacVices_1vB(task, processed_dir):
         print(f"The p<.05 FDR-corrected threshold is z score of {threshold:.3g}")
 
         # save as brain image
-        thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
-                                    "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsBaseline_fdrcorrect_per_sentence_MACVices.nii.gz")
+        thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+"SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsBaseline_fdrcorrect_per_sentence_MACVices.nii.gz")
 
-def secondLevelMacVirtues_1vB(task, processed_dir):
+def secondLevelMacVirtues_1vB(task, processed_dir, scoring):
     # ## second level model directories for PER SENTENCE
     for foundation in range(1, 8):
         contrastImg_dir = processed_dir + task + "/7_MAC/VsBaseline/"  # Or /F_contrast/
@@ -1170,7 +1163,7 @@ def secondLevelMacVirtues_1vB(task, processed_dir):
         all_imgs = [
             os.path.join(contrastImg_dir, name)
             for name in os.listdir(contrastImg_dir)
-                if name.endswith(f"foundation{foundation}_vsBaseline.nii.gz")
+                if name.endswith(f"foundation{foundation}_"+str(scoring)+"_vsBaseline.nii.gz")
         ]
 
         second_level_input = all_imgs
@@ -1195,8 +1188,7 @@ def secondLevelMacVirtues_1vB(task, processed_dir):
             output_type="z_score",
         )
         os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
-        (z_map.to_filename
-         (processed_dir_local + "/" + "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsBaseline_per_sentence_MACVirtues_zscore.nii.gz"))
+        (z_map.to_filename(processed_dir_local + "/" + "SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsBaseline_per_sentence_MACVirtues_zscore.nii.gz"))
 
         #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
         # #### fdr correction
@@ -1212,4 +1204,4 @@ def secondLevelMacVirtues_1vB(task, processed_dir):
 
         # save as brain image
         thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
-                                    "SecondLevel_"+task+'_foundation'+str(foundation)+"_VsBaseline_fdrcorrect_per_sentence_MACVirtues.nii.gz")
+                                    "SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsBaseline_fdrcorrect_per_sentence_MACVirtues.nii.gz")

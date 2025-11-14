@@ -206,8 +206,8 @@ def run(story, chunkOfAnalysis):
                     dataFrameForSaving.insert(0, "V_pos", pos)
                     dataFrameForSaving.insert(0, "V_neg", neg)
                     dataFrameForSaving.insert(0, "V_neu", neu)
-                    dataFrameForSaving.insert(0, "chunkStart", chunkStart)
-                    dataFrameForSaving.insert(0, "chunkEnd", chunkEnd)
+                    dataFrameForSaving.insert(0, "start", chunkStart)
+                    dataFrameForSaving.insert(0, "end", chunkEnd)
                 elif index > 0 and index < len(chunk):
                     newIndex = len(dataFrameForSaving)
                     dataFrameForSaving.loc[newIndex] = merged
@@ -217,14 +217,14 @@ def run(story, chunkOfAnalysis):
                     dataFrameForSaving.loc[newIndex, "V_pos"] = pos
                     dataFrameForSaving.loc[newIndex, "V_neg"] = neg
                     dataFrameForSaving.loc[newIndex, "V_neu"] = neu
-                    dataFrameForSaving.loc[newIndex, "chunkStart"] = chunkStart
-                    dataFrameForSaving.loc[newIndex, "chunkEnd"] = chunkEnd
+                    dataFrameForSaving.loc[newIndex, "start"] = chunkStart
+                    dataFrameForSaving.loc[newIndex, "end"] = chunkEnd
                 index += 1
 
             # Save dataframe with both sentence and segment scores to xlsx
             # dataFrameForSaving.to_excel('sentence_segment_MFT_MAC.xlsx')
             dataFrameForSaving.drop(dataFrameForSaving.tail(1).index, inplace=True) #remove last row because it is empty
-            dataFrameForSaving.to_excel("./text/foundationScores/" + directory_input + '_'+str(chunkOfAnalysis)+'_seconds_MFT_MAC.xlsx')
+            dataFrameForSaving.to_excel("./text/foundationScores/" + directory_input + '_'+str(chunkOfAnalysis)+'_MFT_MAC.xlsx')
 
             #Cleaning up temp files
             file.close()

@@ -1,5 +1,5 @@
-#from mn import analysis as a
-import getMAC_MFT_by_seconds
+from mn import analysis as a
+#import getMAC_MFT_by_seconds
 ########################################################################################################################
 #                  THIS IS THE MAIN EXECUTION SCRIPT FOR THE ANALYSIS PIPELINE OUTLINED IN README.MD
 #
@@ -24,14 +24,12 @@ import getMAC_MFT_by_seconds
 #       and excluded.xlsx there is also a mergeMilkway() helper to copy first level models into a 'milkyway' directory.
 #
 ########################################################################################################################
-processed_dir = "G:/fMRI_project/processed_first_level_per_sentence/"
-
+dir1 = "G:/fMRI_project/processed_3/"
+dir2 = "G:/fMRI_project/processed_6/"
 #stories = ['prettymouth','sherlock','forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka','prettymouthaffair','prettymouthparanoia']
-#stories = ['milkywayoriginal','milkywaysynonyms','milkywayvodka'] // still have to run second level on this
 #stories = ['prettymouthparanoia']
 
 stories = ['prettymouth','tunnel','21styear','shapesphysical','shapessocial','milkywayoriginal','milkywaysynonyms','milkywayvodka']
-#stories = ['shapesphysical']
 
 masks = [
             'gyrus_stg_association-test_z_FDR_0.01.nii',
@@ -54,25 +52,32 @@ masks = [
          ]
 
 for story in stories:
-    getMAC_MFT_by_seconds.run( story, 3 )
-    getMAC_MFT_by_seconds.run(story, 6)
-    #a.downloadStory(story)
-    # a.secondLevelMacVices(story)
-    # a.secondLevelMacVirtues(story)
-    # a.secondLevelMacVices_1vB(story)
-    # a.secondLevelMacVirtues_1vB(story)
-    # a.secondLevelMacVirtues_1v6(story)
-    # a.secondLevelMacVices_1v6(story)
-    # for mask in masks:
-    #     a.univariateWithMask(story, mask)
-    # a.dropStory(story)
-    # a.firstLevelMacVirtues(story)
-    # a.firstLevelMacVices(story)
-    # a.secondLevelMacVices(story)
-    # a.secondLevelMacVirtues(story)
-    # a.secondLevelMacVices_1vB(story)
-    # a.secondLevelMacVirtues_1vB(story)
-    # a.secondLevelMacVirtues_1v6(story)
-    # a.secondLevelMacVices_1v6(story)
-
+    # getMAC_MFT_by_seconds.run( story, 3 )
+    # getMAC_MFT_by_seconds.run(story, 6)
+    a.downloadStory(story)
+    a.firstLevelMacVirtues(story, dir1, 3)
+    a.firstLevelMacVices(story, dir1, 3)
+    a.firstLevelMacVices(story, dir1, 3)
+    a.secondLevelMacVices(story, dir1, 3)
+    a.secondLevelMacVices(story, dir1, 3)   
+    a.secondLevelMacVirtues(story, dir1, 3)
+    a.secondLevelMacVices_1vB(story, dir1, 3)
+    a.secondLevelMacVirtues_1vB(story, dir1, 3)
+    a.secondLevelMacVirtues_1v6(story, dir1, 3)
+    a.secondLevelMacVices_1v6(story, dir1, 3)
+    for mask in masks:
+        a.univariateWithMask(story, mask, dir1, 3)
+    a.firstLevelMacVirtues(story, dir2, 6)
+    a.firstLevelMacVices(story, dir2, 6)
+    a.firstLevelMacVices(story, dir2, 6)
+    a.secondLevelMacVices(story, dir2, 6)
+    a.secondLevelMacVices(story, dir2, 6)
+    a.secondLevelMacVirtues(story, dir2, 6)
+    a.secondLevelMacVices_1vB(story, dir2, 6)
+    a.secondLevelMacVirtues_1vB(story, dir2, 6)
+    a.secondLevelMacVirtues_1v6(story, dir2, 6)
+    a.secondLevelMacVices_1v6(story, dir2, 6)
+    for mask in masks:
+        a.univariateWithMask(story, mask, dir2, 6)
+    a.dropStory(story)
 
