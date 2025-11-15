@@ -17,7 +17,7 @@
 4) Download .nii and .tsv files for a story using downloadStory(NAME) into .\fmriprep
 5) Run firstLevelXXXXX(NAME, DIRECTORY, SCORING), as for task, etc. NAME=story, DIRECTORY=where processed files will go, SCORING=seconds per chunk
 6) Run secondLevelModel_XXXXXXXXX(NAME, DIRECTORY, SCORING), as for (5), etc.
-7) All processed data and plots will be stored in DIRECTORY, which you should independently sync with Google Drive.  
+7) All processed data and plots will be stored in DIRECTORY, which you should independently sync with Google Drive or something like that.  
 8) univeriateWithMask takes NAME, DIRECTORY, SCORING, and MASK, which is a string name+extension of a nii.gz file in ./masks/
 9) Drop fMRI .nii and confound regressor .tsv files for a story using dropStory(NAME); this does not delete the alias file!
 

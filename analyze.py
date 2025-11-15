@@ -53,29 +53,31 @@ masks = [
             'hippocampus_R.nii.gz'
          ]
 
+story = 'shapesphysical'
+a.firstLevelMacVirtuesAndVices(story,dir2,6)
+a.secondLevelMacVices(story, dir2, 6)
+a.secondLevelMacVirtues(story, dir2, 6)
+a.secondLevelMacVices_1vB(story, dir2, 6)
+a.secondLevelMacVirtues_1vB(story, dir2, 6)
+a.secondLevelMacVirtues_1v6(story, dir2, 6)
+a.secondLevelMacVices_1v6(story, dir2, 6)
+a.dropStory(story)
+
 for story in stories:
-    # getMAC_MFT_by_seconds.run( story, 3 )
-    # getMAC_MFT_by_seconds.run(story, 6)
     a.downloadStory(story)
-    a.firstLevelMacVirtues(story, dir1, 3)
-    a.firstLevelMacVices(story, dir1, 3)
+    a.firstLevelMacVirtuesAndVices(story, dir1, 3)
     a.secondLevelMacVices(story, dir1, 3)
     a.secondLevelMacVirtues(story, dir1, 3)
     a.secondLevelMacVices_1vB(story, dir1, 3)
     a.secondLevelMacVirtues_1vB(story, dir1, 3)
     a.secondLevelMacVirtues_1v6(story, dir1, 3)
     a.secondLevelMacVices_1v6(story, dir1, 3)
-    for mask in masks:
-        a.univariateWithMask(story, mask, dir1, 3)
-    a.firstLevelMacVirtues(story, dir2, 6)
-    a.firstLevelMacVices(story, dir2, 6)
+    a.firstLevelMacVirtuesAndVices(story, dir2, 6)
     a.secondLevelMacVices(story, dir2, 6)
     a.secondLevelMacVirtues(story, dir2, 6)
     a.secondLevelMacVices_1vB(story, dir2, 6)
     a.secondLevelMacVirtues_1vB(story, dir2, 6)
     a.secondLevelMacVirtues_1v6(story, dir2, 6)
     a.secondLevelMacVices_1v6(story, dir2, 6)
-    for mask in masks:
-        a.univariateWithMask(story, mask, dir2, 6)
     a.dropStory(story)
 

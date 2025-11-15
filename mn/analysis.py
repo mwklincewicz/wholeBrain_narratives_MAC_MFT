@@ -62,7 +62,7 @@ def transcribe(task):
     df_phrases = pd.DataFrame(columns=["text","start", "end"])
     phraseNumber = 0
     for segment in result['segments']:
-        print( segment )
+        #print( segment )
         phraseNumber = phraseNumber + 1
         df_phrases.loc[phraseNumber] = segment
         for word in segment['words']:
@@ -259,7 +259,7 @@ def get_top_foundation_per_row(story, foundations, scoring):
     for root, dirs, files in os.walk(foundationScores_dir):
         for file in files:
             if story in file and str(scoring) in file:
-                print(f"{bcolors.OKBLUE}Getting top foundations per row in %03s {bcolors.END}" % (story[:-1]))
+                print(f"{bcolors.OKBLUE}Getting top foundations per row in {bcolors.WARNING}%03s {bcolors.OKBLUE}for {bcolors.END}%03s" % (story[:-1], foundations) )
                 df = pd.read_excel(os.path.join(root, file))
                 for index, row in df.iterrows():
                     if ( row[foundations].max() > 0 ):
@@ -706,6 +706,281 @@ def firstLevelMacVirtues(story, processed_dir, scoring):
 
         plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
 
+def firstLevelMacVirtuesAndVices(story, processed_dir, scoring):
+    os.makedirs(processed_dir + story + "\\7_MAC\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
+    os.makedirs(processed_dir + story + "\\7_MAC_V\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
+
+    # This creates the events and durations FOR DESIGN MATRIX
+    virtues_per_sentence = get_top_foundation_per_row(story,
+                                                               ['MAC_a_fairness_virtue',
+                                                                'MAC_a_group_virtue',
+                                                                'MAC_a_deference_virtue',
+                                                                'MAC_a_heroism_virtue',
+                                                                'MAC_a_reciprocity_virtue',
+                                                                'MAC_a_family_virtue',
+                                                                'MAC_a_property_virtue'], scoring)
+    virtueEvents = pd.DataFrame(virtues_per_sentence, columns=["trial_type", "onset", "duration"])
+
+    vices_per_sentence = get_top_foundation_per_row(story,
+                                                    ['MAC_a_fairness_vice',
+                                                     'MAC_a_group_vice',
+                                                     'MAC_a_deference_vice',
+                                                     'MAC_a_heroism_vice',
+                                                     'MAC_a_reciprocity_vice',
+                                                     'MAC_a_family_vice',
+                                                     'MAC_a_property_vice'], scoring)
+
+    vicesEvents = pd.DataFrame(vices_per_sentence, columns=["trial_type", "onset", "duration"])
+
+    print(f"{bcolors.OKGREEN}First level {bcolors.WARNING}virtues and vices{bcolors.OKGREEN} models for " + story + " with " + str(scoring) + f" s. chunks.{bcolors.END}")
+
+    #
+    #   Data transform
+    #
+
+    for participant in load_participants(story, processed_dir):
+        #print ("Building first-level models for participant %s" % (participant))
+        epi_data_NIFTI, epi_path = load_epi_data(participant, story)
+        df, regressor_path = load_regressor(participant, story)
+        confound_file1 = df[
+            ['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
+        # this weird thing handles cases in which there were multiple runs for a single participant
+        if "run-1" in epi_path:
+            participant = participant + "_run-1_"
+        if "run-2" in epi_path:
+            participant = participant + "_run-2_"
+
+        # Make an average
+        mean_img = image.mean_img(epi_data_NIFTI, copy_header=True)
+        mask = masking.compute_epi_mask(mean_img, lower_cutoff=0.2, upper_cutoff=0.85, opening=3, connected=True)
+
+        # Clean and smooth data
+        epi_data_NIFTI = image.clean_img(epi_data_NIFTI, standardize=False)
+        epi_data_NIFTI = image.smooth_img(epi_data_NIFTI, 6.0)
+
+        # get fdata
+        epi_data = epi_data_NIFTI.get_fdata()
+
+        frame_times = (
+                np.arange(epi_data.shape[3]) * 1.5
+        )
+
+        # baseline first level models
+
+        X_base_virtues = make_first_level_design_matrix(
+            frame_times,
+            virtueEvents,
+            add_regs=confound_file1,
+            add_reg_names=['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z'],
+            hrf_model='glover',
+        )
+
+        X_base_vices = make_first_level_design_matrix(
+            frame_times,
+            vicesEvents,
+            add_regs=confound_file1,
+            add_reg_names=['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z'],
+            hrf_model='glover',
+        )
+
+        FM1 = FirstLevelModel(mask_img=mask)
+        FM1 = FM1.fit(epi_data_NIFTI, design_matrices=X_base_virtues)
+
+        FM2 = FirstLevelModel(mask_img=mask)
+        FM2 = FM2.fit(epi_data_NIFTI, design_matrices=X_base_vices)
+
+        # contrast first level model
+
+        # Let's compare it to the unmodulated block design
+        fig, (ax1) = plt.subplots(
+            figsize=(10, 6), nrows=1, ncols=1, constrained_layout=True
+        )
+
+        plot_design_matrix(X_base_virtues, axes=ax1)
+        ax1.set_title("Block design matrix", fontsize=12)
+
+        plot_design_matrix(X_base_vices, axes=ax1)
+        ax1.set_title("Block design matrix", fontsize=12)
+
+        #plt.savefig("design_matrix.jpg", dpi=300, bbox_inches='tight')
+
+        #plt.show()
+
+        ## create contrast image
+        ## create contrast image F test (which voxels significant in any of the 7 foundations)
+        contrast_val = np.eye(7)
+        plot_contrast_matrix(contrast_val, X_base_virtues)
+        plot_contrast_matrix(contrast_val, X_base_vices)
+
+        contrast_name = "F_contrast"
+
+        z_map_virtues = FM1.compute_contrast(
+            contrast_val,
+            stat_type='F',
+            output_type="z_score"  # Can be ‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’ or ‘all’
+        )
+        z_map_vices = FM2.compute_contrast(
+            contrast_val,
+            stat_type='F',
+            output_type="z_score"  # Can be ‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’ or ‘all’
+        )
+        # Apply mask to z_map
+        masked_data = apply_mask(z_map_virtues, mask)
+        z_map_masked_virtues = unmask(masked_data, mask)
+        masked_data = apply_mask(z_map_vices, mask)
+        z_map_masked_vices = unmask(masked_data, mask)
+
+        # save contrast image (to be used at second level)
+        os.makedirs(processed_dir + story + "\\7_MAC\\F_contrast\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
+        z_map_masked_virtues.to_filename(processed_dir+story+"\\7_MAC\\F_contrast\\"+participant+"_"+story+"_"+str(scoring)+"_F_contrast_7_MAC_perSentence.nii.gz")
+        os.makedirs(processed_dir + story + "\\7_MAC_V\\F_contrast\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
+        z_map_masked_vices.to_filename(processed_dir + story + "\\7_MAC_V\\F_contrast\\" + participant + "_" + story + "_" + str(scoring) + "_F_contrast_7_MAC_V_perSentence.nii.gz")
+
+        # determine for each moral foundations, where is more activation for that foundation vs an average of the other 6
+
+        # foundation 1
+        c1 = np.array([1, -1 / 6, -1 / 6, -1 / 6, -1 / 6, -1 / 6, -1 / 6])  # exact -1/6
+        z_map_foundation1_virtues = FM1.compute_contrast(c1, stat_type='t', output_type='z_score')
+        z_map_foundation1_vices = FM2.compute_contrast(c1, stat_type='t', output_type='z_score')
+
+        # foundation 2
+        c2 = np.array([-1 / 6, 1, -1 / 6, -1 / 6, -1 / 6, -1 / 6, -1 / 6])  # exact -1/6
+        z_map_foundation2_virtues = FM1.compute_contrast(c2, stat_type='t', output_type='z_score')
+        z_map_foundation2_vices = FM2.compute_contrast(c2, stat_type='t', output_type='z_score')
+
+        # foundation 3
+        c3 = np.array([-1 / 6, -1 / 6, 1, -1 / 6, -1 / 6, -1 / 6, -1 / 6])  # exact -1/6
+        z_map_foundation3_virtues = FM1.compute_contrast(c3, stat_type='t', output_type='z_score')
+        z_map_foundation3_vices = FM2.compute_contrast(c3, stat_type='t', output_type='z_score')
+
+        # foundation 4
+        c4 = np.array([-1 / 6, -1 / 6, -1 / 6, 1, -1 / 6, -1 / 6, -1 / 6])  # exact -1/6
+        z_map_foundation4_virtues = FM1.compute_contrast(c4, stat_type='t', output_type='z_score')
+        z_map_foundation4_vices = FM2.compute_contrast(c4, stat_type='t', output_type='z_score')
+
+        # foundation 5
+        c5 = np.array([-1 / 6, -1 / 6, -1 / 6, -1 / 6, 1, -1 / 6, -1 / 6])  # exact -1/6
+        z_map_foundation5_virtues = FM1.compute_contrast(c5, stat_type='t', output_type='z_score')
+        z_map_foundation5_vices = FM2.compute_contrast(c5, stat_type='t', output_type='z_score')
+
+        # foundation 6
+        c6 = np.array([-1 / 6, -1 / 6, -1 / 6, -1 / 6, -1 / 6, 1, -1 / 6])  # exact -1/6
+        z_map_foundation6_virtues = FM1.compute_contrast(c6, stat_type='t', output_type='z_score')
+        z_map_foundation6_vices = FM2.compute_contrast(c6, stat_type='t', output_type='z_score')
+
+        # foundation 7
+        c7 = np.array([-1 / 6, -1 / 6, -1 / 6, -1 / 6, -1 / 6, -1 / 6, 1])  # exact -1/6
+        z_map_foundation7_virtues = FM1.compute_contrast(c7, stat_type='t', output_type='z_score')
+        z_map_foundation7_vices = FM2.compute_contrast(c7, stat_type='t', output_type='z_score')
+
+        os.makedirs(processed_dir + story + "\\7_MAC\\VsOther6\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
+        z_map_foundation1_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation1_vsOther6.nii.gz")
+        z_map_foundation2_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation2_vsOther6.nii.gz")
+        z_map_foundation3_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation3_vsOther6.nii.gz")
+        z_map_foundation4_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation4_vsOther6.nii.gz")
+        z_map_foundation5_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation5_vsOther6.nii.gz")
+        z_map_foundation6_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation6_vsOther6.nii.gz")
+        z_map_foundation7_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation7_vsOther6.nii.gz")
+
+        os.makedirs(processed_dir + story + "\\7_MAC_V\\VsOther6\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
+        z_map_foundation1_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation1_vsOther6.nii.gz")
+        z_map_foundation2_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation2_vsOther6.nii.gz")
+        z_map_foundation3_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation3_vsOther6.nii.gz")
+        z_map_foundation4_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation4_vsOther6.nii.gz")
+        z_map_foundation5_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation5_vsOther6.nii.gz")
+        z_map_foundation6_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation6_vsOther6.nii.gz")
+        z_map_foundation7_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation7_vsOther6.nii.gz")
+
+        # foundation 1
+        c1 = np.array([1, 0, 0, 0, 0, 0, 0, -1])  # exact -1/6
+        z_map_foundation1vsbase_virtues = FM1.compute_contrast(c1, stat_type='t', output_type='z_score')
+        z_map_foundation1vsbase_vices = FM2.compute_contrast(c1, stat_type='t', output_type='z_score')
+
+        # foundation 2
+        c2 = np.array([0, 1, 0, 0, 0, 0, 0, -1])  # exact -1/6
+        z_map_foundation2vsbase_virtues = FM1.compute_contrast(c2, stat_type='t', output_type='z_score')
+        z_map_foundation2vsbase_vices = FM2.compute_contrast(c2, stat_type='t', output_type='z_score')
+
+        # foundation 3
+        c3 = np.array([0, 0, 1, 0, 0, 0, 0, -1])  # exact -1/6
+        z_map_foundation3vsbase_virtues = FM1.compute_contrast(c3, stat_type='t', output_type='z_score')
+        z_map_foundation3vsbase_vices = FM2.compute_contrast(c3, stat_type='t', output_type='z_score')
+
+        # foundation 4
+        c4 = np.array([0, 0, 0, 1, 0, 0, 0, -1])  # exact -1/6
+        z_map_foundation4vsbase_virtues = FM1.compute_contrast(c4, stat_type='t', output_type='z_score')
+        z_map_foundation4vsbase_vices = FM2.compute_contrast(c4, stat_type='t', output_type='z_score')
+
+        # foundation 5
+        c5 = np.array([0, 0, 0, 0, 1, 0, 0, -1])  # exact -1/6
+        z_map_foundation5vsbase_virtues = FM1.compute_contrast(c5, stat_type='t', output_type='z_score')
+        z_map_foundation5vsbase_vices = FM2.compute_contrast(c5, stat_type='t', output_type='z_score')
+
+        # foundation 6
+        c6 = np.array([0, 0, 0, 0, 0, 1, 0, -1])  # exact -1/6
+        z_map_foundation6vsbase_virtues = FM1.compute_contrast(c6, stat_type='t', output_type='z_score')
+        z_map_foundation6vsbase_vices = FM2.compute_contrast(c6, stat_type='t', output_type='z_score')
+
+        # foundation 7
+        c7 = np.array([0, 0, 0, 0, 0, 0, 1, -1])  # exact -1/6
+        z_map_foundation7vsbase_virtues = FM1.compute_contrast(c7, stat_type='t', output_type='z_score')
+        z_map_foundation7vsbase_vices = FM2.compute_contrast(c7, stat_type='t', output_type='z_score')
+
+        os.makedirs(processed_dir + story + "\\7_MAC\\VsBaseline\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
+        z_map_foundation1vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation1_vsBaseline.nii.gz")
+        z_map_foundation2vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation2_vsBaseline.nii.gz")
+        z_map_foundation3vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation3_vsBaseline.nii.gz")
+        z_map_foundation4vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation4_vsBaseline.nii.gz")
+        z_map_foundation5vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation5_vsBaseline.nii.gz")
+        z_map_foundation6vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation6_vsBaseline.nii.gz")
+        z_map_foundation7vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation7_vsBaseline.nii.gz")
+
+        os.makedirs(processed_dir + story + "\\7_MAC_V\\VsBaseline\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
+        z_map_foundation1vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation1_vsBaseline.nii.gz")
+        z_map_foundation2vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation2_vsBaseline.nii.gz")
+        z_map_foundation3vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation3_vsBaseline.nii.gz")
+        z_map_foundation4vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation4_vsBaseline.nii.gz")
+        z_map_foundation5vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation5_vsBaseline.nii.gz")
+        z_map_foundation6vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation6_vsBaseline.nii.gz")
+        z_map_foundation7vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation7_vsBaseline.nii.gz")
+
+        # based on t maps rather than thresholded maps, minimum statistic conjunction
+        # based on:
+        # Thomas Nichols, Matthew Brett, Jesper Andersson, Tor Wager, Jean-Baptiste Poline,
+        # Valid conjunction inference with the minimum statistic, NeuroImage, Volume 25, Issue 3, 2005
+
+        min_stat_map_virtues = image.math_img(
+            "np.minimum.reduce((img1, img2, img3, img4, img5, img6, img7))",
+            img1=z_map_foundation1vsbase_virtues,
+            img2=z_map_foundation2vsbase_virtues,
+            img3=z_map_foundation3vsbase_virtues,
+            img4=z_map_foundation4vsbase_virtues,
+            img5=z_map_foundation5vsbase_virtues,
+            img6=z_map_foundation6vsbase_virtues,
+            img7=z_map_foundation7vsbase_virtues,
+        )
+        os.makedirs(processed_dir + story + "\\7_MAC\\Conjunction\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
+        min_stat_map_virtues.to_filename(processed_dir+story+"\\7_MAC\\Conjunction\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_minimum_stat_conjunction.nii.gz")
+
+
+        plotting.plot_stat_map(z_map_masked_virtues, bg_img=mean_img, title="Masked z-map")
+
+        min_stat_map_vices = image.math_img(
+            "np.minimum.reduce((img1, img2, img3, img4, img5, img6, img7))",
+            img1=z_map_foundation1vsbase_vices,
+            img2=z_map_foundation2vsbase_vices,
+            img3=z_map_foundation3vsbase_vices,
+            img4=z_map_foundation4vsbase_vices,
+            img5=z_map_foundation5vsbase_vices,
+            img6=z_map_foundation6vsbase_vices,
+            img7=z_map_foundation7vsbase_vices,
+        )
+        os.makedirs(processed_dir + story + "\\7_MAC_V\\Conjunction\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
+        min_stat_map_vices.to_filename(processed_dir+story+"\\7_MAC_V\\Conjunction\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_minimum_stat_conjunction.nii.gz")
+
+        plotting.plot_stat_map(z_map_masked_virtues, bg_img=mean_img, title="Masked z-map")
+        plotting.plot_stat_map(z_map_masked_vices, bg_img=mean_img, title="Masked z-map")
+
 def univariateWithMask(story, mask, processed_dir, scoring):
 
     # ----------------------------
@@ -713,7 +988,7 @@ def univariateWithMask(story, mask, processed_dir, scoring):
     # ----------------------------
     participants = load_participants(story, processed_dir)
     n_participants = len(participants)
-    print( f"{bcolors.OKCYAN}Using " + mask + " for " + story + f" with scoring (number in seconds, sentence if no number){bcolors.END}" + str(scoring))
+    print( f"{bcolors.OKCYAN}Using " + mask + " for " + story + f" with scoring (number in seconds, 'sentence-level' if no number or 0):   {bcolors.END}" + str(scoring))
     mask_orig = image.load_img(mask_dir + mask)
 
     # ----------------------------
@@ -991,10 +1266,8 @@ def secondLevelMacVices_1v6(task, processed_dir, scoring):
         contrastImg_dir = processed_dir + task + "/7_MAC_V/VsOther6/"  # Or /F_contrast/
         contrastImg_Testdir = ""
         processed_dir_local = processed_dir+task+"/7_MAC_V/SecondLevel_contrast/"
-        os.makedirs(processed_dir + "/", mode=0o777,
-                    exist_ok=True)  # this checks if the directory exists and creates it, if not
-        os.makedirs(contrastImg_dir + "/", mode=0o777,
-                    exist_ok=True)  # this checks if the directory exists and creates it, if not
+        os.makedirs(processed_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
+        os.makedirs(contrastImg_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
 
         #main loop over foundations
         all_imgs = [
@@ -1004,7 +1277,7 @@ def secondLevelMacVices_1v6(task, processed_dir, scoring):
         ]
 
         second_level_input = all_imgs
-        #print(second_level_input)
+        print(second_level_input)
 
         # create a design matrix for one sample t test, to be used as input for the second level model
         design_matrix = pd.DataFrame(
@@ -1025,8 +1298,7 @@ def secondLevelMacVices_1v6(task, processed_dir, scoring):
             output_type="z_score",
         )
         os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
-        (z_map.to_filename
-         (processed_dir_local + "/" + "SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsOther6_per_sentence_MACVirtues_zscore.nii.gz"))
+        (z_map.to_filename(processed_dir_local + "/" + "SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsOther6_per_sentence_MACVirtues_zscore.nii.gz"))
 
         #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
         # #### fdr correction
@@ -1065,7 +1337,7 @@ def secondLevelMacVirtues_1v6(task, processed_dir, scoring):
         ]
 
         second_level_input = all_imgs
-        #print(second_level_input)
+        print(second_level_input)
 
         # create a design matrix for one sample t test, to be used as input for the second level model
         design_matrix = pd.DataFrame(
