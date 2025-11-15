@@ -19,6 +19,16 @@ alias_dir = ".\\fmriprep"
 foundationScores_dir = "./text/foundationScores/"
 mask_dir = "./masks/"
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    END = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 #
 #   Use PYTHON 12, ffmpeg needs to be installed, latest everything else
 #
@@ -36,10 +46,10 @@ def transcribe(task):
 
     audio_file = ".\\audio\\" + task + "_audio.wav"
     if os.path.exists(audio_file):
-        print("The audio file " + audio_file + " exists.")
+        print(f"{bcolors.OKBLUE}The audio file " + audio_file + f" exists.{bcolors.END}")
     else:
-        print("The audio file " + audio_file + " DOES NOT EXIST.")
-    print( "Speech to text from: ./audio/" + task + "_audio.wav")
+        print(f"{bcolors.OKBLUE}The audio file " + audio_file + f" {bcolors.FAIL}DOES NOT EXIST.{bcolors.END}")
+    print( f"{bcolors.OKBLUE}Speech to text from:{bcolors.END} ./audio/" + task + "_audio.wav")
     audio = whisperx.load_audio(audio_file)
     result = model.transcribe(audio, language="en", batch_size=batch_size)
     # print(result["segments"]) # before alignment
@@ -82,12 +92,12 @@ def dropStory(task):
         for file in files:
             if task in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
                 epi = os.path.join(root,file)
-                print("Removing data file for %s" % (epi))
+                #print("Removing data file for %s" % (epi))
                 subprocess.run(["datalad", "drop", epi], shell=True)
             if task in file and file.endswith("desc-confounds_regressors.tsv"):
                 epi = os.path.join(root, file)
                 #exe_path = pathlib.PureWindowsPath(epi).as_posix()
-                print("Removing data file for %s" % (epi))
+                #print("Removing data file for %s" % (epi))
                 subprocess.call(["datalad", "drop", epi], shell=True)
 
 # FUNCTION FOR LOADING ALL IMAGE FILE NAMES FOR A STORY
@@ -136,7 +146,7 @@ def load_image_data(sub,task):
 # FUNCTION FOR DOWNLOADING STORY fMRI IMAGES THROUGH DATALAD
 
 def downloadStory( task ):
-    print( "starting download of " + task )
+    print( f"{bcolors.OKBLUE}starting download of {bcolors.END}" + task )
     if task=="prettymouthaffair" or task=="prettymouthparanoia":
         task="prettymouth"
     elif task=="milkywayoriginal" or task=="milkywaysynonyms" or task=="milkywayvodka":
@@ -167,14 +177,14 @@ def exclude_participants(story, participants):
                 participants.remove(bye)
                 removed.append(bye)
     if len(removed)>0:
-        print("Excluding " + ",".join(removed) + " from " + story)
+        print(f"{bcolors.FAIL}Excluding " + ",".join(removed) + " from " + story + f".{bcolors.END}")
     return participants
 
 # HELPER FUNCTION FOR MERGING FIRST LEVEL MODELS FOR MILKYWAY VARIANTS
 import shutil
 
 def mergeMilkyway(processed_dir):
-    print( "Merging milkyways...")
+    print( f"{bcolors.OKBLUE}Merging milkyways...{bcolors.END}")
     shutil.copytree(processed_dir + "/milkywayoriginal/", processed_dir + "/milkyway/", dirs_exist_ok=True)
     shutil.copytree(processed_dir + "/milkywayvodka/", processed_dir + "/milkyway/", dirs_exist_ok=True)
     shutil.copytree(processed_dir + "/milkywaysynonyms/", processed_dir + "/milkyway/", dirs_exist_ok=True)
@@ -210,7 +220,6 @@ def load_epi_data(sub,story):
     for root, dirs, files in os.walk(alias_dir):
         for file in files:
             if story in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz") and "sub-"+str(sub) in file:
-                #print( "Downloading data for %s" % (sub))
                 epi_in = os.path.join(root,file)
                 if "run-1" in file:
                     epi_in = os.path.join(alias_dir,"sub-%03s/func/sub-%03s_task-%srun-1_space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz" % (sub, sub, story))
@@ -244,13 +253,13 @@ def load_regressor(sub,story):
     return regressor, regressor_location
 
 #return a list of tuples (index, foundation name, foundation score, onset, duration)
-def get_top_foundation_per_sentence(story, foundations):
+def get_top_foundation_per_row(story, foundations, scoring):
     story = story + "_"
     sentence_tuples = []
     for root, dirs, files in os.walk(foundationScores_dir):
         for file in files:
-            if story in file:
-                print("Getting top foundations per sentence in %03s " % (story[:-1]))
+            if story in file and str(scoring) in file:
+                print(f"{bcolors.OKBLUE}Getting top foundations per row in %03s {bcolors.END}" % (story[:-1]))
                 df = pd.read_excel(os.path.join(root, file))
                 for index, row in df.iterrows():
                     if ( row[foundations].max() > 0 ):
@@ -301,17 +310,17 @@ def firstLevelMacVices(story, processed_dir, scoring):
                                     'MAC_a_reciprocity_vice',
                                     'MAC_a_family_vice',
                                     'MAC_a_property_vice']]
-    foundations_per_sentence = get_top_foundation_per_sentence(story,
+    foundations_per_sentence = get_top_foundation_per_row(story,
                                                                ['MAC_a_fairness_vice',
                                                                 'MAC_a_group_vice',
                                                                 'MAC_a_deference_vice',
                                                                 'MAC_a_heroism_vice',
                                                                 'MAC_a_reciprocity_vice',
                                                                 'MAC_a_family_vice',
-                                                                'MAC_a_property_vice'])
+                                                                'MAC_a_property_vice'], scoring)
 
     events = pd.DataFrame(foundations_per_sentence, columns=["trial_type", "onset", "duration"])
-
+    print(f"{bcolors.OKGREEN}First level virtues model for " + story + " with " + str(scoring) + f" s. chunks.{bcolors.END}")
     #
     #   Data transform
     #
@@ -492,10 +501,12 @@ def firstLevelMacVices(story, processed_dir, scoring):
 def firstLevelMacVirtues(story, processed_dir, scoring):
     os.makedirs(processed_dir + story + "\\7_MAC\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
     # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
+    if scoring > 0:
+        scoring = str(scoring)+"_"
     if (story=='prettymouthaffair') or (story=='prettymouthparanoia'):
-        segmentFileDF = pd.read_excel(foundationScores_dir + "prettymouth_"+str(scoring)+"_MFT_MAC.xlsx")
+        segmentFileDF = pd.read_excel(foundationScores_dir + "prettymouth_"+str(scoring)+"MFT_MAC.xlsx")
     else:
-        segmentFileDF = pd.read_excel(foundationScores_dir + story + "_"+str(scoring)+"_MFT_MAC.xlsx")
+        segmentFileDF = pd.read_excel(foundationScores_dir + story + "_"+str(scoring)+"MFT_MAC.xlsx")
     sentenceValues = segmentFileDF[[
                                     'MAC_a_fairness_virtue',
                                     'MAC_a_group_virtue',
@@ -507,16 +518,18 @@ def firstLevelMacVirtues(story, processed_dir, scoring):
 
     # This creates the events and durations FOR DESIGN MATRIX
     eventNames = []
-    foundations_per_sentence = get_top_foundation_per_sentence(story,
+    foundations_per_sentence = get_top_foundation_per_row(story,
                                                                ['MAC_a_fairness_virtue',
                                                                 'MAC_a_group_virtue',
                                                                 'MAC_a_deference_virtue',
                                                                 'MAC_a_heroism_virtue',
                                                                 'MAC_a_reciprocity_virtue',
                                                                 'MAC_a_family_virtue',
-                                                                'MAC_a_property_virtue'])
-
+                                                                'MAC_a_property_virtue'], scoring)
     events = pd.DataFrame(foundations_per_sentence, columns=["trial_type", "onset", "duration"])
+
+    print(f"{bcolors.OKGREEN}First level virtues model for " + story + " with " + str(scoring) + f" s. chunks.{bcolors.END}")
+
     #
     #   Data transform
     #
@@ -527,7 +540,6 @@ def firstLevelMacVirtues(story, processed_dir, scoring):
         df, regressor_path = load_regressor(participant, story)
         confound_file1 = df[
             ['csf', 'white_matter', 'trans_x', 'trans_y', 'trans_z', 'rot_x', 'rot_y', 'rot_z']].to_numpy()
-
         # this weird thing handles cases in which there were multiple runs for a single participant
         if "run-1" in epi_path:
             participant = participant + "_run-1_"
@@ -701,7 +713,7 @@ def univariateWithMask(story, mask, processed_dir, scoring):
     # ----------------------------
     participants = load_participants(story, processed_dir)
     n_participants = len(participants)
-    print( "Using " + mask + " for " + story + " with scoring (number in seconds, sentence if no number)" + str(scoring))
+    print( f"{bcolors.OKCYAN}Using " + mask + " for " + story + f" with scoring (number in seconds, sentence if no number){bcolors.END}" + str(scoring))
     mask_orig = image.load_img(mask_dir + mask)
 
     # ----------------------------
@@ -769,19 +781,17 @@ def univariateWithMask(story, mask, processed_dir, scoring):
     # ----------------------------
     # Save outputs
     # ----------------------------
-    os.makedirs(processed_dir + '/' + story + '/', mode=0o777,
-                exist_ok=True)  # this checks if the directory exists and creates it, if not
+    os.makedirs(processed_dir + '/' + story + '/', mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
     np.save(processed_dir + '/' + story + "/" + story + "_"+str(scoring)+"_" + mask.split('.')[0] + "_3D_clean.npy", array_3d)
     #print("Mask array shape:", array_3d.shape, "(voxels × time × subjects)")
 
 def secondLevelMacVices(task, processed_dir, scoring):
     # ## second level model directories for PER SENTENCE
+    print( f"{bcolors.OKBLUE}Second level vices model for " + task + " with " + str(scoring) + f" s. chunks.{bcolors.END}")
     contrastImg_dir = processed_dir + task + "/7_MAC_V/Conjunction/"  # Or /F_contrast/
     processed_dir_local = processed_dir+task+"/7_MAC_V/SecondLevel_contrast/"
-    os.makedirs(processed_dir + "/", mode=0o777,
-                exist_ok=True)  # this checks if the directory exists and creates it, if not
-    os.makedirs(contrastImg_dir + "/", mode=0o777,
-                exist_ok=True)  # this checks if the directory exists and creates it, if not
+    os.makedirs(processed_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
+    os.makedirs(contrastImg_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
 
     #main loop over foundations
     all_imgs = [
@@ -856,8 +866,7 @@ def secondLevelMacVices(task, processed_dir, scoring):
     print(f"The p<.05 Bonferroni-corrected threshold is z score of {threshold2:.3g}")
 
     # save as brain image
-    thresholded_map2.to_filename(processed_dir_local + "/threshold_"+f"{threshold2:.3g}"+"_"+
-                                 "SecondLevel_CONJUNCTION_"+task+"_"+str(scoring)+"_bonfcorrect_per_Sentence_MACVices.nii.gz")
+    thresholded_map2.to_filename(processed_dir_local + "/threshold_"+f"{threshold2:.3g}"+"_"+"SecondLevel_CONJUNCTION_"+task+"_"+str(scoring)+"_bonfcorrect_per_Sentence_MACVices.nii.gz")
 
     # quick visualization
     plotting.plot_stat_map(
@@ -876,6 +885,7 @@ def secondLevelMacVices(task, processed_dir, scoring):
 
 def secondLevelMacVirtues(task, processed_dir, scoring):
     # ## second level model directories for PER SENTENCE
+    print( f"{bcolors.OKBLUE}Second level virtues model for " + task + " with " + str(scoring) + f" s. chunks.{bcolors.END}")
     contrastImg_dir = processed_dir +task+"/7_MAC/Conjunction/"  # Or /F_contrast/
     contrastImg_Testdir = ""
     processed_dir_local = processed_dir+task+"/7_MAC/SecondLevel_contrast/"
@@ -912,8 +922,7 @@ def secondLevelMacVirtues(task, processed_dir, scoring):
         output_type="z_score",
     )
     os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
-    (z_map.to_filename
-     (processed_dir_local + "/" + "SecondLevel_CONJUNCTION_"+task+"_"+str(scoring)+"_per_sentence_MACVirtues_zscore.nii.gz"))
+    (z_map.to_filename(processed_dir_local + "/" + "SecondLevel_CONJUNCTION_"+task+"_"+str(scoring)+"_per_sentence_MACVirtues_zscore.nii.gz"))
 
     #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
     # #### fdr correction
@@ -975,7 +984,9 @@ def secondLevelMacVirtues(task, processed_dir, scoring):
     )
 
 def secondLevelMacVices_1v6(task, processed_dir, scoring):
+    print(f"{bcolors.OKBLUE}Second level 1v6 vices model for " + task + " with " + str(scoring) + f" s. chunks.{bcolors.END}")
     for foundation in range(1,8):
+        print( "Foundation: " + str(foundation))
         # ## second level model directories for PER SENTENCE
         contrastImg_dir = processed_dir + task + "/7_MAC_V/VsOther6/"  # Or /F_contrast/
         contrastImg_Testdir = ""
@@ -989,11 +1000,11 @@ def secondLevelMacVices_1v6(task, processed_dir, scoring):
         all_imgs = [
             os.path.join(contrastImg_dir, name)
             for name in os.listdir(contrastImg_dir)
-                if name.endswith(f"foundation{foundation}_"+str(scoring)+"__vsOther6.nii.gz")
+                if name.endswith(f"foundation{foundation}_vsOther6.nii.gz")
         ]
 
         second_level_input = all_imgs
-        print(second_level_input)
+        #print(second_level_input)
 
         # create a design matrix for one sample t test, to be used as input for the second level model
         design_matrix = pd.DataFrame(
@@ -1034,7 +1045,9 @@ def secondLevelMacVices_1v6(task, processed_dir, scoring):
                                     "SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsOther6_fdrcorrect_per_sentence_MACVirtues.nii.gz")
 
 def secondLevelMacVirtues_1v6(task, processed_dir, scoring):
-    for foundation in range(1, 8):
+    print(f"{bcolors.OKBLUE}Second level 1v6 virtues model for " + task + " with " + str(scoring) + f" s. chunks.{bcolors.END}")
+    for foundation in range(1,8):
+        print( "Foundation: " + str(foundation))
         # ## second level model directories for PER SENTENCE
         contrastImg_dir = processed_dir + task + "/7_MAC/VsOther6/"  # Or /F_contrast/
         contrastImg_Testdir = ""
@@ -1048,11 +1061,11 @@ def secondLevelMacVirtues_1v6(task, processed_dir, scoring):
         all_imgs = [
             os.path.join(contrastImg_dir, name)
             for name in os.listdir(contrastImg_dir)
-                if name.endswith(f"foundation{foundation}_"+str(scoring)+"__vsOther6.nii.gz")
+                if name.endswith(f"foundation{foundation}_vsOther6.nii.gz")
         ]
 
         second_level_input = all_imgs
-        print(second_level_input)
+        #print(second_level_input)
 
         # create a design matrix for one sample t test, to be used as input for the second level model
         design_matrix = pd.DataFrame(
@@ -1092,24 +1105,24 @@ def secondLevelMacVirtues_1v6(task, processed_dir, scoring):
         thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+"SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsOther6_fdrcorrect_per_sentence_MACVirtues.nii.gz")
 
 def secondLevelMacVices_1vB(task, processed_dir, scoring):
-    for foundation in range(1, 8):
+    print(f"{bcolors.OKBLUE}Second level 1vBaseline vices model for " + task + " with " + str(scoring) + f" s. chunks.{bcolors.END}")
+    for foundation in range(1,8):
+        print( "Foundation: " + str(foundation))
         # ## second level model directories for PER SENTENCE
         contrastImg_dir = processed_dir + task + "/7_MAC_V/VsBaseline/"  # Or /F_contrast/
         processed_dir_local = processed_dir +task+"/7_MAC_V/SecondLevel_contrast/"
-        os.makedirs(processed_dir + "/", mode=0o777,
-                    exist_ok=True)  # this checks if the directory exists and creates it, if not
-        os.makedirs(contrastImg_dir + "/", mode=0o777,
-                    exist_ok=True)  # this checks if the directory exists and creates it, if not
+        os.makedirs(processed_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
+        os.makedirs(contrastImg_dir + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
 
         #main loop over foundations
         all_imgs = [
             os.path.join(contrastImg_dir, name)
             for name in os.listdir(contrastImg_dir)
-                if name.endswith(f"foundation{foundation}_"+str(scoring)+"_vsBaseline.nii.gz")
+                if name.endswith(f"foundation{foundation}_vsBaseline.nii.gz")
         ]
 
         second_level_input = all_imgs
-        print(second_level_input)
+        #print(second_level_input)
 
         # create a design matrix for one sample t test, to be used as input for the second level model
         design_matrix = pd.DataFrame(
@@ -1149,8 +1162,9 @@ def secondLevelMacVices_1vB(task, processed_dir, scoring):
         thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+"SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsBaseline_fdrcorrect_per_sentence_MACVices.nii.gz")
 
 def secondLevelMacVirtues_1vB(task, processed_dir, scoring):
-    # ## second level model directories for PER SENTENCE
-    for foundation in range(1, 8):
+    print(f"{bcolors.OKBLUE}Second level 1vBaseline virtues model for " + task + " with " + str(scoring) + f" s. chunks.{bcolors.END}")
+    for foundation in range(1,8):
+        print( "Foundation: " + str(foundation))
         contrastImg_dir = processed_dir + task + "/7_MAC/VsBaseline/"  # Or /F_contrast/
         contrastImg_Testdir = ""
         processed_dir_local = processed_dir+task+"/7_MAC/SecondLevel_contrast/"
@@ -1163,11 +1177,11 @@ def secondLevelMacVirtues_1vB(task, processed_dir, scoring):
         all_imgs = [
             os.path.join(contrastImg_dir, name)
             for name in os.listdir(contrastImg_dir)
-                if name.endswith(f"foundation{foundation}_"+str(scoring)+"_vsBaseline.nii.gz")
+                if name.endswith(f"foundation{foundation}_vsBaseline.nii.gz")
         ]
 
         second_level_input = all_imgs
-        print(second_level_input)
+        #print(second_level_input)
 
         # create a design matrix for one sample t test, to be used as input for the second level model
         design_matrix = pd.DataFrame(
@@ -1203,5 +1217,4 @@ def secondLevelMacVirtues_1vB(task, processed_dir, scoring):
         print(f"The p<.05 FDR-corrected threshold is z score of {threshold:.3g}")
 
         # save as brain image
-        thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+
-                                    "SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsBaseline_fdrcorrect_per_sentence_MACVirtues.nii.gz")
+        thresholded_map.to_filename(processed_dir_local + "/threshold_"+f"{threshold:.3g}"+"_"+"SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsBaseline_fdrcorrect_per_sentence_MACVirtues.nii.gz")
