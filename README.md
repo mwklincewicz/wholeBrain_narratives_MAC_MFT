@@ -9,8 +9,6 @@
 ............................................................................................
 #### **The pipeline for analysis is the following:**
 
-0) run analyze.py for this except (3), because of (a).  Too big of a pain to load and re-load environment.  Just switch to Python 3.8 and follow comments to execute it.
-
 1) get audio files into ./audio, then install datalad, git-annex, and run: datalad clone https://datasets.datalad.org/labs/hasson/narratives/derivatives/fmriprep
 2) Run transcribe(NAME) to obtain timestamp .csv files (per word/phrase) in .\text\timestamps
 3) Run getMAC_MFT_by_seconds.run(SECONDS) to obtain MAC/MFT, all, vice/virtue, scores per sentence and durations per chunk in SECONDS (from (2))
