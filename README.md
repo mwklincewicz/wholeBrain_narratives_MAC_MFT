@@ -24,9 +24,9 @@
 ............................................................................................
 #### **Some notable ways to break things:**
 
-a) MAC and MFT scoring in (3) above uses libraries that have dependencies on outdated versions of spacy, typing extensions, etc., so downgrade to Python 3.8 and follow instructions from comments in getMAC_MFT.py to complete step (5) ONLY
+a) MAC and MFT scoring uses libraries that have dependencies on outdated versions of spacy, typing extensions, etc., so downgrade to Python 3.8 and follow instructions from comments in getMAC_MFT to complete this step
 
-b) (2) depends on ffmpeg.  Follow online instructions to install it or you will get a mysterious File missing error
+b) (2) depends on ffmpeg.  Follow online instructions to install it and its own dependencies or you will get a mysterious File missing error
 
 c) Other types of analysis, Jupyter Notebooks, etc., all have their own directories, so pay attention when executing anything that you are in the right directory
 
@@ -34,11 +34,11 @@ d) There are directories with backups and other analyses that are not used, but 
 
 e) .\audio, .\fmriprep have datafiles from Princeton (Ken Norman Lab), which are both large, and not yours. They are in .gitignore, so they don't get pushed with commits
 
-f) my_temp_file and emfdTemp.csv are recreated every time you do (3) and they are there to easily and slowly handle character encoding issues; they sometimes stick around and this is a pain right now and slows things down, so it needs a better method.
+f) my_temp_file and emfdTemp.csv are recreated in root directory every time you do score with MFT/MAC and they are there to handle character encoding issues; they sometimes stick around, so this is a TODO.
 
 g) .\text\Narratives_participants.csv holds information about the order in which participants heard social and physical shapes stories
 
-h) .\text\emacscore-master.zip needs to be used to install MAC dictionary scoring for (3), keep it in the directory and use pip
+h) .\text\emacscore-master.zip needs to be used to install MAC dictionary scoring; keep it in the directory and use pip
 
 i) We typically use drive G: on WHITE_LADY, which syncs with Google Drive, sometimes does not have a check for directories; manually make them. 
 
