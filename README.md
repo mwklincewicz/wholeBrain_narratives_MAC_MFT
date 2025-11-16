@@ -9,7 +9,7 @@
 ............................................................................................
 #### **The pipeline for analysis is the following:**
 
-0) run analyze.py for this except (5), because of (a).  Too big of a pain to load and re-load environment.  Just switch to Python 3.8 and follow comments to execute it.
+0) run analyze.py for this except (3), because of (a).  Too big of a pain to load and re-load environment.  Just switch to Python 3.8 and follow comments to execute it.
 
 1) get audio files into ./audio, then install datalad, git-annex, and run: datalad clone https://datasets.datalad.org/labs/hasson/narratives/derivatives/fmriprep
 2) Run transcribe(NAME) to obtain timestamp .csv files (per word/phrase) in .\text\timestamps
