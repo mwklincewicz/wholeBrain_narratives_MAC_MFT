@@ -31,7 +31,7 @@ dir2 = "G:/fMRI_project/processed_6/"
 #stories = ['prettymouth','sherlock','forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka','prettymouthaffair','prettymouthparanoia']
 #stories = ['prettymouthparanoia']
 
-stories = ['shapessocial','tunnel','21styear','prettymouthaffair','prettymouthparanoia','milkywayoriginal','milkywaysynonyms','milkywayvodka']
+stories = ['tunnel','21styear','prettymouthaffair','prettymouthparanoia','milkywayoriginal','milkywaysynonyms','milkywayvodka']
 
 masks = [
             'gyrus_stg_association-test_z_FDR_0.01.nii',
@@ -52,16 +52,6 @@ masks = [
             'hippocampus_L.nii.gz',
             'hippocampus_R.nii.gz'
          ]
-
-story = 'shapesphysical'
-a.firstLevelMacVirtuesAndVices(story,dir2,6)
-a.secondLevelMacVices(story, dir2, 6)
-a.secondLevelMacVirtues(story, dir2, 6)
-a.secondLevelMacVices_1vB(story, dir2, 6)
-a.secondLevelMacVirtues_1vB(story, dir2, 6)
-a.secondLevelMacVirtues_1v6(story, dir2, 6)
-a.secondLevelMacVices_1v6(story, dir2, 6)
-a.dropStory(story)
 
 for story in stories:
     a.downloadStory(story)

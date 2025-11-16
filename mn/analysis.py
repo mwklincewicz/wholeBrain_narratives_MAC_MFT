@@ -79,9 +79,31 @@ def transcribe(task):
 
     import gc; import torch; gc.collect(); torch.cuda.empty_cache(); del model_a
 
+# FUNCTION FOR DOWNLOADING STORY fMRI IMAGES THROUGH DATALAD
+
+def downloadStory( task ):
+    print( f"{bcolors.OKBLUE}starting download of {bcolors.END}" + task )
+    if task=="prettymouthaffair" or task=="prettymouthparanoia":
+        task="prettymouth"
+    elif task=="milkywayoriginal" or task=="milkywaysynonyms" or task=="milkywayvodka":
+        task="milkyway"
+    else:
+        task=task
+    for root, dirs, files in os.walk(alias_dir):
+        for file in files:
+            if str(task) in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
+                epi = os.path.join(root,file)
+                #print("Downloading data for %s" % (epi))
+                subprocess.call(["datalad","get", epi], shell=False)
+            if str(task) in file and file.endswith("desc-confounds_regressors.tsv"):
+                epi = os.path.join(root, file)
+                #print("Downloading data for %s" % (epi))
+                subprocess.call(["datalad", "get", epi], shell=False)
+
 # FUNCTION FOR DELETING STORY fMRI IMAGES THROUGH DATALAD
 
 def dropStory(task):
+    print( f"{bcolors.OKBLUE}starting drop of {bcolors.END}" + task )
     if task=="prettymouthaffair" or task=="prettymouthparanoia":
         task="prettymouth"
     elif task=="milkywayoriginal" or task=="milkywaysynonyms" or task=="milkywayvodka":
@@ -93,12 +115,12 @@ def dropStory(task):
             if task in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
                 epi = os.path.join(root,file)
                 #print("Removing data file for %s" % (epi))
-                subprocess.run(["datalad", "drop", epi], shell=True)
+                subprocess.run(["datalad", "drop", epi], shell=False)
             if task in file and file.endswith("desc-confounds_regressors.tsv"):
                 epi = os.path.join(root, file)
                 #exe_path = pathlib.PureWindowsPath(epi).as_posix()
                 #print("Removing data file for %s" % (epi))
-                subprocess.call(["datalad", "drop", epi], shell=True)
+                subprocess.call(["datalad", "drop", epi], shell=False)
 
 # FUNCTION FOR LOADING ALL IMAGE FILE NAMES FOR A STORY
 
@@ -143,27 +165,6 @@ def load_image_data(sub,task):
                 img = image.load_img(img_path)
     return img, img_path
 
-# FUNCTION FOR DOWNLOADING STORY fMRI IMAGES THROUGH DATALAD
-
-def downloadStory( task ):
-    print( f"{bcolors.OKBLUE}starting download of {bcolors.END}" + task )
-    if task=="prettymouthaffair" or task=="prettymouthparanoia":
-        task="prettymouth"
-    elif task=="milkywayoriginal" or task=="milkywaysynonyms" or task=="milkywayvodka":
-        task="milkyway"
-    else:
-        task=task
-    for root, dirs, files in os.walk(alias_dir):
-        for file in files:
-            if str(task) in file and file.endswith("space-MNI152NLin2009cAsym_res-native_desc-preproc_bold.nii.gz"):
-                epi = os.path.join(root,file)
-                #print("Downloading data for %s" % (epi))
-                subprocess.call(["datalad","get", epi], shell=True)
-            if str(task) in file and file.endswith("desc-confounds_regressors.tsv"):
-                epi = os.path.join(root, file)
-                #print("Downloading data for %s" % (epi))
-                subprocess.call(["datalad", "get", epi], shell=True)
-
 # HELPER FUNCTION FOR EXCLUDING PARTICIPANTS USING excluded.xlsx in root directory
 
 def exclude_participants(story, participants):
@@ -184,7 +185,7 @@ def exclude_participants(story, participants):
 import shutil
 
 def mergeMilkyway(processed_dir):
-    print( f"{bcolors.OKBLUE}Merging milkyways...{bcolors.END}")
+    print( f"{bcolors.WARNING}Merging milkyways...{bcolors.END}")
     shutil.copytree(processed_dir + "/milkywayoriginal/", processed_dir + "/milkyway/", dirs_exist_ok=True)
     shutil.copytree(processed_dir + "/milkywayvodka/", processed_dir + "/milkyway/", dirs_exist_ok=True)
     shutil.copytree(processed_dir + "/milkywaysynonyms/", processed_dir + "/milkyway/", dirs_exist_ok=True)
@@ -1277,7 +1278,7 @@ def secondLevelMacVices_1v6(task, processed_dir, scoring):
         ]
 
         second_level_input = all_imgs
-        print(second_level_input)
+        #print(second_level_input)
 
         # create a design matrix for one sample t test, to be used as input for the second level model
         design_matrix = pd.DataFrame(
@@ -1337,7 +1338,7 @@ def secondLevelMacVirtues_1v6(task, processed_dir, scoring):
         ]
 
         second_level_input = all_imgs
-        print(second_level_input)
+        #print(second_level_input)
 
         # create a design matrix for one sample t test, to be used as input for the second level model
         design_matrix = pd.DataFrame(
@@ -1394,7 +1395,6 @@ def secondLevelMacVices_1vB(task, processed_dir, scoring):
         ]
 
         second_level_input = all_imgs
-        #print(second_level_input)
 
         # create a design matrix for one sample t test, to be used as input for the second level model
         design_matrix = pd.DataFrame(
@@ -1415,8 +1415,7 @@ def secondLevelMacVices_1vB(task, processed_dir, scoring):
             output_type="z_score",
         )
         os.makedirs(processed_dir_local + "/", mode=0o777,exist_ok=True)  # this checks if the directory exists and creates it, if not
-        (z_map.to_filename
-         (processed_dir_local + "/" + "SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsBaseline_per_sentence_MACVices_zscore.nii.gz"))
+        (z_map.to_filename(processed_dir_local + "/" + "SecondLevel_"+task+"_"+str(scoring)+'_foundation'+str(foundation)+"_VsBaseline_per_sentence_MACVices_zscore.nii.gz"))
 
         #output_type{‘z_score’, ‘stat’, ‘p_value’, ‘effect_size’, ‘effect_variance’, ‘all’},
         # #### fdr correction
