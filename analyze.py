@@ -28,46 +28,110 @@ warnings.filterwarnings("ignore")
 ########################################################################################################################
 dir1 = "G:/fMRI_project/processed_3/"
 dir2 = "G:/fMRI_project/processed_6/"
-#stories = ['prettymouth','sherlock','forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka','prettymouthaffair','prettymouthparanoia']
-#stories = ['prettymouthparanoia']
+#allstories = ['milkyway','prettymouth','sherlock','forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka','prettymouthaffair','prettymouthparanoia']
+# allmasks = [
+#             'gyrus_stg_association-test_z_FDR_0.01.nii',
+#             'antSTG_MTG_HOonly_L.nii.gz',
+#             'antSTG_MTG_HOonly_R.nii.gz',
+#             'antSTG_MTG_refined_mask_L.nii.gz',
+#             'antSTG_MTG_refined_mask_R.nii.gz',
+#             'posSTG_MTG_HOonly_L.nii.gz',
+#             'posSTG_MTG_HOonly_R.nii.gz',
+#             'posSTG_MTG_refined_mask_L.nii.gz',
+#             'posSTG_MTG_refined_mask_R.nii.gz',
+#             'STG_MTG_refined_mask_L.nii.gz',
+#             'STG_MTG_refined_mask_R.nii.gz',
+#             'tempPole_HOonly_L.nii.gz',
+#             'tempPole_HOonly_R.nii.gz',
+#             'TPJ_refined_mask_L.nii.gz',
+#             'TPJ_refined_mask_R.nii.gz',
+#             'hippocampus_L.nii.gz',
+#             'hippocampus_R.nii.gz'
+#          ]
 
-stories = ['tunnel','21styear','prettymouthaffair','prettymouthparanoia','milkywayoriginal','milkywaysynonyms','milkywayvodka']
-
+stories = ['tunnel','21styear','prettymouthaffair','prettymouthparanoia']
 masks = [
-            'gyrus_stg_association-test_z_FDR_0.01.nii',
-            'antSTG_MTG_HOonly_L.nii.gz',
-            'antSTG_MTG_HOonly_R.nii.gz',
-            'antSTG_MTG_refined_mask_L.nii.gz',
-            'antSTG_MTG_refined_mask_R.nii.gz',
-            'posSTG_MTG_HOonly_L.nii.gz',
-            'posSTG_MTG_HOonly_R.nii.gz',
-            'posSTG_MTG_refined_mask_L.nii.gz',
-            'posSTG_MTG_refined_mask_R.nii.gz',
-            'STG_MTG_refined_mask_L.nii.gz',
-            'STG_MTG_refined_mask_R.nii.gz',
-            'tempPole_HOonly_L.nii.gz',
-            'tempPole_HOonly_R.nii.gz',
-            'TPJ_refined_mask_L.nii.gz',
-            'TPJ_refined_mask_R.nii.gz',
-            'hippocampus_L.nii.gz',
-            'hippocampus_R.nii.gz'
-         ]
+    'TPJ_refined_mask_L.nii.gz',
+    'TPJ_refined_mask_R.nii.gz',
+    'hippocampus_L.nii.gz',
+    'hippocampus_R.nii.gz'
+]
+a.firstLevelMacVirtuesAndVices('shapessocial',dir2, 6)
+a.secondLevelMacVirtues_1vB('shapessocial', dir2, 6)
+a.secondLevelMacVirtues_1v6('shapessocial', dir2, 6)
+a.secondLevelMacVices_1v6('shapessocial', dir2, 6)
+a.dropStory('shapessocial')
 
-for story in stories:
-    a.downloadStory(story)
-    a.firstLevelMacVirtuesAndVices(story, dir1, 3)
-    a.secondLevelMacVices(story, dir1, 3)
-    a.secondLevelMacVirtues(story, dir1, 3)
-    a.secondLevelMacVices_1vB(story, dir1, 3)
-    a.secondLevelMacVirtues_1vB(story, dir1, 3)
-    a.secondLevelMacVirtues_1v6(story, dir1, 3)
-    a.secondLevelMacVices_1v6(story, dir1, 3)
-    a.firstLevelMacVirtuesAndVices(story, dir2, 6)
-    a.secondLevelMacVices(story, dir2, 6)
-    a.secondLevelMacVirtues(story, dir2, 6)
-    a.secondLevelMacVices_1vB(story, dir2, 6)
-    a.secondLevelMacVirtues_1vB(story, dir2, 6)
-    a.secondLevelMacVirtues_1v6(story, dir2, 6)
-    a.secondLevelMacVices_1v6(story, dir2, 6)
-    a.dropStory(story)
+a.downloadStory('shapesphysical')
+for mask in masks:
+    a.univariateWithMask('shapesphysical', mask, dir1, 3)
+    a.univariateWithMask('shapesphysical', mask, dir2, 6)
+a.dropStory('shapesphysical')
 
+a.downloadStory('milkyway')
+a.secondLevelMacVices('milkyway', dir1, 3)
+a.secondLevelMacVirtues('milkyway', dir1, 3)
+a.secondLevelMacVices_1vB('milkyway', dir1, 3)
+a.secondLevelMacVirtues_1vB('milkyway', dir1, 3)
+a.secondLevelMacVirtues_1v6('milkyway', dir1, 3)
+a.secondLevelMacVices_1v6('milkyway', dir1, 3)
+a.secondLevelMacVices('milkyway', dir2, 6)
+a.secondLevelMacVirtues('milkyway', dir2, 6)
+a.secondLevelMacVices_1vB('milkyway', dir2, 6)
+a.secondLevelMacVirtues_1vB('milkyway', dir2, 6)
+a.secondLevelMacVirtues_1v6('milkyway', dir2, 6)
+a.secondLevelMacVices_1v6('milkyway', dir2, 6)
+a.dropStory('milkyway')
+
+
+# for story in stories:
+#     a.downloadStory(story)
+#     a.firstLevelMacVirtuesAndVices(story, dir1, 3)
+#     a.secondLevelMacVices(story, dir1, 3)
+#     a.secondLevelMacVirtues(story, dir1, 3)
+#     a.secondLevelMacVices_1vB(story, dir1, 3)
+#     a.secondLevelMacVirtues_1vB(story, dir1, 3)
+#     a.secondLevelMacVirtues_1v6(story, dir1, 3)
+#     a.secondLevelMacVices_1v6(story, dir1, 3)
+#     a.firstLevelMacVirtuesAndVices(story, dir2, 6)
+#     a.secondLevelMacVices(story, dir2, 6)
+#     a.secondLevelMacVirtues(story, dir2, 6)
+#     a.secondLevelMacVices_1vB(story, dir2, 6)
+#     a.secondLevelMacVirtues_1vB(story, dir2, 6)
+#     a.secondLevelMacVirtues_1v6(story, dir2, 6)
+#     a.secondLevelMacVices_1v6(story, dir2, 6)
+#     a.dropStory(story)
+
+#stories = ['milkywayoriginal','milkywaysynonyms','milkywayvodka']
+
+#a.downloadStory('milkyway')
+
+# for story in stories:
+#     a.firstLevelMacVirtuesAndVices(story, dir1, 3)
+#     a.secondLevelMacVices(story, dir1, 3)
+#     a.secondLevelMacVirtues(story, dir1, 3)
+#     a.secondLevelMacVices_1vB(story, dir1, 3)
+#     a.secondLevelMacVirtues_1vB(story, dir1, 3)
+#     a.secondLevelMacVirtues_1v6(story, dir1, 3)
+#     a.secondLevelMacVices_1v6(story, dir1, 3)
+#     a.firstLevelMacVirtuesAndVices(story, dir2, 6)
+#     a.secondLevelMacVices(story, dir2, 6)
+#     a.secondLevelMacVirtues(story, dir2, 6)
+#     a.secondLevelMacVices_1vB(story, dir2, 6)
+#     a.secondLevelMacVirtues_1vB(story, dir2, 6)
+#     a.secondLevelMacVirtues_1v6(story, dir2, 6)
+#     a.secondLevelMacVices_1v6(story, dir2, 6)
+
+# a.secondLevelMacVices('milkyway', dir1, 3)
+# a.secondLevelMacVirtues('milkyway', dir1, 3)
+# a.secondLevelMacVices_1vB('milkyway', dir1, 3)
+# a.secondLevelMacVirtues_1vB('milkyway', dir1, 3)
+# a.secondLevelMacVirtues_1v6('milkyway', dir1, 3)
+# a.secondLevelMacVices_1v6('milkyway', dir1, 3)
+# a.secondLevelMacVices('milkyway', dir2, 6)
+# a.secondLevelMacVirtues('milkyway', dir2, 6)
+# a.secondLevelMacVices_1vB('milkyway', dir2, 6)
+# a.secondLevelMacVirtues_1vB('milkyway', dir2, 6)
+# a.secondLevelMacVirtues_1v6('milkyway', dir2, 6)
+# a.secondLevelMacVices_1v6('milkyway', dir2, 6)
+# a.dropStory('milkyway')

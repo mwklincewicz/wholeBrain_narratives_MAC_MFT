@@ -19,9 +19,6 @@ from pathlib import Path
 #   emfdscore from git
 #   emacscore best to download zip and install with pip
 
-#stories = ['shapesphysical','shapessocial']
-stories = ['black']#,'21styear','tunnel','pieman','piemanpni'] #names of narrative files in 'text_to_be_segmented' subdir
-
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -66,8 +63,13 @@ def run(story, chunkOfAnalysis):
                 f2.close()
             file = open(os.path.join('my_temp_file'), 'r', encoding='utf-8', errors='ignore')
 
-            exp2_text = file.read()
-            sentences = exp2_text.split('\n')
+####################################################################################
+# THIS IS THE MAIN LOOP PREPARING FOR SCORING SENTENCES/CHUNKS/SEGMENTS WITH MFT/MAC
+# TODO: this is a mess and needs to be written well preserving functionality
+# TODO: put the whole two-loop processess into one
+# TODO: make it possible to pass 0 for 'senentence'-level scoring
+####################################################################################
+
             index = 0
             doMore = True
             t_index = 1
@@ -78,6 +80,9 @@ def run(story, chunkOfAnalysis):
             t = 0
             counter = 0
             chunks = []
+            exp2_text = file.read()
+            sentences = exp2_text.split('\n')
+
             for sentence in sentences:
                 #
                 #   This will add timestamps (per sentence)
@@ -221,7 +226,7 @@ def run(story, chunkOfAnalysis):
                     dataFrameForSaving.loc[newIndex, "end"] = chunkEnd
                 index += 1
 
-            # Save dataframe with both sentence and segment scores to xlsx
+            # Save dataframe with either sentence and chunk scores to xlsx
             # dataFrameForSaving.to_excel('sentence_segment_MFT_MAC.xlsx')
             dataFrameForSaving.drop(dataFrameForSaving.tail(1).index, inplace=True) #remove last row because it is empty
             dataFrameForSaving.to_excel("./text/foundationScores/" + directory_input + '_'+str(chunkOfAnalysis)+'_MFT_MAC.xlsx')
@@ -239,7 +244,6 @@ def run(story, chunkOfAnalysis):
                 os.remove('emfdTemp.csv')
 
 # UNCOMMENT THIS TO RUN MANUALLY AND ADD NAME OF STORY THROUGH PROMPT
-#
 
 #story = input("Enter the story you wish to analyze: ")
 #run('tunnel',6)

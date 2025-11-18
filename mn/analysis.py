@@ -11,13 +11,10 @@ import whisperx
 import pandas as pd
 import os
 import stanza
+import shutil
 from nilearn import plotting
 from nilearn.glm.second_level import SecondLevelModel
 from nilearn.glm import threshold_stats_img
-
-alias_dir = ".\\fmriprep"
-foundationScores_dir = "./text/foundationScores/"
-mask_dir = "./masks/"
 
 class bcolors:
     HEADER = '\033[95m'
@@ -29,12 +26,17 @@ class bcolors:
     END = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
-#
-#   Use PYTHON 12, ffmpeg needs to be installed, latest everything else
-#
-#   This transcribes audio files in using WHISPERX, which builds on OpenAI whisper model for speech-to-text
-#
 
+alias_dir = ".\\fmriprep"
+foundationScores_dir = "./text/foundationScores/"
+mask_dir = "./masks/"
+
+####################################################################################
+#                       DATA MANIPULATION FUNCTIONS FOLLOW
+####################################################################################
+
+#   This transcribes audio files in using WHISPERX, which builds on OpenAI whisper model for speech-to-text
+#   Use PYTHON 12, ffmpeg needs to be installed, latest everything else
 def transcribe(task):
     device = "cpu"
     batch_size = 4  # reduce if low on GPU mem
@@ -79,7 +81,7 @@ def transcribe(task):
 
     import gc; import torch; gc.collect(); torch.cuda.empty_cache(); del model_a
 
-# FUNCTION FOR DOWNLOADING STORY fMRI IMAGES THROUGH DATALAD
+# FUNCTION FOR DOWNLOADING STORY fMRI IMAGES THROUGH DATALAD, ASSUMES ALIASES EXIST ('datalad clone' them first!)
 
 def downloadStory( task ):
     print( f"{bcolors.OKBLUE}starting download of {bcolors.END}" + task )
@@ -100,7 +102,7 @@ def downloadStory( task ):
                 #print("Downloading data for %s" % (epi))
                 subprocess.call(["datalad", "get", epi], shell=False)
 
-# FUNCTION FOR DELETING STORY fMRI IMAGES THROUGH DATALAD
+# FUNCTION FOR DROPPING STORY fMRI IMAGES THROUGH DATALAD, WHICH DOES NOT DELETE THE ALIAS
 
 def dropStory(task):
     print( f"{bcolors.OKBLUE}starting drop of {bcolors.END}" + task )
@@ -165,7 +167,7 @@ def load_image_data(sub,task):
                 img = image.load_img(img_path)
     return img, img_path
 
-# HELPER FUNCTION FOR EXCLUDING PARTICIPANTS USING excluded.xlsx in root directory
+# HELPER FUNCTION FOR EXCLUDING PARTICIPANTS USING excluded.xlsx
 
 def exclude_participants(story, participants):
     df = pd.read_excel('excluded.xlsx')
@@ -181,9 +183,7 @@ def exclude_participants(story, participants):
         print(f"{bcolors.FAIL}Excluding " + ",".join(removed) + " from " + story + f".{bcolors.END}")
     return participants
 
-# HELPER FUNCTION FOR MERGING FIRST LEVEL MODELS FOR MILKYWAY VARIANTS
-import shutil
-
+# HELPER FUNCTION MERGING FIRST LEVEL MODELS OF MILKYWAY VARIANTS
 def mergeMilkyway(processed_dir):
     print( f"{bcolors.WARNING}Merging milkyways...{bcolors.END}")
     shutil.copytree(processed_dir + "/milkywayoriginal/", processed_dir + "/milkyway/", dirs_exist_ok=True)
@@ -195,7 +195,7 @@ def load_participants(task, processed_dir):
     #return a list of all participant numbers for a story
     participants = []
     story = ""
-    if task == "milkyway": mergeMilkyway(processed_dir) #in case this is a milkyway second-level model this will me called
+    if task == "milkyway": mergeMilkyway(processed_dir) #in case this is a milkyway model for all variants (USED FOR SECOND LEVEL ONLY)
     if task=="prettymouthaffair" or task=="prettymouthparanoia": story="prettymouth"
     elif task=="milkywayoriginal" or task=="milkywaysynonyms" or task=="milkywayvodka":
         story="milkyway"
@@ -232,7 +232,7 @@ def load_epi_data(sub,story):
                 #print("Loading data from %s" % (epi_in))
     return epi_data, epi_in
 
-# Load tsv file with regressors
+# Load tsv file with regressors (for confound elimintation)
 def load_regressor(sub,story):
     if story =='prettymouthaffair' or story == 'prettymouthparanoia': story='prettymouth'
     elif story=="milkywayoriginal" or story=="milkywaysynonyms" or story=="milkywayvodka":
@@ -248,12 +248,11 @@ def load_regressor(sub,story):
                     print( "Ignoring regressors for run 2")
                 else:
                     regressor_location = os.path.join(alias_dir,"sub-%03s/func/sub-%03s_task-%04sdesc-confounds_regressors.tsv" % (sub, sub, story))
-
                 #print("Loading regressors from %s" % (regressor_location))
                 regressor = pd.read_csv(regressor_location, sep='\t')
     return regressor, regressor_location
 
-#return a list of tuples (index, foundation name, foundation score, onset, duration)
+#return a list of tuples (index, foundation name, foundation score, onset, duration) with top foundation score
 def get_top_foundation_per_row(story, foundations, scoring):
     story = story + "_"
     sentence_tuples = []
@@ -293,24 +292,13 @@ def load_durations(story):
                 durations.append( df['end'] - df['start'] )
     return durations
 
-#
-# MODELLING FUNCTIONS FOLLOW
-#
+####################################################################################
+#                       MODELLING FUNCTIONS FOLLOW
+####################################################################################
 
 def firstLevelMacVices(story, processed_dir, scoring):
     os.makedirs(processed_dir + story + "\\7_MAC_V\\", mode=0o777, exist_ok=True)  # this checks if the directory for dropping .nii files exists and creates it, if not
     # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
-    if (story=='prettymouthaffair') or (story=='prettymouthparanoia'):
-        segmentFileDF = pd.read_excel(foundationScores_dir + "prettymouth_"+str(scoring)+"_MFT_MAC.xlsx")
-    else:
-        segmentFileDF = pd.read_excel(foundationScores_dir + story + "_"+str(scoring)+"_MFT_MAC.xlsx")
-    sentenceValues = segmentFileDF[['MAC_a_fairness_vice',
-                                    'MAC_a_group_vice',
-                                    'MAC_a_deference_vice',
-                                    'MAC_a_heroism_vice',
-                                    'MAC_a_reciprocity_vice',
-                                    'MAC_a_family_vice',
-                                    'MAC_a_property_vice']]
     foundations_per_sentence = get_top_foundation_per_row(story,
                                                                ['MAC_a_fairness_vice',
                                                                 'MAC_a_group_vice',
@@ -321,11 +309,10 @@ def firstLevelMacVices(story, processed_dir, scoring):
                                                                 'MAC_a_property_vice'], scoring)
 
     events = pd.DataFrame(foundations_per_sentence, columns=["trial_type", "onset", "duration"])
-    print(f"{bcolors.OKGREEN}First level virtues model for " + story + " with " + str(scoring) + f" s. chunks.{bcolors.END}")
+    print(f"{bcolors.OKGREEN}First level vices model for " + story + " with " + str(scoring) + f" s. chunks.{bcolors.END}")
     #
     #   Data transform
     #
-
     for participant in load_participants(story, processed_dir):
         #print ("Building first-level models for participant %s" % (participant))
         epi_data_NIFTI, epi_path = load_epi_data(participant, story)
@@ -504,21 +491,7 @@ def firstLevelMacVirtues(story, processed_dir, scoring):
     # this creates a dataframe with per sentence and per segment scores for all foundations and column names that match them, plus segment file name as first element
     if scoring > 0:
         scoring = str(scoring)+"_"
-    if (story=='prettymouthaffair') or (story=='prettymouthparanoia'):
-        segmentFileDF = pd.read_excel(foundationScores_dir + "prettymouth_"+str(scoring)+"MFT_MAC.xlsx")
-    else:
-        segmentFileDF = pd.read_excel(foundationScores_dir + story + "_"+str(scoring)+"MFT_MAC.xlsx")
-    sentenceValues = segmentFileDF[[
-                                    'MAC_a_fairness_virtue',
-                                    'MAC_a_group_virtue',
-                                    'MAC_a_deference_virtue',
-                                    'MAC_a_heroism_virtue',
-                                    'MAC_a_reciprocity_virtue',
-                                    'MAC_a_family_virtue',
-                                    'MAC_a_property_virtue']]
-
     # This creates the events and durations FOR DESIGN MATRIX
-    eventNames = []
     foundations_per_sentence = get_top_foundation_per_row(story,
                                                                ['MAC_a_fairness_virtue',
                                                                 'MAC_a_group_virtue',
@@ -983,13 +956,12 @@ def firstLevelMacVirtuesAndVices(story, processed_dir, scoring):
         plotting.plot_stat_map(z_map_masked_vices, bg_img=mean_img, title="Masked z-map")
 
 def univariateWithMask(story, mask, processed_dir, scoring):
-
+    print( f"{bcolors.OKCYAN}Using " + mask + " for " + story + f" with scoring (number in seconds, 'sentence-level' if no number or 0):   {bcolors.END}" + str(scoring))
     # ----------------------------
     # Load prep data structures
     # ----------------------------
     participants = load_participants(story, processed_dir)
     n_participants = len(participants)
-    print( f"{bcolors.OKCYAN}Using " + mask + " for " + story + f" with scoring (number in seconds, 'sentence-level' if no number or 0):   {bcolors.END}" + str(scoring))
     mask_orig = image.load_img(mask_dir + mask)
 
     # ----------------------------
@@ -1177,7 +1149,6 @@ def secondLevelMacVirtues(task, processed_dir, scoring):
     ]
 
     second_level_input = all_imgs
-
 
     # create a design matrix for one sample t test, to be used as input for the second level model
     design_matrix = pd.DataFrame(
