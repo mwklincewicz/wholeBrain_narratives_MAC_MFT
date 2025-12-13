@@ -293,14 +293,12 @@ def load_durations(story):
                 durations.append( df['end'] - df['start'] )
     return durations
 
-# Helper function to return recording length
+# Helper function to return recording length plus N volumes
 
 def endOfRecording( story, padding ):
     for root, dirs, files in os.walk('./text/timestamps/'+story):
-        print( "Getting end of recording for %03s " % (story) )
         for file in files:
             if story in file and "per" in file:
-                print( "got one: %s" % file )
                 with open( './text/timestamps/' + story + "/" + file, 'r') as f:
                     last_line = f.readlines()[-1]
                 end = last_line.split(',')[-1]
