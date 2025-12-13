@@ -15,6 +15,7 @@ import shutil
 from nilearn import plotting
 from nilearn.glm.second_level import SecondLevelModel
 from nilearn.glm import threshold_stats_img
+import ants
 
 class bcolors:
     HEADER = '\033[95m'
@@ -287,11 +288,24 @@ def load_durations(story):
     for root, dirs, files in os.walk(foundationScores_dir):
         for file in files:
             if story in file:
-                print("Getting sentence durations for %03s " % (story[:-1]))
+                print("Getting sentence durations for %03s " % (story))
                 df = pd.read_excel(os.path.join(root, file), usecols=['start', 'end'] )
                 durations.append( df['end'] - df['start'] )
     return durations
 
+# Helper function to return recording length
+
+def endOfRecording( story, padding ):
+    for root, dirs, files in os.walk('./text/timestamps/'+story):
+        print( "Getting end of recording for %03s " % (story) )
+        for file in files:
+            if story in file and "per" in file:
+                print( "got one: %s" % file )
+                with open( './text/timestamps/' + story + "/" + file, 'r') as f:
+                    last_line = f.readlines()[-1]
+                end = last_line.split(',')[-1]
+                paddedEnd = float(end)/1.5 + padding*1.5
+                return int(paddedEnd)
 ####################################################################################
 #                       MODELLING FUNCTIONS FOLLOW
 ####################################################################################
@@ -387,7 +401,7 @@ def firstLevelMacVices(story, processed_dir, scoring):
 
         # save contrast image (to be used at second level)
         os.makedirs(processed_dir + story + "\\7_MAC_V\\F_contrast\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_masked.to_filename(processed_dir+story+"\\7_MAC_V\\F_contrast\\"+participant+"_"+story+"_"+str(scoring)+"_F_contrast_7_MAC_V_perSentence.nii.gz")
+        z_map_masked.to_filename(processed_dir+story+"\\7_MAC_V\\F_contrast\\"+participant+"_"+story+"_"+str(scoring)+"_F_contrast_7_MAC_V.nii.gz")
 
         # determine for each moral foundations, where is more activation for that foundation vs an average of the other 6
 
@@ -420,13 +434,13 @@ def firstLevelMacVices(story, processed_dir, scoring):
         z_map_foundation7 = FM1.compute_contrast(c7, stat_type='t', output_type='z_score')
 
         os.makedirs(processed_dir + story + "\\7_MAC_V\\VsOther6\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_foundation1.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation1_vsOther6.nii.gz")
-        z_map_foundation2.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation2_vsOther6.nii.gz")
-        z_map_foundation3.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation3_vsOther6.nii.gz")
-        z_map_foundation4.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation4_vsOther6.nii.gz")
-        z_map_foundation5.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation5_vsOther6.nii.gz")
-        z_map_foundation6.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation6_vsOther6.nii.gz")
-        z_map_foundation7.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation7_vsOther6.nii.gz")
+        z_map_foundation1.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation1_vsOther6.nii.gz")
+        z_map_foundation2.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation2_vsOther6.nii.gz")
+        z_map_foundation3.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation3_vsOther6.nii.gz")
+        z_map_foundation4.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation4_vsOther6.nii.gz")
+        z_map_foundation5.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation5_vsOther6.nii.gz")
+        z_map_foundation6.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation6_vsOther6.nii.gz")
+        z_map_foundation7.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation7_vsOther6.nii.gz")
 
         # foundation 1
         c1 = np.array([1, 0, 0, 0, 0, 0, 0, -1])  # exact -1/6
@@ -457,13 +471,13 @@ def firstLevelMacVices(story, processed_dir, scoring):
         z_map_foundation7vsbase = FM1.compute_contrast(c7, stat_type='t', output_type='z_score')
 
         os.makedirs(processed_dir + story + "\\7_MAC_V\\VsBaseline\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_foundation1vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation1_vsBaseline.nii.gz")
-        z_map_foundation2vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation2_vsBaseline.nii.gz")
-        z_map_foundation3vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation3_vsBaseline.nii.gz")
-        z_map_foundation4vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation4_vsBaseline.nii.gz")
-        z_map_foundation5vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation5_vsBaseline.nii.gz")
-        z_map_foundation6vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation6_vsBaseline.nii.gz")
-        z_map_foundation7vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation7_vsBaseline.nii.gz")
+        z_map_foundation1vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation1_vsBaseline.nii.gz")
+        z_map_foundation2vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation2_vsBaseline.nii.gz")
+        z_map_foundation3vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation3_vsBaseline.nii.gz")
+        z_map_foundation4vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation4_vsBaseline.nii.gz")
+        z_map_foundation5vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation5_vsBaseline.nii.gz")
+        z_map_foundation6vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation6_vsBaseline.nii.gz")
+        z_map_foundation7vsbase.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation7_vsBaseline.nii.gz")
 
         # based on t maps rather than thresholded maps, minimum statistic conjunction
         # based on:
@@ -481,7 +495,7 @@ def firstLevelMacVices(story, processed_dir, scoring):
             img7=z_map_foundation7vsbase,
         )
         os.makedirs(processed_dir + story + "\\7_MAC_V\\Conjunction\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        min_stat_map.to_filename(processed_dir+story+"\\7_MAC_V\\Conjunction\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_minimum_stat_conjunction.nii.gz")
+        min_stat_map.to_filename(processed_dir+story+"\\7_MAC_V\\Conjunction\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_minimum_stat_conjunction.nii.gz")
 
 
         plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
@@ -581,7 +595,7 @@ def firstLevelMacVirtues(story, processed_dir, scoring):
 
         # save contrast image (to be used at second level)
         os.makedirs(processed_dir + story + "\\7_MAC\\F_contrast\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_masked.to_filename(processed_dir+story+"\\7_MAC\\F_contrast\\"+participant+"_"+story+"_"+str(scoring)+"_F_contrast_7_MAC_perSentence.nii.gz")
+        z_map_masked.to_filename(processed_dir+story+"\\7_MAC\\F_contrast\\"+participant+"_"+story+"_"+str(scoring)+"_F_contrast_7_MAC.nii.gz")
 
         # determine for each moral foundations, where is more activation for that foundation vs an average of the other 6
 
@@ -614,13 +628,13 @@ def firstLevelMacVirtues(story, processed_dir, scoring):
         z_map_foundation7 = FM1.compute_contrast(c7, stat_type='t', output_type='z_score')
 
         os.makedirs(processed_dir + story + "\\7_MAC\\VsOther6\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_foundation1.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation1_vsOther6.nii.gz")
-        z_map_foundation2.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation2_vsOther6.nii.gz")
-        z_map_foundation3.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation3_vsOther6.nii.gz")
-        z_map_foundation4.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation4_vsOther6.nii.gz")
-        z_map_foundation5.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation5_vsOther6.nii.gz")
-        z_map_foundation6.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation6_vsOther6.nii.gz")
-        z_map_foundation7.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation7_vsOther6.nii.gz")
+        z_map_foundation1.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation1_vsOther6.nii.gz")
+        z_map_foundation2.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation2_vsOther6.nii.gz")
+        z_map_foundation3.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation3_vsOther6.nii.gz")
+        z_map_foundation4.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation4_vsOther6.nii.gz")
+        z_map_foundation5.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation5_vsOther6.nii.gz")
+        z_map_foundation6.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation6_vsOther6.nii.gz")
+        z_map_foundation7.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation7_vsOther6.nii.gz")
 
         # foundation 1
         c1 = np.array([1, 0, 0, 0, 0, 0, 0, -1])  # exact -1/6
@@ -651,13 +665,13 @@ def firstLevelMacVirtues(story, processed_dir, scoring):
         z_map_foundation7vsbase = FM1.compute_contrast(c7, stat_type='t', output_type='z_score')
 
         os.makedirs(processed_dir + story + "\\7_MAC\\VsBaseline\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_foundation1vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation1_vsBaseline.nii.gz")
-        z_map_foundation2vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation2_vsBaseline.nii.gz")
-        z_map_foundation3vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation3_vsBaseline.nii.gz")
-        z_map_foundation4vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation4_vsBaseline.nii.gz")
-        z_map_foundation5vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation5_vsBaseline.nii.gz")
-        z_map_foundation6vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation6_vsBaseline.nii.gz")
-        z_map_foundation7vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation7_vsBaseline.nii.gz")
+        z_map_foundation1vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation1_vsBaseline.nii.gz")
+        z_map_foundation2vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation2_vsBaseline.nii.gz")
+        z_map_foundation3vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation3_vsBaseline.nii.gz")
+        z_map_foundation4vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation4_vsBaseline.nii.gz")
+        z_map_foundation5vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation5_vsBaseline.nii.gz")
+        z_map_foundation6vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation6_vsBaseline.nii.gz")
+        z_map_foundation7vsbase.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation7_vsBaseline.nii.gz")
 
         # based on t maps rather than thresholded maps, minimum statistic conjunction
         # based on:
@@ -675,7 +689,7 @@ def firstLevelMacVirtues(story, processed_dir, scoring):
             img7=z_map_foundation7vsbase,
         )
         os.makedirs(processed_dir + story + "\\7_MAC\\Conjunction\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        min_stat_map.to_filename(processed_dir+story+"\\7_MAC\\Conjunction\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_minimum_stat_conjunction.nii.gz")
+        min_stat_map.to_filename(processed_dir+story+"\\7_MAC\\Conjunction\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_minimum_stat_conjunction.nii.gz")
 
 
         plotting.plot_stat_map(z_map_masked, bg_img=mean_img, title="Masked z-map")
@@ -806,9 +820,9 @@ def firstLevelMacVirtuesAndVices(story, processed_dir, scoring):
 
         # save contrast image (to be used at second level)
         os.makedirs(processed_dir + story + "\\7_MAC\\F_contrast\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_masked_virtues.to_filename(processed_dir+story+"\\7_MAC\\F_contrast\\"+participant+"_"+story+"_"+str(scoring)+"_F_contrast_7_MAC_perSentence.nii.gz")
+        z_map_masked_virtues.to_filename(processed_dir+story+"\\7_MAC\\F_contrast\\"+participant+"_"+story+"_"+str(scoring)+"_F_contrast_7_MAC.nii.gz")
         os.makedirs(processed_dir + story + "\\7_MAC_V\\F_contrast\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_masked_vices.to_filename(processed_dir + story + "\\7_MAC_V\\F_contrast\\" + participant + "_" + story + "_" + str(scoring) + "_F_contrast_7_MAC_V_perSentence.nii.gz")
+        z_map_masked_vices.to_filename(processed_dir + story + "\\7_MAC_V\\F_contrast\\" + participant + "_" + story + "_" + str(scoring) + "_F_contrast_7_MAC_V.nii.gz")
 
         # determine for each moral foundations, where is more activation for that foundation vs an average of the other 6
 
@@ -848,22 +862,22 @@ def firstLevelMacVirtuesAndVices(story, processed_dir, scoring):
         z_map_foundation7_vices = FM2.compute_contrast(c7, stat_type='t', output_type='z_score')
 
         os.makedirs(processed_dir + story + "\\7_MAC\\VsOther6\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_foundation1_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation1_vsOther6.nii.gz")
-        z_map_foundation2_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation2_vsOther6.nii.gz")
-        z_map_foundation3_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation3_vsOther6.nii.gz")
-        z_map_foundation4_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation4_vsOther6.nii.gz")
-        z_map_foundation5_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation5_vsOther6.nii.gz")
-        z_map_foundation6_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation6_vsOther6.nii.gz")
-        z_map_foundation7_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation7_vsOther6.nii.gz")
+        z_map_foundation1_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation1_vsOther6.nii.gz")
+        z_map_foundation2_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation2_vsOther6.nii.gz")
+        z_map_foundation3_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation3_vsOther6.nii.gz")
+        z_map_foundation4_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation4_vsOther6.nii.gz")
+        z_map_foundation5_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation5_vsOther6.nii.gz")
+        z_map_foundation6_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation6_vsOther6.nii.gz")
+        z_map_foundation7_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation7_vsOther6.nii.gz")
 
         os.makedirs(processed_dir + story + "\\7_MAC_V\\VsOther6\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_foundation1_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation1_vsOther6.nii.gz")
-        z_map_foundation2_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation2_vsOther6.nii.gz")
-        z_map_foundation3_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation3_vsOther6.nii.gz")
-        z_map_foundation4_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation4_vsOther6.nii.gz")
-        z_map_foundation5_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation5_vsOther6.nii.gz")
-        z_map_foundation6_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation6_vsOther6.nii.gz")
-        z_map_foundation7_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation7_vsOther6.nii.gz")
+        z_map_foundation1_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation1_vsOther6.nii.gz")
+        z_map_foundation2_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation2_vsOther6.nii.gz")
+        z_map_foundation3_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation3_vsOther6.nii.gz")
+        z_map_foundation4_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation4_vsOther6.nii.gz")
+        z_map_foundation5_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation5_vsOther6.nii.gz")
+        z_map_foundation6_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation6_vsOther6.nii.gz")
+        z_map_foundation7_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsOther6\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation7_vsOther6.nii.gz")
 
         # foundation 1
         c1 = np.array([1, 0, 0, 0, 0, 0, 0, -1])  # exact -1/6
@@ -901,22 +915,22 @@ def firstLevelMacVirtuesAndVices(story, processed_dir, scoring):
         z_map_foundation7vsbase_vices = FM2.compute_contrast(c7, stat_type='t', output_type='z_score')
 
         os.makedirs(processed_dir + story + "\\7_MAC\\VsBaseline\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_foundation1vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation1_vsBaseline.nii.gz")
-        z_map_foundation2vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation2_vsBaseline.nii.gz")
-        z_map_foundation3vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation3_vsBaseline.nii.gz")
-        z_map_foundation4vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation4_vsBaseline.nii.gz")
-        z_map_foundation5vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation5_vsBaseline.nii.gz")
-        z_map_foundation6vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation6_vsBaseline.nii.gz")
+        z_map_foundation1vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation1_vsBaseline.nii.gz")
+        z_map_foundation2vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation2_vsBaseline.nii.gz")
+        z_map_foundation3vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation3_vsBaseline.nii.gz")
+        z_map_foundation4vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation4_vsBaseline.nii.gz")
+        z_map_foundation5vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation5_vsBaseline.nii.gz")
+        z_map_foundation6vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_z_map_foundation6_vsBaseline.nii.gz")
         z_map_foundation7vsbase_virtues.to_filename(processed_dir+story+"\\7_MAC\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_perSentence_z_map_foundation7_vsBaseline.nii.gz")
 
         os.makedirs(processed_dir + story + "\\7_MAC_V\\VsBaseline\\", mode=0o777, exist_ok=True)  # this checks if the directory exists and creates it, if not
-        z_map_foundation1vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation1_vsBaseline.nii.gz")
-        z_map_foundation2vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation2_vsBaseline.nii.gz")
-        z_map_foundation3vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation3_vsBaseline.nii.gz")
-        z_map_foundation4vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation4_vsBaseline.nii.gz")
-        z_map_foundation5vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation5_vsBaseline.nii.gz")
-        z_map_foundation6vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation6_vsBaseline.nii.gz")
-        z_map_foundation7vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_perSentence_z_map_foundation7_vsBaseline.nii.gz")
+        z_map_foundation1vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation1_vsBaseline.nii.gz")
+        z_map_foundation2vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation2_vsBaseline.nii.gz")
+        z_map_foundation3vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation3_vsBaseline.nii.gz")
+        z_map_foundation4vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation4_vsBaseline.nii.gz")
+        z_map_foundation5vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation5_vsBaseline.nii.gz")
+        z_map_foundation6vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation6_vsBaseline.nii.gz")
+        z_map_foundation7vsbase_vices.to_filename(processed_dir+story+"\\7_MAC_V\\VsBaseline\\"+ participant + "_"+story+"_"+str(scoring)+"_7_MAC_V_z_map_foundation7_vsBaseline.nii.gz")
 
         # based on t maps rather than thresholded maps, minimum statistic conjunction
         # based on:
@@ -969,12 +983,12 @@ def univariateWithMask(story, mask, processed_dir, scoring):
     # ----------------------------
     ref_img = load_image_data(participants[0], story)[0]
     # Resample masks to match the first image’s space
-    mask_res = image.resample_to_img(mask_orig, ref_img.slicer[..., 0], interpolation='nearest', force_resample=True,copy_header=True,clip=True, fill_value=0)
+    mask_res = image.resample_to_img(mask_orig, ref_img.slicer[..., 0], interpolation='nearest', force_resample=True,copy_header=True)
 
     mask_data = mask_res.get_fdata().astype(bool)
 
     n_voxels = np.sum(mask_data)
-    n_timepoints = ref_img.shape[-1]
+    n_timepoints = endOfRecording(story, 3) # gets the last word timestamp for a story and adds N volumes (passed as parameter)
     #print(f"Each participant has {n_timepoints} timepoints")
 
     # ----------------------------
@@ -1009,18 +1023,15 @@ def univariateWithMask(story, mask, processed_dir, scoring):
         clean_img_data = clean_data.get_fdata()
 
         # Resample masks to participant space (if needed)
-        mask_res = image.resample_to_img(mask_orig, clean_data.slicer[..., 0], interpolation='nearest', force_resample=True,copy_header=True, fill_value=0)
+        mask_res = image.resample_to_img(mask_orig, clean_data.slicer[..., 0], interpolation='nearest', force_resample=True,copy_header=True)
 
         mask_data = mask_res.get_fdata().astype(bool)
 
         # Extract voxel time series (voxels × time)
         ts = clean_img_data[mask_data, :]
-        # reshape in case the reference recording is shorter or longer than what you do here
+        # reshape in case the reference recording is longer than what you do here (almost always will be, given how we get n_timepoints above)
         if ts.shape[1] > n_timepoints:
             ts = ts[:, :n_timepoints]
-        if ts.shape[1] < n_timepoints:
-            padding = n_timepoints - clean_img_data.shape[-1]
-            ts.resize(ts.shape[0], ts[1].shape[0]+padding)
 
         # Store in 3D array
         array_3d[:, :, i] = ts

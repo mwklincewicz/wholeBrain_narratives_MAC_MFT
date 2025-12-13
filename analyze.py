@@ -28,61 +28,49 @@ warnings.filterwarnings("ignore")
 ########################################################################################################################
 dir1 = "G:/fMRI_project/processed_3/"
 dir2 = "G:/fMRI_project/processed_6/"
+dir3 = "G:/fMRI_project/processed_0/"
+
 #allstories = ['milkyway','prettymouth','sherlock','forgot','21styear','slumlordreach','bronx','pieman','piemanpni','tunnel', 'black','lucy','merlin','shapesphysical', 'shapessocial','notthefallintact','milkywayoriginal','milkywaysynonyms','milkywayvodka','prettymouthaffair','prettymouthparanoia']
 # allmasks = [
 #             'gyrus_stg_association-test_z_FDR_0.01.nii',
 #             'antSTG_MTG_HOonly_L.nii.gz',
 #             'antSTG_MTG_HOonly_R.nii.gz',
-#             'antSTG_MTG_refined_mask_L.nii.gz',
-#             'antSTG_MTG_refined_mask_R.nii.gz',
+#             'antSTG_MTG_refined_mask_L.nii.gz', #core
+#             'antSTG_MTG_refined_mask_R.nii.gz', #core
 #             'posSTG_MTG_HOonly_L.nii.gz',
 #             'posSTG_MTG_HOonly_R.nii.gz',
-#             'posSTG_MTG_refined_mask_L.nii.gz',
-#             'posSTG_MTG_refined_mask_R.nii.gz',
+#             'posSTG_MTG_refined_mask_L.nii.gz', #core
+#             'posSTG_MTG_refined_mask_R.nii.gz', #core
 #             'STG_MTG_refined_mask_L.nii.gz',
 #             'STG_MTG_refined_mask_R.nii.gz',
 #             'tempPole_HOonly_L.nii.gz',
 #             'tempPole_HOonly_R.nii.gz',
-#             'TPJ_refined_mask_L.nii.gz',
-#             'TPJ_refined_mask_R.nii.gz',
-#             'hippocampus_L.nii.gz',
-#             'hippocampus_R.nii.gz'
+#             'TPJ_refined_mask_L.nii.gz', #core
+#             'TPJ_refined_mask_R.nii.gz', #core
+#             'hippocampus_L.nii.gz', #core
+#             'hippocampus_R.nii.gz' #CORE
 #          ]
 
-stories = ['tunnel','21styear','prettymouthaffair','prettymouthparanoia']
+stories = ['shapesphysical', 'shapessocial']
 masks = [
-    'TPJ_refined_mask_L.nii.gz',
-    'TPJ_refined_mask_R.nii.gz',
-    'hippocampus_L.nii.gz',
-    'hippocampus_R.nii.gz'
+    'antSTG_MTG_refined_mask_L.nii.gz', #core
+    'antSTG_MTG_refined_mask_R.nii.gz', #core
+    'posSTG_MTG_refined_mask_L.nii.gz', #core
+    'posSTG_MTG_refined_mask_R.nii.gz', #core
+    'TPJ_refined_mask_L.nii.gz', #core
+    'TPJ_refined_mask_R.nii.gz', #core
 ]
-a.firstLevelMacVirtuesAndVices('shapessocial',dir2, 6)
-a.secondLevelMacVirtues_1vB('shapessocial', dir2, 6)
-a.secondLevelMacVirtues_1v6('shapessocial', dir2, 6)
-a.secondLevelMacVices_1v6('shapessocial', dir2, 6)
-a.dropStory('shapessocial')
 
-a.downloadStory('shapesphysical')
+#a.firstLevelMacVirtuesAndVices('shapesphysical',dir3,0)
+# a.secondLevelMacVirtues_1vB('shapessocial', dir3,0)
+# a.secondLevelMacVirtues_1v6('shapessocial', dir3,0)
+# a.secondLevelMacVices_1v6('shapessocial', dir3,0)
+#
 for mask in masks:
-    a.univariateWithMask('shapesphysical', mask, dir1, 3)
-    a.univariateWithMask('shapesphysical', mask, dir2, 6)
-a.dropStory('shapesphysical')
+    a.univariateWithMask('shapesphysical', mask, dir3, 0)
 
-a.downloadStory('milkyway')
-a.secondLevelMacVices('milkyway', dir1, 3)
-a.secondLevelMacVirtues('milkyway', dir1, 3)
-a.secondLevelMacVices_1vB('milkyway', dir1, 3)
-a.secondLevelMacVirtues_1vB('milkyway', dir1, 3)
-a.secondLevelMacVirtues_1v6('milkyway', dir1, 3)
-a.secondLevelMacVices_1v6('milkyway', dir1, 3)
-a.secondLevelMacVices('milkyway', dir2, 6)
-a.secondLevelMacVirtues('milkyway', dir2, 6)
-a.secondLevelMacVices_1vB('milkyway', dir2, 6)
-a.secondLevelMacVirtues_1vB('milkyway', dir2, 6)
-a.secondLevelMacVirtues_1v6('milkyway', dir2, 6)
-a.secondLevelMacVices_1v6('milkyway', dir2, 6)
-a.dropStory('milkyway')
-
+for mask in masks:
+    a.univariateWithMask('shapessocial', mask, dir3, 0)
 
 # for story in stories:
 #     a.downloadStory(story)
