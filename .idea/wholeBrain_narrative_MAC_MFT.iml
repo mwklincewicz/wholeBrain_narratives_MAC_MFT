@@ -8,7 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/olderAnalysis/_testData/processed_first_level_MAC_family/social" />
       <excludeFolder url="file://$MODULE_DIR$/olderAnalysis/_testData/processed_first_level_MAC_family/wordpeak_social" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.12 (wholeBrain_narrative_MAC_MFT)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.12 (narratives_project)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

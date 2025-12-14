@@ -187,7 +187,7 @@ def run(story):
 
     # # Save dataframe with both sentence and segment scores to xlsx
     #dataFrameForSaving.to_excel('sentence_segment_MFT_MAC.xlsx')
-    dataFrameForSaving.to_excel("./text/foundationScores/" + directory_input + '_MFT_MAC.xlsx')
+    dataFrameForSaving.to_excel("./text/foundationScores/" + directory_input + '_0_MFT_MAC.xlsx')
 
     #Cleaning up temp files
     file.close()

@@ -15,7 +15,6 @@ import shutil
 from nilearn import plotting
 from nilearn.glm.second_level import SecondLevelModel
 from nilearn.glm import threshold_stats_img
-import ants
 
 class bcolors:
     HEADER = '\033[95m'

@@ -1,5 +1,6 @@
 from mn import analysis as a
-#import getMAC_MFT_by_seconds
+# import getMAC_MFT_by_seconds
+# import getMAC_MFT_by_sentence
 import warnings
 warnings.filterwarnings("ignore")
 ########################################################################################################################
@@ -51,26 +52,30 @@ dir3 = "G:/fMRI_project/processed_0/"
 #             'hippocampus_R.nii.gz' #CORE
 #          ]
 
-stories = ['shapesphysical', 'shapessocial']
+stories = ['shapessocial','shapesphysical']
+# for story in stories:
+#     getMAC_MFT_by_sentence.run(story)
 masks = [
-    'antSTG_MTG_refined_mask_L.nii.gz', #core
-    'antSTG_MTG_refined_mask_R.nii.gz', #core
-    'posSTG_MTG_refined_mask_L.nii.gz', #core
-    'posSTG_MTG_refined_mask_R.nii.gz', #core
-    'TPJ_refined_mask_L.nii.gz', #core
-    'TPJ_refined_mask_R.nii.gz', #core
+                'antSTG_MTG_refined_mask_L.nii.gz', #core
+                'antSTG_MTG_refined_mask_R.nii.gz', #core
+                'posSTG_MTG_refined_mask_L.nii.gz', #core
+                'posSTG_MTG_refined_mask_R.nii.gz', #core
+                'TPJ_refined_mask_L.nii.gz', #core
+                'TPJ_refined_mask_R.nii.gz', #core
+                'hippocampus_L.nii.gz', #core
+                'hippocampus_R.nii.gz' #CORE
 ]
+for story in stories:
+    a.firstLevelMacVirtuesAndVices(story,dir3,0)
+    a.secondLevelMacVirtues_1vB(story, dir3,0)
+    a.secondLevelMacVirtues_1v6(story, dir3,0)
+    a.secondLevelMacVices_1v6(story, dir3,0)
 
-#a.firstLevelMacVirtuesAndVices('shapesphysical',dir3,0)
-# a.secondLevelMacVirtues_1vB('shapessocial', dir3,0)
-# a.secondLevelMacVirtues_1v6('shapessocial', dir3,0)
-# a.secondLevelMacVices_1v6('shapessocial', dir3,0)
-#
-for mask in masks:
-    a.univariateWithMask('shapesphysical', mask, dir3, 0)
+    for mask in masks:
+        a.univariateWithMask(story, mask, dir3, 0)
 
-for mask in masks:
-    a.univariateWithMask('shapessocial', mask, dir3, 0)
+# for mask in masks:
+#     a.univariateWithMask('shapessocial', mask, dir3, 0)
 
 # for story in stories:
 #     a.downloadStory(story)
