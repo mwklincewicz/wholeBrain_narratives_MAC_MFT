@@ -52,7 +52,7 @@ dir3 = "G:/fMRI_project/processed_0/"
 #             'hippocampus_R.nii.gz' #CORE
 #          ]
 
-stories = ['shapessocial','shapesphysical']
+stories = ['21styear','tunnel']
 # for story in stories:
 #     getMAC_MFT_by_sentence.run(story)
 masks = [

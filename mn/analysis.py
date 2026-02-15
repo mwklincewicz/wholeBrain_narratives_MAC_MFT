@@ -252,7 +252,7 @@ def load_regressor(sub,story):
                 regressor = pd.read_csv(regressor_location, sep='\t')
     return regressor, regressor_location
 
-#return a list of tuples (index, foundation name, foundation score, onset, duration) with top foundation score
+#return a list of tuples (foundation name, onset, duration) with top foundation score
 def get_top_foundation_per_row(story, foundations, scoring):
     story = story + "_"
     sentence_tuples = []
@@ -267,6 +267,24 @@ def get_top_foundation_per_row(story, foundations, scoring):
                     else:
                         tuple = 'baseline', row['start'], row['end'] - row['start']
                     sentence_tuples.append(tuple)
+    return sentence_tuples
+
+#return a list of tuples (foundation name, sentence) with top foundation score
+def get_top_foundation_per_sentence(story, foundations, scoring):
+    story = story + "_"
+    sentence_tuples = []
+    for root, dirs, files in os.walk(foundationScores_dir):
+        for file in files:
+            if story in file and str(scoring) in file:
+                print(f"{bcolors.OKBLUE}Getting top foundations per sentence in {bcolors.WARNING}%03s {bcolors.OKBLUE}for {bcolors.END}%03s" % (story[:-1], foundations) )
+                df = pd.read_excel(os.path.join(root, file))
+                for index, row in df.iterrows():
+                    if ( row[foundations].max() > 0 ):
+                        tuple = row[foundations].idxmax(), row['sentence'] #, row[foundations].max()
+                        sentence_tuples.append(tuple)
+                    # else:
+                    #     tuple = 'baseline', row['sentence'], row[foundations].max()
+
     return sentence_tuples
 
 #return a list of timestamps for onset
