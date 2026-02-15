@@ -264,9 +264,11 @@ def get_top_foundation_per_row(story, foundations, scoring):
                 for index, row in df.iterrows():
                     if ( row[foundations].max() > 0 ):
                         tuple = row[foundations].idxmax(), row['start'], row['end'] - row['start']
+                        sentence_tuples.append(tuple)
                     else:
                         tuple = 'baseline', row['start'], row['end'] - row['start']
-                    sentence_tuples.append(tuple)
+                        sentence_tuples.append(tuple)
+
     return sentence_tuples
 
 #return a list of tuples (foundation name, sentence) with top foundation score
@@ -283,8 +285,8 @@ def get_top_foundation_per_sentence(story, foundations, scoring):
                         tuple = row[foundations].idxmax(), row['sentence'] #, row[foundations].max()
                         sentence_tuples.append(tuple)
                     # else:
-                    #     tuple = 'baseline', row['sentence'], row[foundations].max()
-
+                    #     tuple = 'baseline', row['sentence'] #, row[foundations].max()
+                    #     sentence_tuples.append(tuple)
     return sentence_tuples
 
 #return a list of timestamps for onset
