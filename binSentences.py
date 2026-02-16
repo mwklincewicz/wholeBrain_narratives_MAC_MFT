@@ -1,7 +1,6 @@
-from contextlib import nullcontext
-
-from mn import analysis as a
+import os
 import warnings
+import pandas as pd
 warnings.filterwarnings("ignore")
 
 ########################################################################################################################
@@ -9,6 +8,27 @@ warnings.filterwarnings("ignore")
 #   then used to find corresponding brain regions.  Use this to find patterns in language for those stimuli.
 #
 ########################################################################################################################
+foundationScores_dir = "./text/foundationScores/"
+foundationBins_dir = "./text/foundationBins/"
+
+#return a list of tuples (foundation name, sentence, value) with top foundation score
+def get_top_foundation_per_sentence(story, foundations, scoring):
+    story = story + "_"
+    sentence_tuples = []
+    for root, dirs, files in os.walk(foundationScores_dir):
+        for file in files:
+            if story in file and str(scoring) in file:
+                print(f"{bcolors.OKBLUE}Getting top foundations per sentence in {bcolors.WARNING}%03s {bcolors.OKBLUE}for {bcolors.END}%03s" % (story[:-1], foundations) )
+                df = pd.read_excel(os.path.join(root, file))
+                for index, row in df.iterrows():
+                    if ( row[foundations].max() > 0 ):
+                        tuple = row[foundations].idxmax(), row['sentence'], row[foundations].max()
+                        sentence_tuples.append(tuple)
+                    # else:
+                    #     tuple = 'baseline', row['sentence'] #, row[foundations].max()
+                    #     sentence_tuples.append(tuple)
+    return sentence_tuples
+
 stories =                   ['21styear','tunnel']
 foundationGroups =          [['MAC_a_fairness_virtue',
                             'MAC_a_group_virtue',
@@ -39,21 +59,18 @@ dct = {}
 
 for story in stories:
     for group in foundationGroups:
-        foundationBins = a.get_top_foundation_per_sentence(story, group, 0)
-        for tpl in foundationBins:
-            idx = tpl[0]  # idx has the 'dependent' variable
-            temp = dct.get(idx, [])
-            temp.append(tpl[1])
-            dct[idx] = temp
+        foundationBins = get_top_foundation_per_sentence(story, group, 0)
+        for tuple in foundationBins:
+            foundation = tuple[0]
+            sentence = dct.get(foundation, [])
+            sentence.append(str(round(tuple[2], 3))+'; '+str(tuple[1]))
+            dct[foundation] = sentence
 
         for bin in dct.keys():
             print( f'\n{bcolors.OKBLUE}'+bin+f'{bcolors.END} in ' + bcolors.OKCYAN+story+bcolors.END )
+            file = open(foundationBins_dir + str(story) + '_' + bin + '.csv', 'w')
             for sentence in dct.get(bin):
+                file.write(sentence+'\n')
                 print( sentence )
         dct = {}
-    # for foundation in vices_per_sentence:
-    #     file = open('./text/sentenceBins/'+str(story)+'_'+foundation+'.csv', 'w')
-    #
-    #     for values in foundations_per_sentence:
-    #         file.write(values[1]+'\n')
-    #     file.close()
+        file.close()
