@@ -22,9 +22,17 @@ class bcolors:
 #   This takes text files from sentences that are used to populate design matrices for each foundation, which are
 #   and then scores them using MAC dictionary
 #
+#   Use Python 3.8, with a batch file that installs
+#   spacy 3.4
+#   typing-extensions has to be 4.4
+#   has to be pandas 1.5.3
+#   also install scikit-learn 1.3
+#   also install openpyxl
+#   emfdscore from git
+#   emacscore best to download zip and install with pip
 ########################################################################################################################
-foundationScores_dir = "./text/foundationScores/"
-foundationBins_dir = "./text/foundationBins/"
+foundationScores_dir = "foundationScores/"
+foundationBins_dir = "foundationBins/"
 sentences = ''
 for filename in os.listdir(foundationBins_dir):
     if filename.endswith('.csv'):
@@ -39,7 +47,6 @@ for filename in os.listdir(foundationBins_dir):
     length = len(tempDf)
     #print(f"{bcolors.OKCYAN}MAC "+ foundation + " " + vice_or_virtue + f" for {bcolors.END}" )
     #print(sentences.to_string())
-    #eMFD_df_all = emfd_score_docs(tempDf, 'emfd', 'all', 'bow', 'vice-virtue', length)
     eMAC_df_all = emac_score_docs(tempDf, 'emac', 'all', 'bow', 'vice-virtue', length)
     print( eMAC_df_all[foundation+'.'+vice_or_virtue].values[0] )
     file = open(foundationBins_dir + '/' + filename, 'a')

@@ -8,8 +8,8 @@ warnings.filterwarnings("ignore")
 #   then used to find corresponding brain regions.  Use this to find patterns in language for those stimuli.
 #
 ########################################################################################################################
-foundationScores_dir = "./text/foundationScores/"
-foundationBins_dir = "./text/foundationBins/"
+foundationScores_dir = "foundationScores/"
+foundationBins_dir = "foundationBins/"
 
 #return a list of tuples (foundation name, sentence, value) with top foundation score
 def get_top_foundation_per_sentence(story, foundations, scoring):
